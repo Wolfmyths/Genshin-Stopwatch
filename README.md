@@ -3,7 +3,7 @@
 
 ## How does it work?
 
-Genshin Stopwatch is a program that is does not require an internet connection to use and does not run in the background. When you start up the program it will calculate the difference between when you started the program and when the destination of said timer is.
+Genshin Stopwatch is a program that is *does not require an internet connection* to use and *does not run in the background*. When you start up the program it will calculate the difference between when you started the program and when the destination of said timer is.
 
 When you close the application your stopwatches will save to a `save.txt` file. The save file is easily configurable and easy to read. Here is an example of a stopwatch's save data in `save.txt`:
 
@@ -16,3 +16,20 @@ When you close the application your stopwatches will save to a `save.txt` file. 
 ## What platforms is this compatible with?
 
 At the moment only Windows machines can run this program, I'm not sure if I plan on making mobile versions.
+
+## It doesn't work!
+
++ Check `save.txt` and make sure it looks in a similar format to the example above.
++ The program needs `save.txt` to start, so if there isn't one in the directory create a text file with the same name.
++ Genshin Stopwatch only works on `Windows`.
+
+If you found a bug or crash, please report it to me and show how to replicate the issue if possible.<br>
+**Before submitting a bug report please check the known bugs in the release notes before telling me.**
+
+## Future Plans?
+
+I don't have many ideas at the moment but if someone has any feel free to let me know!
+
+## Credits
+
+Thanks to [PyQt5](https://pypi.org/project/PyQt5/) for making an open source easy-to-use framework.
