@@ -1,5 +1,5 @@
 # Genshin Stopwatch
-### A program to help keep track of Genshin Impact's time gates.
+### A program to help keep track of Genshin Impact's time gates. ![logo](icon.png)
 
 ## How does it work?
 
