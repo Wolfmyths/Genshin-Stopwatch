@@ -55,6 +55,7 @@ If you found a bug or crash, please report it to me and show how to replicate th
 ## Future Plans?
 
 + Touch up on the UI a tiny bit for more clarity
++ Color Themes
 + Mobile version? (Hard maybe)
 
 If you have a suggestion let me know!
