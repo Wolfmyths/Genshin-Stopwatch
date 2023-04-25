@@ -13,7 +13,9 @@ Genshin Stopwatch is a program that *does not require an internet connection* to
 
 *You can run the program in the background* or disable it in the settings if you want.
 
-When a stopwatch finished, a desktop notification will be played *(Check your windows notification and focus assist settings to make sure they will go off.)*
+**The program is accessible through the system tray** (Up arrow next to the volume mixer) **when running in the background.**
+
+When a stopwatch finishes, a desktop notification will be played *(Check your windows notification and focus assist settings to make sure they will go off.)*
 
 When you close the application your stopwatches will save to the `save.txt` file. The save file is easily configurable and easy to read.
 
@@ -52,7 +54,8 @@ If you found a bug or crash, please report it to me and show how to replicate th
 
 ## Future Plans?
 
-+ Add windows notifications when a stopwatch finishes
++ Touch up on the UI a tiny bit for more clarity
++ Mobile version? (Hard maybe)
 
 If you have a suggestion let me know!
 
