@@ -330,14 +330,14 @@ class addTimer(qtw.QDockWidget):
 
         elif timeObject == 'Custom':
 
-            duration: str = self.customDurationLineEdit.text()
+            hours: str = self.customDurationLineEdit.text()
             minutes: str = self.customDurationLineEditMinutes.text()
-
-            if not duration.isdigit() or not minutes.isdigit():
-                return self.customDurationLineEdit.setText('Error: Whole Numbers Only')
             
-            duration = int(duration)
-            minutes = int(minutes)
+            try:
+                hours = abs(int(hours))
+                minutes = abs(int(minutes))
+            except ValueError:
+                return self.customDurationLineEdit.setText('Error: Whole Numbers Only')
 
         else:
 
@@ -348,13 +348,13 @@ class addTimer(qtw.QDockWidget):
             
             duration = duration.split()
 
-            duration = int(duration[0])
-
             if duration[1] == 'Days' or duration[1] == 'Day':
-                duration *= 24
-            
-            hours = duration
+                duration = int(duration[0]) * 24
+            else:
+                duration = int(duration[0])
 
+
+            hours = duration
 
         duration = datetime.timedelta(hours=hours, minutes=minutes)
 
