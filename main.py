@@ -7,7 +7,10 @@ import json
 
 from win10toast import ToastNotifier
 
+
+
 class Settings:
+    
     def __init__(self):
         self.settings = self.loadSettings()
 
@@ -82,8 +85,16 @@ class addTimer(qtw.QDockWidget):
                 'durations': ['4 Hours', '8 Hours', '12 Hours', '20 Hours']
             },
 
-            'Teapot': {
+            'Teapot Gardening/Construction': {
                 'durations': ['12 Hours', '14 Hours', '16 Hours', '70 Hours']
+            },
+
+            'Realm Currency': {
+                'durations': ['Bare-Bones (0, 4/hr)', 'Humble Abode (>2k, 8/hr)', 'Cozy (>3k, 12/hr)', 'Queen-Size (>4.5k, 16/hr)', 'Elegant (>6k, 20/hr)', 'Exquisite (>8k, 22/hr)', 'Extradordinary (>10k, 24/hr)', 'Stately (>12k, 26/hr)', 'Luxury (>15k, 28/hr)', 'Fit for a king (>20k, 30/hr)']
+            },
+
+            'Realm Companionship XP': {
+                'durations' : ['0 - 2999 (2/hr)', '3000 - 5999 (3/hr)', '6000 - 11999 (4/hr)', '12000+ (5/hr)']
             },
 
             'Fishing': {
@@ -117,7 +128,29 @@ class addTimer(qtw.QDockWidget):
 
         self.formLayout.addRow(self.durationLabel, self.durationDropDown)
 
-        # Custom Duration Row (Hidden by default, see show/hide events)
+        # Realm Currency Level (Hidden by default, see show/hide events)
+        # {Trust Rank : Realm Currency Storage Limit}
+        self.rCLevelValues = {
+            '1'  : 300,
+            '2'  : 300,
+            '3'  : 900,
+            '4'  : 1200,
+            '5'  : 1400,
+            '6'  : 1600,
+            '7'  : 1800,
+            '8'  : 2000,
+            '9'  : 2200,
+            '10' : 2400
+        }
+
+        self.rCLevelLabel = qtw.QLabel('Realm Trust Level (1-10):')
+        self.rCLevelLabel.setObjectName('rCLevelLabel')
+        self.rCLevelLineEdit = qtw.QLineEdit()
+        self.rCLevelLineEdit.setObjectName('rCLevelLineEdit')
+
+        self.formLayout.addRow(self.rCLevelLabel, self.rCLevelLineEdit)
+
+        # Custom Duration Hours Row (Hidden by default, see show/hide events)
 
         self.customDurationLabel = qtw.QLabel('Custom Duration (Amount of Hours):')
         self.customDurationLabel.setObjectName('customDurationLabel')
@@ -125,6 +158,15 @@ class addTimer(qtw.QDockWidget):
         self.customDurationLineEdit.setObjectName('customDurationLineEdit')
 
         self.formLayout.addRow(self.customDurationLabel, self.customDurationLineEdit)
+
+        # Custom Duration Minutes Row (Hidden by default, see show/hide events)
+
+        self.customDurationLabelMinutes = qtw.QLabel('Custom Duration (Amount of Minutes):')
+        self.customDurationLabelMinutes.setObjectName('customDurationLabelMinutes')
+        self.customDurationLineEditMinutes = qtw.QLineEdit()
+        self.customDurationLineEditMinutes.setObjectName('customDurationLineEditMinutes')
+
+        self.formLayout.addRow(self.customDurationLabelMinutes, self.customDurationLineEditMinutes)
 
         # Name Row
         self.nameLabel = qtw.QLabel('Name (Optional):')
@@ -134,13 +176,13 @@ class addTimer(qtw.QDockWidget):
 
         self.colorsDict = {
 
-            'Cryo':'#37AA9C',
-            'Dendro':'#32B85C',
-            'Fire':'#AB413F',
-            'Water':'#3F7EAB',
-            'Geo':'#F7A936',
+            'Cryo'   :'#37AA9C',
+            'Dendro' :'#32B85C',
+            'Fire'   :'#AB413F',
+            'Water'  :'#3F7EAB',
+            'Geo'    :'#F7A936',
             'Electro':'#8156E3',
-            'Anemo':'#60FD75'
+            'Anemo'  :'#60FD75'
 
             }
 
@@ -159,62 +201,162 @@ class addTimer(qtw.QDockWidget):
 
         self.setWidget(self.centralFrame)
     
+    def hideRealmCurrency(self):
+
+            self.rCLevelLabel.hide()
+            self.rCLevelLineEdit.hide()
+
+    def showRealmCurrency(self):
+
+        self.rCLevelLabel.show()
+        self.rCLevelLineEdit.show()
+
+    def hideCustom(self):
+
+        self.customDurationLabel.hide()
+        self.customDurationLineEdit.hide()
+
+        self.customDurationLabelMinutes.hide()
+        self.customDurationLineEditMinutes.hide()
+
+    def showCustom(self):
+
+        self.customDurationLabel.show()
+        self.customDurationLineEdit.show()
+
+        self.customDurationLabelMinutes.show()
+        self.customDurationLineEditMinutes.show()
+    
+    def hideNormalDurations(self):
+
+        self.durationLabel.hide()
+        self.durationDropDown.hide()
+    
+    def showNormalDurations(self):
+
+        self.durationLabel.show()
+        self.durationDropDown.show()
+    
     def dropDownSelected(self, topic: str):
         
         selectedTopic = self.topicSelectionDict[topic]['durations']
 
         self.durationDropDown.clear()
 
-        if selectedTopic != 'Custom':
+        if topic == 'Realm Currency':
 
-            self.customDurationLabel.hide()
-            self.customDurationLineEdit.hide()
+            self.hideCustom()
+
+            self.durationLabel.setText('Realm Status:')
+
+            self.showRealmCurrency()
+            self.durationDropDown.addItems(selectedTopic)
+        
+        elif topic == 'Realm Companionship XP':
+
+            self.hideCustom()
+
+            self.durationLabel.setText('Adeptal Energy:')
+            self.durationDropDown.addItems(selectedTopic)
+
+            self.showRealmCurrency()
+
+        elif topic == 'Custom':
+            
+            self.hideNormalDurations()
+
+            self.hideRealmCurrency()
+
+            self.showCustom()
+
+        else:
+
+            self.hideCustom()
+            self.hideRealmCurrency()
+
+            self.durationLabel.setText('Duration:')
 
             if self.durationLabel.isHidden():
 
-                self.durationLabel.show()
-                self.durationDropDown.show()
+                self.showNormalDurations()
 
             self.durationDropDown.addItems(selectedTopic)
-
-        else:
-            
-            self.durationLabel.hide()
-            self.durationDropDown.hide()
-
-            self.customDurationLabel.show()
-            self.customDurationLineEdit.show()
             
     
     def startStopWatch(self):
         timeObject = self.topicDropDown.currentText()
 
-        duration: str = self.durationDropDown.currentText() if not self.durationDropDown.isHidden() else self.customDurationLineEdit.text()
-
         color = self.colorsDict[self.outlineColorDropDown.currentText()]
+
+        hours: int = 0
+        minutes: int = 0
         
-        if not self.durationDropDown.isHidden():
+        if timeObject == 'Realm Currency':
+
+            duration: str = self.durationDropDown.currentText()
+            duration = duration.split(',')
+            duration = duration[-1]
+
+            duration: int = int(duration.split('/')[0])
+
+            try:
+
+                maxStorage: int = self.rCLevelValues[self.rCLevelLineEdit.text()]
+
+            except KeyError:
+                return self.rCLevelLineEdit.setText('Error: Invalid Input')
+            
+            duration: str = str(round(maxStorage/duration, 2)).split('.')
+
+            hours = int(duration[0])
+            minutes = round(float(f'0.{duration[1]}') * 60)
+        
+        elif timeObject == 'Realm Companionship XP':
+
+            if int(self.rCLevelLineEdit.text()) not in range(1, 11):
+                return self.rCLevelLineEdit.setText('Error: Invalid Input')
+
+            duration: str = self.durationDropDown.currentText()
+            duration = duration.split('/')
+
+            duration: int = int(duration[0][-1])
+
+            maxStorage = int(self.rCLevelLineEdit.text()) * 50
+
+            duration: str = str(round(maxStorage/duration, 2)).split('.')
+
+            hours = int(duration[0])
+            minutes = round(float(f'0.{duration[1]}') * 60)
+
+        elif timeObject == 'Custom':
+
+            duration: str = self.customDurationLineEdit.text()
+            minutes: str = self.customDurationLineEditMinutes.text()
+
+            if not duration.isdigit() or not minutes.isdigit():
+                return self.customDurationLineEdit.setText('Error: Whole Numbers Only')
+            
+            duration = int(duration)
+            minutes = int(minutes)
+
+        else:
+
+            duration: str = self.durationDropDown.currentText()
 
             if duration == 'Nothing Selected':
                 return
             
             duration = duration.split()
 
+            duration = int(duration[0])
+
             if duration[1] == 'Days' or duration[1] == 'Day':
-                duration = int(duration[0]) * 24
-            else:
-                duration = int(duration[0])
-
-        else:
-
-            if not duration.isdigit():
-                return self.customDurationLineEdit.setText('Error: Whole Numbers Only')
+                duration *= 24
             
-            duration = int(duration)
+            hours = duration
 
 
-
-        duration = datetime.timedelta(hours=duration)
+        duration = datetime.timedelta(hours=hours, minutes=minutes)
 
         nameText = self.nameLineEdit.text()
         name = nameText if len(nameText) > 0 else timeObject
@@ -249,10 +391,10 @@ class addTimer(qtw.QDockWidget):
 
         addtimerButton.setChecked(True)
         
-        if self.topicDropDown.currentText() != 'Custom':
+        if self.topicDropDown.currentText() != 'Custom' or self.topicDropDown.currentText() != 'Realm Currency':
 
-            self.customDurationLabel.hide()
-            self.customDurationLineEdit.hide()
+            self.hideCustom()
+            self.hideRealmCurrency()
 
         mw.dockWidgetOptions.applySettings(Add_timer_open_on_startup=True)
 
@@ -308,6 +450,13 @@ class optionsDock(qtw.QDockWidget):
         self.formLayout.addRow('Shutdown app on close: ', self.appOnCloseCheckbox)
 
         # Checkbox
+        self.showOnOpenCheckbox = qtw.QCheckBox()
+        self.showOnOpenCheckbox.setChecked(getSettings['Show_on_startup'])
+        self.showOnOpenCheckbox.setToolTip('Program will automatically show or hide when starting.')
+        # Form Row
+        self.formLayout.addRow('Show on app start: ', self.showOnOpenCheckbox)
+
+        # Checkbox
         self.notifyCheckbox = qtw.QCheckBox()
         self.notifyCheckbox.setChecked(getSettings['Desktop_notifications'])
         self.notifyCheckbox.setToolTip('A windows desktop notification will appear when a stopwatch finishes.')
@@ -334,7 +483,8 @@ class optionsDock(qtw.QDockWidget):
                     "Desktop_notifications": self.notifyCheckbox.isChecked(),
                     "Options_open_on_startup" : self.isHidden(),
                     "Add_timer_open_on_startup" : self.parent().findChild(qtw.QDockWidget, 'addTimerDockWidget').isHidden(),
-                    "Window_size" : {'width': self.parent().width(), 'height': self.parent().height()}
+                    "Window_size" : {'width': self.parent().width(), 'height': self.parent().height()},
+                    "Show_on_startup" : self.showOnOpenCheckbox.isChecked()
                     }
                 
                 break
@@ -504,8 +654,6 @@ class centralWidget(qtw.QWidget):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.scrollAreaLayout.addWidget(self.scrollArea)
 
-        
-    
     def addStopWatch(self, timeObject: str, duration: datetime.timedelta, name: str, startDuration: datetime.timedelta, color: str, notepadContents: str = '', index: int | None = None) -> None:
         
         self.frame = qtw.QFrame(self.scrollAreaWidgetContents)
@@ -543,10 +691,15 @@ class centralWidget(qtw.QWidget):
 
         parent.setProperty('border-color', color)
 
+        startDurationDays = int(startDuration.__str__().split(':')[0].split()[0])
+        startDurationMinutes = int(startDuration.__str__().split(':')[1].split(':')[0])
+
+        if len(str(startDurationMinutes)) == 1:
+            startDurationMinutes = str(startDurationMinutes) + '0'
+
         if startDuration >= datetime.timedelta(hours=24): # startDuration gives the days but not in total hours, needed so that loadSaveData() can work
-            
-            startDurationDays = int(startDuration.__str__().split(':')[0].split()[0])
-            parent.setProperty('originalDuration', f'{startDurationDays * 24}:00:00')
+    
+            parent.setProperty('originalDuration', f'{startDurationDays * 24}:{startDurationMinutes}:00')
 
         else:
             parent.setProperty('originalDuration', startDuration)
@@ -627,7 +780,6 @@ class centralWidget(qtw.QWidget):
         QTimer_.setObjectName(f'{id_}QTimer')
 
         n = ToastNotifier()
-
 
         def countDownTimer(self: qtw.QWidget, difference: datetime) -> None:
 
@@ -749,7 +901,7 @@ class window(qtw.QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidgetOptions)
         self.dockWidgetOptions.setVisible(self.setting['Options_open_on_startup'])
 
-        # So I don't spam the save window function (see function sizeApplyTimerTimeout)
+        # So the resize event doesn't spam the save window function (see function sizeApplyTimerTimeout)
         self.windowSizeApplyTimer = QTimer(self)
         self.windowSizeApplyTimer.setObjectName('windowSizeApplyTimer')
         self.windowSizeApplyTimer.timeout.connect(lambda: self.sizeApplyTimerTimeout())
@@ -785,9 +937,7 @@ class window(qtw.QMainWindow):
 
                     originalDuration = ''.join(line.split()[3:])
 
-                    originalDuration = int(originalDuration.split(':')[0])
-
-                    originalDuration = datetime.timedelta(hours=originalDuration)
+                    originalDuration = datetime.timedelta(hours= int(originalDuration.split(':')[0]), minutes= int(originalDuration.split(':')[1]))
                 
                 elif line.startswith('Border Color:'):
 
@@ -859,7 +1009,9 @@ class trayMen(qtw.QMenu):
 
         self.setObjectName('System Tray')
 
-        self.openCloseButton = qtw.QAction("Close")
+        openOrClose = 'Close' if Settings().getSettings()['Show_on_startup'] else 'Open'
+
+        self.openCloseButton = qtw.QAction(openOrClose)
         self.openCloseButton.triggered.connect(lambda: self.openClose_Pressed())
         self.quitAppButton = qtw.QAction("Shut Down")
         self.quitAppButton.triggered.connect(app.quit)
@@ -876,6 +1028,7 @@ class trayMen(qtw.QMenu):
             self.openCloseButton.setText('Close')
             mw.setVisible(True)
 
+
 if __name__ == '__main__':
     import sys
 
@@ -884,10 +1037,10 @@ if __name__ == '__main__':
 
     mw = window()
 
-    version = '1.2'
+    version = '1.3'
     mw.setWindowTitle(f'Genshin Stopwatch V{version}')
     mw.setWindowIcon(qtg.QIcon('icon.ico'))
-    mw.show()
+    mw.show() if Settings().getSettings()['Show_on_startup'] else mw.hide()
 
     tray: qtw.QSystemTrayIcon = qtw.QSystemTrayIcon()
     tray.setIcon(qtg.QIcon('icon.ico'))
