@@ -38,6 +38,7 @@ At the moment only Windows machines can run this program, I'm not sure if I plan
 + Genshin Stopwatch only works on `Windows`.
 + Check `settings.json` and make sure it looks similar to when you downloaded the program.
 + If notifications aren't working, go to `action center` and `manage notifications`. `Focus assist settings` can disable notifications when they happen under certain conditions.
++ If you updated your stopwatch version, please make sure the `settings.json` and `save.txt` has matching settings with the version you're using. Or just replace the whole file.
 
 ## Does this program run on system startup?
 
@@ -46,8 +47,10 @@ Yes! But you have to do a couple steps to do so, follow the instructions below.
 ### How to run program on system startup:
 1. Create a shortcut of the .exe
 2. Press `win + r`
-3. Type in `shell:startup` this will take your to your startup directory
+3. Type in `shell:startup` this will take you to your startup directory
 4. Place the shortcut in folder
+
+**You can disable run on startup by going to** `task manager -> startup` 
 
 If you found a bug or crash, please report it to me and show how to replicate the issue if possible.<br>
 **Before submitting a bug report please check the known bugs in the release notes before telling me.**
