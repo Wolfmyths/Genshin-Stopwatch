@@ -247,18 +247,22 @@ class addTimer(qtw.QDockWidget):
 
             self.hideCustom()
 
+            self.showNormalDurations()
             self.durationLabel.setText('Realm Status:')
+            self.durationDropDown.addItems(selectedTopic)
 
             self.showRealmCurrency()
-            self.durationDropDown.addItems(selectedTopic)
+            
+            
         
         elif topic == 'Realm Companionship XP':
 
             self.hideCustom()
 
+            self.showNormalDurations()
             self.durationLabel.setText('Adeptal Energy:')
             self.durationDropDown.addItems(selectedTopic)
-
+            
             self.showRealmCurrency()
 
         elif topic == 'Custom':
