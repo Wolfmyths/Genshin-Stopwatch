@@ -379,7 +379,9 @@ class addTimer(qtw.QDockWidget):
 
             addtimerButton.setChecked(False)
 
-            mw.dockWidgetOptions.applySettings(Add_timer_open_on_startup=False)
+            if not parent.isMinimized():
+
+                mw.dockWidgetOptions.applySettings(Add_timer_open_on_startup=False)
 
         return super().hideEvent(a0)
     
@@ -390,13 +392,12 @@ class addTimer(qtw.QDockWidget):
         addtimerButton: qtw.QAction = toolbar.findChild(qtw.QAction, 'addTimerButton')
 
         addtimerButton.setChecked(True)
-        
-        if self.topicDropDown.currentText() != 'Custom' or self.topicDropDown.currentText() != 'Realm Currency':
 
-            self.hideCustom()
-            self.hideRealmCurrency()
+        self.dropDownSelected(self.topicDropDown.currentText())
 
-        mw.dockWidgetOptions.applySettings(Add_timer_open_on_startup=True)
+        if not parent.isMinimized():
+
+            mw.dockWidgetOptions.applySettings(Add_timer_open_on_startup=True)
 
         return super().showEvent(a0)
     
@@ -994,6 +995,7 @@ class window(qtw.QMainWindow):
             a0.ignore()
         else:
             app.exit()
+
     
     def resizeEvent(self, a0: qtg.QResizeEvent) -> None:
 
