@@ -70,39 +70,39 @@ class addTimer(qtw.QDockWidget):
         self.topicSelectionDict = {
 
             '': {
-                'durations': ['Nothing Selected']
-            }, 
+                'durations': tuple(['Nothing Selected'])
+            },
+
+            'Stamina': {
+                'durations': 'Stamina'
+            },
 
             'Parametric Transformer': {
-                'durations': ['7 Days']
+                'durations': tuple(['7 Days'])
             }, 
 
             'Respawns': {
-                'durations': ['12 Hours', '1 Day', '2 Days', '3 Days']
+                'durations': ('12 Hours', '1 Day', '2 Days', '3 Days')
             },
 
             'Expedition': {
-                'durations': ['4 Hours', '8 Hours', '12 Hours', '20 Hours']
+                'durations': ('4 Hours', '8 Hours', '12 Hours', '20 Hours')
             },
 
             'Teapot Gardening/Construction': {
-                'durations': ['12 Hours', '14 Hours', '16 Hours', '70 Hours']
+                'durations': ('12 Hours', '14 Hours', '16 Hours', '70 Hours')
             },
 
             'Realm Currency': {
-                'durations': ['Bare-Bones (0, 4/hr)', 'Humble Abode (>2k, 8/hr)', 'Cozy (>3k, 12/hr)', 'Queen-Size (>4.5k, 16/hr)', 'Elegant (>6k, 20/hr)', 'Exquisite (>8k, 22/hr)', 'Extradordinary (>10k, 24/hr)', 'Stately (>12k, 26/hr)', 'Luxury (>15k, 28/hr)', 'Fit for a king (>20k, 30/hr)']
+                'durations': ('Bare-Bones', 'Humble Abode', 'Cozy', 'Queen-Size', 'Elegant', 'Exquisite', 'Extradordinary', 'Stately', 'Luxury', 'Fit for a king')
             },
 
             'Realm Companionship XP': {
-                'durations' : ['0 - 2999 (2/hr)', '3000 - 5999 (3/hr)', '6000 - 11999 (4/hr)', '12000+ (5/hr)']
+                'durations' : ('0 - 2999 (2/hr)', '3000 - 5999 (3/hr)', '6000 - 11999 (4/hr)', '12000+ (5/hr)')
             },
 
             'Fishing': {
-                'durations': ['1 Day', '3 Days']
-            },
-
-            'Other': {
-                'durations': ['4 Hours', '8 Hours', '12 Hours', '14 Hours', '16 Hours', '20 Hours', '1 Day', '2 Days', '3 Days', '7 Days']
+                'durations': ('1 Day', '3 Days')
             },
 
             'Custom': {
@@ -143,30 +143,42 @@ class addTimer(qtw.QDockWidget):
             '10' : 2400
         }
 
-        self.rCLevelLabel = qtw.QLabel('Realm Trust Level (1-10):')
-        self.rCLevelLabel.setObjectName('rCLevelLabel')
-        self.rCLevelLineEdit = qtw.QLineEdit()
-        self.rCLevelLineEdit.setObjectName('rCLevelLineEdit')
+        # Dict of Realm Statuses and their corresponding income rates
+        # {status:rate/hr}
 
-        self.formLayout.addRow(self.rCLevelLabel, self.rCLevelLineEdit)
+        self.rCRateValuesDict = {k:v for (k,v) in zip(self.topicSelectionDict['Realm Currency']['durations'], (4, 8, 16, 20, 22, 24, 26, 28, 30))}
 
-        # Custom Duration Hours Row (Hidden by default, see show/hide events)
+        # Dict of Adeptal Energy thresholds and their corresponding income rates for companionship XP
+        # {adeptal energy range:rate/hr}
 
-        self.customDurationLabel = qtw.QLabel('Custom Duration (Amount of Hours):')
-        self.customDurationLabel.setObjectName('customDurationLabel')
-        self.customDurationLineEdit = qtw.QLineEdit()
-        self.customDurationLineEdit.setObjectName('customDurationLineEdit')
+        self.rCFriendshipValuesDict = {k:v for (k,v) in zip(self.topicSelectionDict['Realm Companionship XP']['durations'], range(2, 6)) }
 
-        self.formLayout.addRow(self.customDurationLabel, self.customDurationLineEdit)
+        # Line edit w/ label (Hidden by default, see show/hide events)
 
-        # Custom Duration Minutes Row (Hidden by default, see show/hide events)
+        self.lineEditLabel1 = qtw.QLabel()
+        self.lineEditLabel1.setObjectName('lineEditLabel1')
+        self.lineEdit1 = qtw.QLineEdit()
+        self.lineEdit1.setObjectName('lineEdit1')
 
-        self.customDurationLabelMinutes = qtw.QLabel('Custom Duration (Amount of Minutes):')
-        self.customDurationLabelMinutes.setObjectName('customDurationLabelMinutes')
-        self.customDurationLineEditMinutes = qtw.QLineEdit()
-        self.customDurationLineEditMinutes.setObjectName('customDurationLineEditMinutes')
+        self.formLayout.addRow(self.lineEditLabel1, self.lineEdit1)
 
-        self.formLayout.addRow(self.customDurationLabelMinutes, self.customDurationLineEditMinutes)
+        # Line edit w/ label (Hidden by default, see show/hide events)
+
+        self.lineEditLabel2 = qtw.QLabel()
+        self.lineEditLabel2.setObjectName('lineEditLabel2')
+        self.lineEdit2 = qtw.QLineEdit()
+        self.lineEdit2.setObjectName('lineEdit2')
+
+        self.formLayout.addRow(self.lineEditLabel2, self.lineEdit2)
+
+        # Line edit w/ label (Hidden by default, see show/hide events)
+
+        self.lineEditLabel3 = qtw.QLabel()
+        self.lineEditLabel3.setObjectName('lineEditLabel3')
+        self.lineEdit3 = qtw.QLineEdit()
+        self.lineEdit3.setObjectName('lineEdit3')
+
+        self.formLayout.addRow(self.lineEditLabel3, self.lineEdit3)
 
         # Name Row
         self.nameLabel = qtw.QLabel('Name (Optional):')
@@ -203,29 +215,35 @@ class addTimer(qtw.QDockWidget):
     
     def hideRealmCurrency(self):
 
-            self.rCLevelLabel.hide()
-            self.rCLevelLineEdit.hide()
+        self.lineEditLabel1.hide()
+        self.lineEdit1.hide()
 
     def showRealmCurrency(self):
 
-        self.rCLevelLabel.show()
-        self.rCLevelLineEdit.show()
+        self.lineEditLabel1.show()
+        self.lineEdit1.show()
 
     def hideCustom(self):
 
-        self.customDurationLabel.hide()
-        self.customDurationLineEdit.hide()
+        self.lineEditLabel1.hide()
+        self.lineEdit1.hide()
 
-        self.customDurationLabelMinutes.hide()
-        self.customDurationLineEditMinutes.hide()
+        self.lineEditLabel2.hide()
+        self.lineEdit2.hide()
+
+        self.lineEditLabel3.hide()
+        self.lineEdit3.hide()
 
     def showCustom(self):
 
-        self.customDurationLabel.show()
-        self.customDurationLineEdit.show()
+        self.lineEditLabel1.show()
+        self.lineEdit1.show()
 
-        self.customDurationLabelMinutes.show()
-        self.customDurationLineEditMinutes.show()
+        self.lineEditLabel2.show()
+        self.lineEdit2.show()
+
+        self.lineEditLabel3.show()
+        self.lineEdit3.show()
     
     def hideNormalDurations(self):
 
@@ -252,8 +270,7 @@ class addTimer(qtw.QDockWidget):
             self.durationDropDown.addItems(selectedTopic)
 
             self.showRealmCurrency()
-            
-            
+            self.lineEditLabel1.setText('Realm Trust Level (1-10)')
         
         elif topic == 'Realm Companionship XP':
 
@@ -264,6 +281,17 @@ class addTimer(qtw.QDockWidget):
             self.durationDropDown.addItems(selectedTopic)
             
             self.showRealmCurrency()
+            self.lineEditLabel1.setText('Realm Trust Level (1-10)')
+        
+        elif topic == 'Stamina':
+
+            self.hideCustom()
+            self.hideRealmCurrency()
+            self.hideNormalDurations()
+
+            self.lineEditLabel1.show()
+            self.lineEditLabel1.setText('Current Stamina')
+            self.lineEdit1.show()
 
         elif topic == 'Custom':
             
@@ -272,6 +300,9 @@ class addTimer(qtw.QDockWidget):
             self.hideRealmCurrency()
 
             self.showCustom()
+            self.lineEditLabel1.setText('Days:')
+            self.lineEditLabel2.setText('Hours:')
+            self.lineEditLabel3.setText('Minutes:')
 
         else:
 
@@ -292,23 +323,21 @@ class addTimer(qtw.QDockWidget):
 
         color = self.colorsDict[self.outlineColorDropDown.currentText()]
 
+        days: int = 0
         hours: int = 0
         minutes: int = 0
         
         if timeObject == 'Realm Currency':
 
-            duration: str = self.durationDropDown.currentText()
-            duration = duration.split(',')
-            duration = duration[-1]
-
-            duration: int = int(duration.split('/')[0])
+            rate: str = self.durationDropDown.currentText()
+            duration = self.rCRateValuesDict[rate]
 
             try:
 
-                maxStorage: int = self.rCLevelValues[self.rCLevelLineEdit.text()]
+                maxStorage: int = self.rCLevelValues[self.lineEdit1.text()]
 
             except KeyError:
-                return self.rCLevelLineEdit.setText('Error: Invalid Input')
+                return self.lineEdit1.setText('Error: Invalid Input')
             
             duration: str = str(round(maxStorage/duration, 2)).split('.')
 
@@ -317,15 +346,13 @@ class addTimer(qtw.QDockWidget):
         
         elif timeObject == 'Realm Companionship XP':
 
-            if int(self.rCLevelLineEdit.text()) not in range(1, 11):
-                return self.rCLevelLineEdit.setText('Error: Invalid Input')
+            if int(self.lineEdit1.text()) not in range(1, 11):
+                return self.lineEdit1.setText('Error: Invalid Input')
 
-            duration: str = self.durationDropDown.currentText()
-            duration = duration.split('/')
+            rate: str = self.durationDropDown.currentText()
+            duration = self.rCFriendshipValuesDict[rate]
 
-            duration: int = int(duration[0][-1])
-
-            maxStorage = int(self.rCLevelLineEdit.text()) * 50
+            maxStorage = int(self.lineEdit1.text()) * 50
 
             duration: str = str(round(maxStorage/duration, 2)).split('.')
 
@@ -334,14 +361,26 @@ class addTimer(qtw.QDockWidget):
 
         elif timeObject == 'Custom':
 
-            hours: str = self.customDurationLineEdit.text()
-            minutes: str = self.customDurationLineEditMinutes.text()
+            days: str|int = self.lineEdit1.text() if self.lineEdit1.text().isdigit() else 0
+            hours: str|int = self.lineEdit2.text() if self.lineEdit2.text().isdigit() else 0
+            minutes: str|int = self.lineEdit3.text() if self.lineEdit3.text().isdigit() else 0
             
-            try:
-                hours = abs(int(hours))
-                minutes = abs(int(minutes))
-            except ValueError:
-                return self.customDurationLineEdit.setText('Error: Whole Numbers Only')
+            days = abs(int(days)) * 24
+            hours = abs(int(hours))
+            minutes = abs(int(minutes))
+
+        elif timeObject == 'Stamina':
+
+            amountOfStamina: str = self.lineEdit1.text()
+            print(amountOfStamina)
+
+            if not amountOfStamina.isdigit():
+                return self.lineEdit1.setText('Invalid Input')
+            else:
+
+                amountOfStamina = int(amountOfStamina)
+                
+                minutes = (160 - amountOfStamina) * 8
 
         else:
 
@@ -360,7 +399,7 @@ class addTimer(qtw.QDockWidget):
 
             hours = duration
 
-        duration = datetime.timedelta(hours=hours, minutes=minutes)
+        duration = datetime.timedelta(days=days, hours=hours, minutes=minutes)
 
         nameText = self.nameLineEdit.text()
         name = nameText if len(nameText) > 0 else timeObject
@@ -450,6 +489,7 @@ class optionsDock(qtw.QDockWidget):
         # Checkbox
         self.appOnCloseCheckbox = qtw.QCheckBox()
         self.appOnCloseCheckbox.setChecked(getSettings['Shutdown_app_on_close'])
+        self.appOnCloseCheckbox.clicked.connect(lambda: self.settingChanged(on=True))
         self.appOnCloseCheckbox.setToolTip('The app will close and not run in the background.')
         # Form Row
         self.formLayout.addRow('Shutdown app on close: ', self.appOnCloseCheckbox)
@@ -457,6 +497,7 @@ class optionsDock(qtw.QDockWidget):
         # Checkbox
         self.showOnOpenCheckbox = qtw.QCheckBox()
         self.showOnOpenCheckbox.setChecked(getSettings['Show_on_startup'])
+        self.showOnOpenCheckbox.clicked.connect(lambda: self.settingChanged(on=True))
         self.showOnOpenCheckbox.setToolTip('Program will automatically show or hide when starting.')
         # Form Row
         self.formLayout.addRow('Show on app start: ', self.showOnOpenCheckbox)
@@ -464,6 +505,7 @@ class optionsDock(qtw.QDockWidget):
         # Checkbox
         self.notifyCheckbox = qtw.QCheckBox()
         self.notifyCheckbox.setChecked(getSettings['Desktop_notifications'])
+        self.notifyCheckbox.clicked.connect(lambda: self.settingChanged(on=True))
         self.notifyCheckbox.setToolTip('A windows desktop notification will appear when a stopwatch finishes.')
         # Form Row
         self.formLayout.addRow('Desktop notifications: ', self.notifyCheckbox)
@@ -471,9 +513,20 @@ class optionsDock(qtw.QDockWidget):
         # Button
         self.applyButton = qtw.QPushButton('Apply')
         self.applyButton.clicked.connect(lambda: self.applySettings(all=None))
+        self.applyButton.clicked.connect(lambda: self.settingChanged(on=False))
         verticalLayout.addWidget(self.applyButton, alignment=Qt.AlignTop)
 
         self.setWidget(self.centralFrame)
+    
+    def settingChanged(self, on: bool):
+
+        if on:
+            self.applyButton.setStyleSheet('color: yellow;')
+            
+        else:
+            self.applyButton.setStyleSheet('color: #94F3E4;')
+        
+        self.applyButton.ensurePolished()
     
     def applySettings(self, **kwargs):
 
@@ -1043,7 +1096,7 @@ if __name__ == '__main__':
 
     mw = window()
 
-    version = '1.3'
+    version = '1.3.2'
     mw.setWindowTitle(f'Genshin Stopwatch V{version}')
     mw.setWindowIcon(qtg.QIcon('icon.ico'))
     mw.show() if Settings().getSettings()['Show_on_startup'] else mw.hide()
