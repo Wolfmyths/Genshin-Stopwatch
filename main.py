@@ -327,37 +327,38 @@ class addTimer(qtw.QDockWidget):
         hours: int = 0
         minutes: int = 0
         
+        percentToMinutes: callable[[str], str] = lambda rate: round( (float(rate) / 100) * 60 )
+        calculateDuration: callable[[int, int], str] = lambda maxStorage, rate: str(round(maxStorage/rate, 2)).split('.')
+        
         if timeObject == 'Realm Currency':
+
+            if int(self.lineEdit1.text()) not in range(1, 11):
+                return self.lineEdit1.setText('Error: Invalid Input')
+            
+            maxStorage: int = self.rCLevelValues[self.lineEdit1.text()]
 
             rate: str = self.durationDropDown.currentText()
             duration = self.rCRateValuesDict[rate]
-
-            try:
-
-                maxStorage: int = self.rCLevelValues[self.lineEdit1.text()]
-
-            except KeyError:
-                return self.lineEdit1.setText('Error: Invalid Input')
             
-            duration: str = str(round(maxStorage/duration, 2)).split('.')
+            duration: list[str] = calculateDuration(maxStorage, duration)
 
             hours = int(duration[0])
-            minutes = round(float(f'0.{duration[1]}') * 60)
+            minutes = percentToMinutes(duration[1])
         
         elif timeObject == 'Realm Companionship XP':
 
             if int(self.lineEdit1.text()) not in range(1, 11):
                 return self.lineEdit1.setText('Error: Invalid Input')
+            
+            maxStorage = int(self.lineEdit1.text()) * 50
 
             rate: str = self.durationDropDown.currentText()
             duration = self.rCFriendshipValuesDict[rate]
 
-            maxStorage = int(self.lineEdit1.text()) * 50
-
-            duration: str = str(round(maxStorage/duration, 2)).split('.')
+            duration = calculateDuration(maxStorage, duration)
 
             hours = int(duration[0])
-            minutes = round(float(f'0.{duration[1]}') * 60)
+            minutes = percentToMinutes(duration[1])
 
         elif timeObject == 'Custom':
 
@@ -365,7 +366,7 @@ class addTimer(qtw.QDockWidget):
             hours: str|int = self.lineEdit2.text() if self.lineEdit2.text().isdigit() else 0
             minutes: str|int = self.lineEdit3.text() if self.lineEdit3.text().isdigit() else 0
             
-            days = abs(int(days)) * 24
+            days = abs(int(days))
             hours = abs(int(hours))
             minutes = abs(int(minutes))
 
@@ -444,7 +445,7 @@ class addTimer(qtw.QDockWidget):
 
         return super().showEvent(a0)
     
-class optionsDock(qtw.QDockWidget):
+class optionsDock(qtw.QDockWidget): 
     def __init__(self, parent=None | qtw.QMainWindow):
         super().__init__(parent)
 
