@@ -1097,7 +1097,7 @@ if __name__ == '__main__':
 
     mw = window()
 
-    version = '1.3.2'
+    version = '1.3.3'
     mw.setWindowTitle(f'Genshin Stopwatch V{version}')
     mw.setWindowIcon(qtg.QIcon('icon.ico'))
     mw.show() if Settings().getSettings()['Show_on_startup'] else mw.hide()
