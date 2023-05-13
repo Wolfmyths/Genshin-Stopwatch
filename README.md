@@ -69,3 +69,5 @@ If you have a suggestion let me know!
 Thanks to [PyQt5](https://pypi.org/project/PyQt5/) for making an open source easy-to-use framework.
 
 Thanks to [Win10toast](https://pypi.org/project/win10toast/) for making it easy to include deskstop notifications. (And for including threading so I don't have to)
+
+[Pyinstaller](https://pypi.org/project/pyinstaller/) for creating a way to change python programs into an exe
