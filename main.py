@@ -261,61 +261,63 @@ class addTimer(qtw.QDockWidget):
 
         self.durationDropDown.clear()
 
-        if topic == 'Realm Currency':
+        match topic:
 
-            self.hideCustom()
+            case 'Realm Currency':
 
-            self.showNormalDurations()
-            self.durationLabel.setText('Realm Status:')
-            self.durationDropDown.addItems(selectedTopic)
-
-            self.showRealmCurrency()
-            self.lineEditLabel1.setText('Realm Trust Level (1-10)')
-        
-        elif topic == 'Realm Companionship XP':
-
-            self.hideCustom()
-
-            self.showNormalDurations()
-            self.durationLabel.setText('Adeptal Energy:')
-            self.durationDropDown.addItems(selectedTopic)
-            
-            self.showRealmCurrency()
-            self.lineEditLabel1.setText('Realm Trust Level (1-10)')
-        
-        elif topic == 'Stamina':
-
-            self.hideCustom()
-            self.hideRealmCurrency()
-            self.hideNormalDurations()
-
-            self.lineEditLabel1.show()
-            self.lineEditLabel1.setText('Current Stamina')
-            self.lineEdit1.show()
-
-        elif topic == 'Custom':
-            
-            self.hideNormalDurations()
-
-            self.hideRealmCurrency()
-
-            self.showCustom()
-            self.lineEditLabel1.setText('Days:')
-            self.lineEditLabel2.setText('Hours:')
-            self.lineEditLabel3.setText('Minutes:')
-
-        else:
-
-            self.hideCustom()
-            self.hideRealmCurrency()
-
-            self.durationLabel.setText('Duration:')
-
-            if self.durationLabel.isHidden():
+                self.hideCustom()
 
                 self.showNormalDurations()
+                self.durationLabel.setText('Realm Status:')
+                self.durationDropDown.addItems(selectedTopic)
 
-            self.durationDropDown.addItems(selectedTopic)
+                self.showRealmCurrency()
+                self.lineEditLabel1.setText('Realm Trust Level (1-10)')
+        
+            case 'Realm Companionship XP':
+
+                self.hideCustom()
+
+                self.showNormalDurations()
+                self.durationLabel.setText('Adeptal Energy:')
+                self.durationDropDown.addItems(selectedTopic)
+                
+                self.showRealmCurrency()
+                self.lineEditLabel1.setText('Realm Trust Level (1-10)')
+        
+            case 'Stamina':
+
+                self.hideCustom()
+                self.hideRealmCurrency()
+                self.hideNormalDurations()
+
+                self.lineEditLabel1.show()
+                self.lineEditLabel1.setText('Current Stamina')
+                self.lineEdit1.show()
+
+            case 'Custom':
+                
+                self.hideNormalDurations()
+
+                self.hideRealmCurrency()
+
+                self.showCustom()
+                self.lineEditLabel1.setText('Days:')
+                self.lineEditLabel2.setText('Hours:')
+                self.lineEditLabel3.setText('Minutes:')
+
+            case _:
+
+                self.hideCustom()
+                self.hideRealmCurrency()
+
+                self.durationLabel.setText('Duration:')
+
+                if self.durationLabel.isHidden():
+
+                    self.showNormalDurations()
+
+                self.durationDropDown.addItems(selectedTopic)
             
     
     def startStopWatch(self):
@@ -330,75 +332,77 @@ class addTimer(qtw.QDockWidget):
         percentToMinutes: callable[[str], str] = lambda rate: round( (float(rate) / 100) * 60 )
         calculateDuration: callable[[int, int], str] = lambda maxStorage, rate: str(round(maxStorage/rate, 2)).split('.')
         
-        if timeObject == 'Realm Currency':
-
-            if int(self.lineEdit1.text()) not in range(1, 11):
-                return self.lineEdit1.setText('Error: Invalid Input')
+        match timeObject:
             
-            maxStorage: int = self.rCLevelValues[self.lineEdit1.text()]
+            case 'Realm Currency':
 
-            rate: str = self.durationDropDown.currentText()
-            duration = self.rCRateValuesDict[rate]
-            
-            duration: list[str] = calculateDuration(maxStorage, duration)
-
-            hours = int(duration[0])
-            minutes = percentToMinutes(duration[1])
-        
-        elif timeObject == 'Realm Companionship XP':
-
-            if int(self.lineEdit1.text()) not in range(1, 11):
-                return self.lineEdit1.setText('Error: Invalid Input')
-            
-            maxStorage = int(self.lineEdit1.text()) * 50
-
-            rate: str = self.durationDropDown.currentText()
-            duration = self.rCFriendshipValuesDict[rate]
-
-            duration = calculateDuration(maxStorage, duration)
-
-            hours = int(duration[0])
-            minutes = percentToMinutes(duration[1])
-
-        elif timeObject == 'Custom':
-
-            days: str|int = self.lineEdit1.text() if self.lineEdit1.text().isdigit() else 0
-            hours: str|int = self.lineEdit2.text() if self.lineEdit2.text().isdigit() else 0
-            minutes: str|int = self.lineEdit3.text() if self.lineEdit3.text().isdigit() else 0
-            
-            days = abs(int(days))
-            hours = abs(int(hours))
-            minutes = abs(int(minutes))
-
-        elif timeObject == 'Stamina':
-
-            amountOfStamina: str = self.lineEdit1.text()
-            print(amountOfStamina)
-
-            if not amountOfStamina.isdigit():
-                return self.lineEdit1.setText('Invalid Input')
-            else:
-
-                amountOfStamina = int(amountOfStamina)
+                if int(self.lineEdit1.text()) not in range(1, 11):
+                    return self.lineEdit1.setText('Error: Invalid Input')
                 
-                minutes = (160 - amountOfStamina) * 8
+                maxStorage: int = self.rCLevelValues[self.lineEdit1.text()]
 
-        else:
+                rate: str = self.durationDropDown.currentText()
+                duration = self.rCRateValuesDict[rate]
+                
+                duration: list[str] = calculateDuration(maxStorage, duration)
 
-            duration: str = self.durationDropDown.currentText()
+                hours = int(duration[0])
+                minutes = percentToMinutes(duration[1])
+        
+            case 'Realm Companionship XP':
 
-            if duration == 'Nothing Selected':
-                return
-            
-            duration = duration.split()
+                if int(self.lineEdit1.text()) not in range(1, 11):
+                    return self.lineEdit1.setText('Error: Invalid Input')
+                
+                maxStorage = int(self.lineEdit1.text()) * 50
 
-            if duration[1] == 'Days' or duration[1] == 'Day':
-                duration = int(duration[0]) * 24
-            else:
-                duration = int(duration[0])
+                rate: str = self.durationDropDown.currentText()
+                duration = self.rCFriendshipValuesDict[rate]
+
+                duration = calculateDuration(maxStorage, duration)
+
+                hours = int(duration[0])
+                minutes = percentToMinutes(duration[1])
+
+            case 'Custom':
+
+                days: str|int = self.lineEdit1.text() if self.lineEdit1.text().isdigit() else 0
+                hours: str|int = self.lineEdit2.text() if self.lineEdit2.text().isdigit() else 0
+                minutes: str|int = self.lineEdit3.text() if self.lineEdit3.text().isdigit() else 0
+                
+                days = abs(int(days))
+                hours = abs(int(hours))
+                minutes = abs(int(minutes))
+
+            case 'Stamina':
+
+                amountOfStamina: str = self.lineEdit1.text()
+                print(amountOfStamina)
+
+                if not amountOfStamina.isdigit():
+                    return self.lineEdit1.setText('Invalid Input')
+                else:
+
+                    amountOfStamina = int(amountOfStamina)
+                    
+                    minutes = (160 - amountOfStamina) * 8
+
+            case _:
+
+                duration: str = self.durationDropDown.currentText()
+
+                if duration == 'Nothing Selected':
+                    return
+                
+                duration = duration.split()
+
+                if duration[1] == 'Days' or duration[1] == 'Day':
+                    duration = int(duration[0]) * 24
+                else:
+                    duration = int(duration[0])
 
 
-            hours = duration
+                hours = duration
 
         duration = datetime.timedelta(days=days, hours=hours, minutes=minutes)
 
