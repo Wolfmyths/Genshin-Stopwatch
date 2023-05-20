@@ -58,6 +58,9 @@ If you found a bug or crash, please report it to me and show how to replicate th
 ## Future Plans?
 
 + Touch up on the UI a tiny bit for more clarity
++ Save/load code rewrite
++ Settings save/load rewrite
++ Make a guide on which timer is used for by showing examples
 + Color Themes?
 + Background pictures to choose from for the timers?
 + Mobile version? (Hard maybe)
