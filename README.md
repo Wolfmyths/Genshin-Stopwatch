@@ -67,6 +67,10 @@ If you found a bug or crash, please report it to me and show how to replicate th
 
 If you have a suggestion let me know!
 
+## Contributing
+
+If you want to Contribute you can as long as I have an issue posted its up for grabs!
+
 ## Credits
 
 Thanks to [PyQt5](https://pypi.org/project/PyQt5/) for making an open source easy-to-use framework.
