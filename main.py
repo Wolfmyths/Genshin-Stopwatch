@@ -3,32 +3,9 @@ import PyQt5.QtGui as qtg
 from PyQt5.QtCore import Qt, QPoint, QTimer
 
 import datetime
-import json
+from configparser import ConfigParser
 
 from win10toast import ToastNotifier
-
-
-
-class Settings:
-    
-    def __init__(self):
-        self.settings = self.loadSettings()
-
-    def getSettings(self) -> dict:
-        return self.settings
-
-    def loadSettings(self) -> dict:
-        with open('settings.json', 'r+') as f:
-            data = json.load(f)
-
-            return data
-        
-    @staticmethod
-    def saveSettings(updatedSettings: dict):
-        with open('settings.json', 'r+') as f:
-            f.seek(0)
-            f.truncate()
-            json.dump(updatedSettings, f, indent=4)
 
 class addTimer(qtw.QDockWidget):
     def __init__(self, parent=None | qtw.QMainWindow):
@@ -336,7 +313,10 @@ class addTimer(qtw.QDockWidget):
             
             case 'Realm Currency':
 
-                if int(self.lineEdit1.text()) not in range(1, 11):
+                try:
+                    if int(self.lineEdit1.text()) not in range(1, 11):
+                        raise ValueError 
+                except ValueError:
                     return self.lineEdit1.setText('Error: Invalid Input')
                 
                 maxStorage: int = self.rCLevelValues[self.lineEdit1.text()]
@@ -351,7 +331,10 @@ class addTimer(qtw.QDockWidget):
         
             case 'Realm Companionship XP':
 
-                if int(self.lineEdit1.text()) not in range(1, 11):
+                try:
+                    if int(self.lineEdit1.text()) not in range(1, 11):
+                        raise ValueError 
+                except ValueError:
                     return self.lineEdit1.setText('Error: Invalid Input')
                 
                 maxStorage = int(self.lineEdit1.text()) * 50
@@ -429,7 +412,9 @@ class addTimer(qtw.QDockWidget):
 
             if not parent.isMinimized():
 
-                mw.dockWidgetOptions.applySettings(Add_timer_open_on_startup=False)
+                config['QOL']['addtimer open on startup'] = 'False'
+                
+                saveConfig()
 
         return super().hideEvent(a0)
     
@@ -445,7 +430,9 @@ class addTimer(qtw.QDockWidget):
 
         if not parent.isMinimized():
 
-            mw.dockWidgetOptions.applySettings(Add_timer_open_on_startup=True)
+            config['QOL']['addtimer open on startup'] = 'True'
+            
+            saveConfig()
 
         return super().showEvent(a0)
     
@@ -489,36 +476,34 @@ class optionsDock(qtw.QDockWidget):
         self.formLayout.setHorizontalSpacing(10)
         self.topicFrame.setLayout(self.formLayout)
 
-        getSettings: dict = Settings().getSettings()
-
         # Checkbox
         self.appOnCloseCheckbox = qtw.QCheckBox()
-        self.appOnCloseCheckbox.setChecked(getSettings['Shutdown_app_on_close'])
-        self.appOnCloseCheckbox.clicked.connect(lambda: self.settingChanged(on=True))
+        self.appOnCloseCheckbox.setChecked(config['OPTIONS'].getboolean('shutdown app on close'))
+        self.appOnCloseCheckbox.clicked.connect(lambda: self.settingChanged(True))
         self.appOnCloseCheckbox.setToolTip('The app will close and not run in the background.')
         # Form Row
         self.formLayout.addRow('Shutdown app on close: ', self.appOnCloseCheckbox)
 
         # Checkbox
         self.showOnOpenCheckbox = qtw.QCheckBox()
-        self.showOnOpenCheckbox.setChecked(getSettings['Show_on_startup'])
-        self.showOnOpenCheckbox.clicked.connect(lambda: self.settingChanged(on=True))
+        self.showOnOpenCheckbox.setChecked(config['OPTIONS'].getboolean('show on startup'))
+        self.showOnOpenCheckbox.clicked.connect(lambda: self.settingChanged(True))
         self.showOnOpenCheckbox.setToolTip('Program will automatically show or hide when starting.')
         # Form Row
         self.formLayout.addRow('Show on app start: ', self.showOnOpenCheckbox)
 
         # Checkbox
         self.notifyCheckbox = qtw.QCheckBox()
-        self.notifyCheckbox.setChecked(getSettings['Desktop_notifications'])
-        self.notifyCheckbox.clicked.connect(lambda: self.settingChanged(on=True))
+        self.notifyCheckbox.setChecked(config['OPTIONS'].getboolean('desktop notifications'))
+        self.notifyCheckbox.clicked.connect(lambda: self.settingChanged(True))
         self.notifyCheckbox.setToolTip('A windows desktop notification will appear when a stopwatch finishes.')
         # Form Row
         self.formLayout.addRow('Desktop notifications: ', self.notifyCheckbox)
 
         # Button
         self.applyButton = qtw.QPushButton('Apply')
-        self.applyButton.clicked.connect(lambda: self.applySettings(all=None))
-        self.applyButton.clicked.connect(lambda: self.settingChanged(on=False))
+        self.applyButton.clicked.connect(lambda: self.applySettings())
+        self.applyButton.clicked.connect(lambda: self.settingChanged(False))
         verticalLayout.addWidget(self.applyButton, alignment=Qt.AlignTop)
 
         self.setWidget(self.centralFrame)
@@ -533,30 +518,18 @@ class optionsDock(qtw.QDockWidget):
         
         self.applyButton.ensurePolished()
     
-    def applySettings(self, **kwargs):
+    def applySettings(self):
 
-        newSettings: dict = Settings().getSettings()
+        updatedConfig = {
+                            'shutdown app on close' : str(self.appOnCloseCheckbox.isChecked()),
+                            'show on startup'       : str(self.showOnOpenCheckbox.isChecked()),
+                            'desktop notifications' : str(self.notifyCheckbox.isChecked())
+                        }
 
-        for settingName, value in kwargs.items():
-
-            if settingName == 'all':
-
-                newSettings: dict = {
-                    "Shutdown_app_on_close": self.appOnCloseCheckbox.isChecked(),
-                    "Desktop_notifications": self.notifyCheckbox.isChecked(),
-                    "Options_open_on_startup" : self.isHidden(),
-                    "Add_timer_open_on_startup" : self.parent().findChild(qtw.QDockWidget, 'addTimerDockWidget').isHidden(),
-                    "Window_size" : {'width': self.parent().width(), 'height': self.parent().height()},
-                    "Show_on_startup" : self.showOnOpenCheckbox.isChecked()
-                    }
-                
-                break
-
-            else:
-
-                newSettings[settingName] = value
+        config['OPTIONS'] = updatedConfig
         
-        Settings.saveSettings(newSettings)
+        saveConfig()
+        self.settingChanged(False)
     
     def hideEvent(self, a0: qtg.QHideEvent) -> None:
 
@@ -571,7 +544,9 @@ class optionsDock(qtw.QDockWidget):
 
             optionsButton.setChecked(False)
 
-            self.applySettings(Options_open_on_startup=False)
+            config['QOL']['settings open on startup'] = 'False'
+            
+            saveConfig()
 
         return super().hideEvent(a0)
     
@@ -583,7 +558,9 @@ class optionsDock(qtw.QDockWidget):
 
         optionsButton.setChecked(True)
 
-        self.applySettings(Options_open_on_startup=True)
+        config['QOL']['settings open on startup'] = 'True'
+        
+        saveConfig()
         return super().showEvent(a0)
 
 
@@ -603,13 +580,11 @@ class toolbar(qtw.QToolBar):
             }
             ''')
 
-        setting: dict = Settings().getSettings()
-
         # Add Timer Button
         self.addTimerButton = qtw.QAction('Add Timer', self)
         self.addTimerButton.setObjectName('addTimerButton')
         self.addTimerButton.setCheckable(True)
-        self.addTimerButton.setChecked(setting['Add_timer_open_on_startup'])
+        self.addTimerButton.setChecked(config['QOL'].getboolean('addtimer open on startup'))
         self.addTimerButton.triggered.connect(lambda: self.button_Clicked('addTimerDockWidget', self.addTimerButton.isChecked() ) )
         self.addAction(self.addTimerButton)
 
@@ -617,7 +592,7 @@ class toolbar(qtw.QToolBar):
         self.optionsButton = qtw.QAction('Options', self)
         self.optionsButton.setObjectName('optionsButton')
         self.optionsButton.setCheckable(True)
-        self.optionsButton.setChecked(setting['Options_open_on_startup'])
+        self.optionsButton.setChecked(config['QOL'].getboolean('settings open on startup'))
         self.optionsButton.triggered.connect(lambda: self.button_Clicked('optionsDockWidget', self.optionsButton.isChecked() ) )
         self.addAction(self.optionsButton)
     
@@ -861,8 +836,7 @@ class centralWidget(qtw.QWidget):
                     countDownLabel.setProperty('finished', "true")
                     parent.style().polish(countDownLabel)
 
-                    getsettings: dict = Settings().getSettings()
-                    if getsettings['Desktop_notifications']:
+                    if config['OPTIONS'].getboolean('desktop notifications'):
 
                         n.show_toast('Stopwatch Finished', f"{name} has finished!", 'icon.ico', 10, True)
 
@@ -872,6 +846,7 @@ class centralWidget(qtw.QWidget):
 
         
         countDownTimer(self, difference)
+        self.parent().saveData()
             
     
     def resetTimer(self, timeObject: str, name: str, startDuration: datetime.timedelta, id: str, color: str, notes: str = ''):
@@ -893,8 +868,6 @@ class centralWidget(qtw.QWidget):
 class window(qtw.QMainWindow):
     def __init__(self):
         super(window, self).__init__()
-
-        self.setting: dict = Settings().getSettings()
 
         # Application Stylesheet
         self.setStyleSheet(
@@ -958,18 +931,18 @@ class window(qtw.QMainWindow):
 
         self.dockWidgetAddTimer = addTimer(self)
         self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidgetAddTimer)
-        self.dockWidgetAddTimer.setVisible(self.setting['Add_timer_open_on_startup'])
+        self.dockWidgetAddTimer.setVisible(config['QOL'].getboolean('addtimer open on startup'))
 
         self.dockWidgetOptions = optionsDock(self)
         self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidgetOptions)
-        self.dockWidgetOptions.setVisible(self.setting['Options_open_on_startup'])
+        self.dockWidgetOptions.setVisible(config['QOL'].getboolean('settings open on startup'))
 
         # So the resize event doesn't spam the save window function (see function sizeApplyTimerTimeout)
         self.windowSizeApplyTimer = QTimer(self)
         self.windowSizeApplyTimer.setObjectName('windowSizeApplyTimer')
         self.windowSizeApplyTimer.timeout.connect(lambda: self.sizeApplyTimerTimeout())
 
-        self.resize(self.setting["Window_size"]['width'], self.setting["Window_size"]['height'])
+        self.resize(config['WINDOW SIZE'].getint('width'), config['WINDOW SIZE'].getint('height'))
 
         self.loadSaveData()
 
@@ -1010,14 +983,14 @@ class window(qtw.QMainWindow):
                     notes = ''.join(line.split('Notes: ')[1:]).strip()
 
                     self.central.addStopWatch(name, finishedTime, name, originalDuration, color, notepadContents=notes)
-                    
+
     def saveData(self):
         
         with open('save.txt', 'w+') as fhand:
 
             string = ''''''
 
-            for qtObject in mw.central.findChildren(qtw.QFrame):
+            for qtObject in self.central.findChildren(qtw.QFrame):
                 
                 if len(qtObject.objectName()) == 13: # Length of a stopwatch's name which is their id() value
                     
@@ -1043,19 +1016,21 @@ class window(qtw.QMainWindow):
     def sizeApplyTimerTimeout(self):
 
         self.windowSizeApplyTimer.stop()
-        self.dockWidgetOptions.applySettings(Window_size={"width": self.width(), "height": self.height()})
+        
+        config['WINDOW SIZE'] = {'width' : str(mw.width()), 'height' : str(mw.height())}
+        
+        saveConfig()
 
 
     def closeEvent(self, a0: qtg.QCloseEvent) -> None:
-
-        getsettings: dict = Settings().getSettings()
         
-        if not getsettings['Shutdown_app_on_close']:
+        if not config['OPTIONS'].getboolean('show on startup'):
 
             trayMenu.openClose_Pressed()
 
             a0.ignore()
         else:
+            self.saveData()
             app.exit()
 
     
@@ -1073,7 +1048,7 @@ class trayMen(qtw.QMenu):
 
         self.setObjectName('System Tray')
 
-        openOrClose = 'Close' if Settings().getSettings()['Show_on_startup'] else 'Open'
+        openOrClose = 'Close' if config['OPTIONS'].getboolean('show on startup') else 'Open'
 
         self.openCloseButton = qtw.QAction(openOrClose)
         self.openCloseButton.triggered.connect(lambda: self.openClose_Pressed())
@@ -1096,15 +1071,22 @@ class trayMen(qtw.QMenu):
 if __name__ == '__main__':
     import sys
 
+    config = ConfigParser()
+    config.read('config.ini')
+
+    def saveConfig():
+        with open('config.ini', 'w') as f:
+            config.write(f)
+
     app: qtw.QApplication = qtw.QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
 
     mw = window()
 
-    version = '1.3.3'
+    version = '1.3.4'
     mw.setWindowTitle(f'Genshin Stopwatch V{version}')
     mw.setWindowIcon(qtg.QIcon('icon.ico'))
-    mw.show() if Settings().getSettings()['Show_on_startup'] else mw.hide()
+    mw.show() if config['OPTIONS'].getboolean('show on startup') else mw.hide()
 
     tray: qtw.QSystemTrayIcon = qtw.QSystemTrayIcon()
     tray.setIcon(qtg.QIcon('icon.ico'))
@@ -1116,9 +1098,6 @@ if __name__ == '__main__':
     tray.setContextMenu(trayMenu)
 
     app.exec_()
-
-    # After Program Ends
-    mw.saveData()
 
 # Color Pallete
 # Background: #1A1A1B 
