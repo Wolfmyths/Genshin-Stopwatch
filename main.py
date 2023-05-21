@@ -692,7 +692,7 @@ class centralWidget(qtw.QWidget):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.scrollAreaLayout.addWidget(self.scrollArea)
 
-    def addStopWatch(self, timeObject: str, duration: datetime.timedelta, name: str, startDuration: datetime.timedelta, color: str, notepadContents: str = '', index: int | None = None) -> None:
+    def addStopWatch(self, timeObject: str, duration: datetime.timedelta, name: str, startDuration: datetime.timedelta, color: str, notepadContents: str = '', index: int | None = None, save: bool = True) -> None:
         
         self.frame = qtw.QFrame(self.scrollAreaWidgetContents)
         self.frame.setStyleSheet('''
@@ -753,7 +753,7 @@ class centralWidget(qtw.QWidget):
 
         deleteButton = qtw.QPushButton('X', self.frame)
         deleteButton.setMinimumSize(40,40)
-        deleteButton.clicked.connect(lambda: self.findChild(qtw.QFrame, id_).deleteLater())
+        deleteButton.clicked.connect(lambda: self.deleteTimer(id_))
         frameLayout.addWidget(deleteButton, 0, 2, alignment=Qt.AlignRight)
 
         countDown = qtw.QLabel('00:00:00', self.frame)
@@ -791,6 +791,7 @@ class centralWidget(qtw.QWidget):
 
         self.frame.setLayout(frameLayout)
 
+        # Index is only given when a timer is resetTimer() is called
         if index:
             self.verticalLayout.insertWidget(index, self.frame)
         else:
@@ -846,8 +847,15 @@ class centralWidget(qtw.QWidget):
 
         
         countDownTimer(self, difference)
-        self.parent().saveData()
-            
+
+        if save:
+            self.parent().saveData()
+    
+    def deleteTimer(self, id_: str):
+        self.findChild(qtw.QFrame, id_).deleteLater()
+
+        # There is a 1ms delay to call saveData() so that the deleteLater() method can finish, otherwise saveData() won't save anything
+        QTimer.singleShot(1, lambda: self.parent().saveData())
     
     def resetTimer(self, timeObject: str, name: str, startDuration: datetime.timedelta, id: str, color: str, notes: str = ''):
         
@@ -937,7 +945,7 @@ class window(qtw.QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidgetOptions)
         self.dockWidgetOptions.setVisible(config['QOL'].getboolean('settings open on startup'))
 
-        # So the resize event doesn't spam the save window function (see function sizeApplyTimerTimeout)
+        # So the resize event doesn't spam the save window resolution function (see sizeApplyTimerTimeout() )
         self.windowSizeApplyTimer = QTimer(self)
         self.windowSizeApplyTimer.setObjectName('windowSizeApplyTimer')
         self.windowSizeApplyTimer.timeout.connect(lambda: self.sizeApplyTimerTimeout())
@@ -947,71 +955,65 @@ class window(qtw.QMainWindow):
         self.loadSaveData()
 
     def loadSaveData(self):
-        with open('save.txt', 'r+') as fhand:
+        data = ConfigParser()
+        data.read('save.txt')
 
-            for line in fhand:
+        for timerID in data.sections():
 
-                if line.isspace():
-                    continue
+            # Name
+            name = data[timerID]['name']
 
-                elif line.startswith('Name:'):
-            
-                    name = line.split('Name: ')[1]
-                    name = name.strip() # For some reason it keeps the linebreak that saveData() created, making an extra linebreak
+            # Changing the timer's destination into a datetime type
+            timeFinished = data[timerID]['time finished']
+            timeFinished = datetime.datetime.strptime(timeFinished, '%Y-%m-%d %H:%M:%S')
+            timeFinished = timeFinished - datetime.datetime.today().replace(microsecond=0)
 
-                elif line.startswith('Time Finished: '):
+            # The original duration (For resetting the timer) and changing into a timedelta type
+            originalDuration = data[timerID]['time original duration'].split(':')
+            originalDuration = datetime.timedelta(hours= int(originalDuration[0]), minutes= int(originalDuration[1]))
 
-                    finishedTime = line.split()[2:]
+            # Border color (In hexcode format)
+            borderColor = data[timerID]['border color']
 
-                    finishedTime = f'{finishedTime[0]} {finishedTime[1].split(".")[0]}' # The '.split(".")[0]' gets rid of the milliseconds
+            # Notes
+            notes = data[timerID]['notes']
 
-                    finishedTime = datetime.datetime.strptime(finishedTime, '%Y-%m-%d %H:%M:%S')
 
-                    finishedTime = finishedTime - datetime.datetime.today().replace(microsecond=0)
 
-                elif line.startswith('Time Original Duration: '):
+            # Remove old ID
+            data.remove_section(timerID)
 
-                    originalDuration = ''.join(line.split()[3:])
+            # Create stopwatch
+            self.central.addStopWatch(name, timeFinished, name, originalDuration, borderColor, notes, save=False)
+        
+        # Update the savefile (Old IDs are removed)
+        with open('save.txt', 'w') as f:
+            data.write(f)
 
-                    originalDuration = datetime.timedelta(hours= int(originalDuration.split(':')[0]), minutes= int(originalDuration.split(':')[1]))
-                
-                elif line.startswith('Border Color:'):
-
-                    color = line.split()[2]
-
-                elif line.startswith('Notes: '):
-                    notes = ''.join(line.split('Notes: ')[1:]).strip()
-
-                    self.central.addStopWatch(name, finishedTime, name, originalDuration, color, notepadContents=notes)
+        # Update the savefile (Saving new IDs created from for loop)
+        self.saveData()
 
     def saveData(self):
-        
-        with open('save.txt', 'w+') as fhand:
 
-            string = ''''''
+        data = ConfigParser()
+        data.read('save.txt')
 
-            for qtObject in self.central.findChildren(qtw.QFrame):
-                
-                if len(qtObject.objectName()) == 13: # Length of a stopwatch's name which is their id() value
-                    
-                    objectName: str = qtObject.objectName()
+        for qtObject in self.central.findChildren(qtw.QFrame):
 
-                    string += (
-                    f'Name: {qtObject.findChild(qtw.QLabel, f"{objectName}nameLabel").text()}\n'
-                    f'Time Finished: {qtObject.property("finishedTime")}\n'
-                    f'Time Original Duration: {qtObject.property("originalDuration")}\n'
-                    f'Border Color: {qtObject.property("border-color")}\n'
-                    f'Notes: {qtObject.findChild(qtw.QTextEdit).toPlainText()}\n'
-                    )
+            objectName: str = qtObject.objectName()
+            
+            if len(objectName) == 13: # Length of a stopwatch's name which is their id() value
 
-                    # Makes the save file easier to read in between stopwatches
-                    string += '\n'
+                data[objectName] = {
+                    'name'                   : qtObject.findChild(qtw.QLabel, f"{objectName}nameLabel").text(),
+                    'time finished'          : qtObject.property("finishedTime"),
+                    'time original duration' : qtObject.property("originalDuration"),
+                    'border color'           : qtObject.property("border-color"),
+                    'notes'                  : qtObject.findChild(qtw.QTextEdit).toPlainText()
+                }
 
-            fhand.seek(0)
-
-            fhand.truncate()
-
-            fhand.write(string)
+        with open('save.txt', 'w') as f:
+            data.write(f)
     
     def sizeApplyTimerTimeout(self):
 
@@ -1053,10 +1055,14 @@ class trayMen(qtw.QMenu):
         self.openCloseButton = qtw.QAction(openOrClose)
         self.openCloseButton.triggered.connect(lambda: self.openClose_Pressed())
         self.quitAppButton = qtw.QAction("Shut Down")
-        self.quitAppButton.triggered.connect(app.quit)
+        self.quitAppButton.triggered.connect(lambda: self.shutdownApp())
 
         self.addAction(self.openCloseButton)
         self.addAction(self.quitAppButton)
+    
+    def shutdownApp(self):
+        mw.saveData()
+        app.quit()
 
     def openClose_Pressed(self):
 
