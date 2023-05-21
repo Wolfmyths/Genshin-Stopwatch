@@ -17,7 +17,7 @@ Genshin Stopwatch is a program that *does not require an internet connection* to
 
 When a stopwatch finishes, a desktop notification will be played *(Check your windows notification and focus assist settings to make sure they will go off.)*
 
-When you close the application your stopwatches will save to the `save.txt` file. The save file is easily configurable and easy to read.
+When you create a stopwatch or close the application, your stopwatches will save to the `save.txt` file. The save file is easily configurable and easy to read.
 
 Here is an example of a stopwatch's save data in `save.txt`:
 
