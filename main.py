@@ -994,9 +994,9 @@ class window(qtw.QMainWindow):
         self.saveData()
 
     def saveData(self):
+        print('saving data')
 
         data = ConfigParser()
-        data.read('save.txt')
 
         for qtObject in self.central.findChildren(qtw.QFrame):
 
