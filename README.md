@@ -21,7 +21,7 @@ When you close the application your stopwatches will save to the `save.txt` file
 
 Here is an example of a stopwatch's save data in `save.txt`:
 
-> [2589221199520] <- This is a unique ID, this shouldn't be changed by the user!<br>
+> [2589221199520] <- This is a unique ID, this is for the computer to read and shouldn't be changed by the user!<br>
 > name = Parametric Transformer<br>
 > time finished = 2023-05-28 11:34:14<br>
 > time original duration = 168:00:00<br>
