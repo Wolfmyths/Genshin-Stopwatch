@@ -365,7 +365,6 @@ class addTimer(qtw.QDockWidget):
             case 'Stamina':
 
                 amountOfStamina: str = self.lineEdit1.text()
-                print(amountOfStamina)
 
                 if not amountOfStamina.isdigit():
                     return self.lineEdit1.setText('Invalid Input')
@@ -853,7 +852,6 @@ class window(qtw.QMainWindow):
         self.saveData()
 
     def saveData(self):
-        print('saving data')
 
         data = ConfigParser()
 
@@ -885,7 +883,7 @@ class window(qtw.QMainWindow):
 
     def closeEvent(self, a0: qtg.QCloseEvent) -> None:
         
-        if not config['OPTIONS'].getboolean('show on startup'):
+        if not config['OPTIONS'].getboolean('shutdown app on close'):
 
             trayMenu.openClose_Pressed()
 
