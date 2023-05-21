@@ -59,7 +59,7 @@ If you found a bug or crash, please report it to me and show how to replicate th
 
 + Touch up on the UI a tiny bit for more clarity
 + Save/load code rewrite
-+ Settings save/load rewrite
++ ~~Settings rewrite~~ *Finished, ready for next patch*
 + Make a guide on which timer is used for by showing examples
 + Color Themes?
 + Background pictures to choose from for the timers?
@@ -69,7 +69,7 @@ If you have a suggestion let me know!
 
 ## Contributing
 
-If you want to Contribute you can as long as I have an issue posted its up for grabs!
+If you want to Contribute you can as long as I have an issue posted its up for grabs! Just make a fork and submit a pull request of your contribution.
 
 ## Credits
 
