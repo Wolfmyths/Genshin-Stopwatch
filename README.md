@@ -21,11 +21,12 @@ When you close the application your stopwatches will save to the `save.txt` file
 
 Here is an example of a stopwatch's save data in `save.txt`:
 
-> Name: Parametric Transformer<br>
-> Time Finished: 2023-03-19 20:07:18<br>
-> Time Original Duration: 168:00:00<br>
-> Border Color: #37AA9C<br>
-> Notes:<br>
+> [2589221199520] <- This is a unique ID, this shouldn't be changed by the user!<br>
+> name = Parametric Transformer<br>
+> time finished = 2023-05-28 11:34:14<br>
+> time original duration = 168:00:00<br>
+> border color = #37AA9C<br>
+> notes = <br>
 
 ## What platforms is this compatible with?
 
@@ -34,11 +35,11 @@ At the moment only Windows machines can run this program, I'm not sure if I plan
 ## It doesn't work!
 
 + Check `save.txt` and make sure it looks in a similar format to the example above.
-+ The program needs `save.txt` and `settings.json` to start, so if there isn't one in the directory create a text file with the same name or redownload the program.
++ The program needs `save.txt` and `config.ini` to start, so if there isn't one in the directory create a text file with the same name or redownload the program.
 + Genshin Stopwatch only works on `Windows`.
-+ Check `settings.json` and make sure it looks similar to when you downloaded the program.
++ Check `config.ini` and make sure it looks similar to when you downloaded the program.
 + If notifications aren't working, go to `action center` and `manage notifications`. `Focus assist settings` can disable notifications when they happen under certain conditions.
-+ If you updated your stopwatch version, please make sure the `settings.json` and `save.txt` has matching settings with the version you're using. Or just replace the whole file.
++ If you updated your stopwatch version, please make sure the `config.ini` and `save.txt` has matching settings with the version you're using. Or just replace the whole file.
 
 ## Does this program run on system startup?
 
@@ -58,8 +59,6 @@ If you found a bug or crash, please report it to me and show how to replicate th
 ## Future Plans?
 
 + Touch up on the UI a tiny bit for more clarity
-+ Save/load code rewrite
-+ ~~Settings rewrite~~ *Finished, ready for next patch*
 + Make a guide on which timer is used for by showing examples
 + Color Themes?
 + Background pictures to choose from for the timers?
