@@ -18,7 +18,7 @@ class addTimer(qtw.QDockWidget):
 
         self.setStyleSheet(
             '''
-            
+
             QLabel, QPushButton{
                 font-size: 18px;
             }
@@ -35,14 +35,14 @@ class addTimer(qtw.QDockWidget):
         # Topic Frame
         self.topicFrame = qtw.QFrame(self.centralFrame)
         verticalLayout.addWidget(self.topicFrame)
-        
+
         # Form Layout (For Topic Frame)
         self.formLayout = qtw.QFormLayout()
         self.formLayout.setVerticalSpacing(15)
         self.formLayout.setRowWrapPolicy(qtw.QFormLayout.WrapAllRows)
         self.topicFrame.setLayout(self.formLayout)
 
-        
+
         # Topic data
         self.topicSelectionDict = {
 
@@ -56,7 +56,7 @@ class addTimer(qtw.QDockWidget):
 
             'Parametric Transformer': {
                 'durations': tuple(['7 Days'])
-            }, 
+            },
 
             'Respawns': {
                 'durations': ('12 Hours', '1 Day', '2 Days', '3 Days')
@@ -85,7 +85,7 @@ class addTimer(qtw.QDockWidget):
             'Custom': {
                 'durations': 'Custom'
             }
-            
+
         }
 
         # Topic Selection Row
@@ -189,7 +189,7 @@ class addTimer(qtw.QDockWidget):
         verticalLayout.addWidget(self.startTimerButton, alignment=Qt.AlignTop)
 
         self.setWidget(self.centralFrame)
-    
+
     def hideRealmCurrency(self):
 
         self.lineEditLabel1.hide()
@@ -221,19 +221,19 @@ class addTimer(qtw.QDockWidget):
 
         self.lineEditLabel3.show()
         self.lineEdit3.show()
-    
+
     def hideNormalDurations(self):
 
         self.durationLabel.hide()
         self.durationDropDown.hide()
-    
+
     def showNormalDurations(self):
 
         self.durationLabel.show()
         self.durationDropDown.show()
-    
+
     def dropDownSelected(self, topic: str):
-        
+
         selectedTopic = self.topicSelectionDict[topic]['durations']
 
         self.durationDropDown.clear()
@@ -250,7 +250,7 @@ class addTimer(qtw.QDockWidget):
 
                 self.showRealmCurrency()
                 self.lineEditLabel1.setText('Realm Trust Level (1-10)')
-        
+
             case 'Realm Companionship XP':
 
                 self.hideCustom()
@@ -258,10 +258,10 @@ class addTimer(qtw.QDockWidget):
                 self.showNormalDurations()
                 self.durationLabel.setText('Adeptal Energy:')
                 self.durationDropDown.addItems(selectedTopic)
-                
+
                 self.showRealmCurrency()
                 self.lineEditLabel1.setText('Realm Trust Level (1-10)')
-        
+
             case 'Stamina':
 
                 self.hideCustom()
@@ -273,7 +273,7 @@ class addTimer(qtw.QDockWidget):
                 self.lineEdit1.show()
 
             case 'Custom':
-                
+
                 self.hideNormalDurations()
 
                 self.hideRealmCurrency()
@@ -295,8 +295,8 @@ class addTimer(qtw.QDockWidget):
                     self.showNormalDurations()
 
                 self.durationDropDown.addItems(selectedTopic)
-            
-    
+
+
     def startStopWatch(self):
         timeObject = self.topicDropDown.currentText()
 
@@ -305,38 +305,38 @@ class addTimer(qtw.QDockWidget):
         days: int = 0
         hours: int = 0
         minutes: int = 0
-        
+
         percentToMinutes: callable[[str], str] = lambda rate: round( (float(rate) / 100) * 60 )
         calculateDuration: callable[[int, int], str] = lambda maxStorage, rate: str(round(maxStorage/rate, 2)).split('.')
-        
+
         match timeObject:
-            
+
             case 'Realm Currency':
 
                 try:
                     if int(self.lineEdit1.text()) not in range(1, 11):
-                        raise ValueError 
+                        raise ValueError
                 except ValueError:
                     return self.lineEdit1.setText('Error: Invalid Input')
-                
+
                 maxStorage: int = self.rCLevelValues[self.lineEdit1.text()]
 
                 rate: str = self.durationDropDown.currentText()
                 duration = self.rCRateValuesDict[rate]
-                
+
                 duration: list[str] = calculateDuration(maxStorage, duration)
 
                 hours = int(duration[0])
                 minutes = percentToMinutes(duration[1])
-        
+
             case 'Realm Companionship XP':
 
                 try:
                     if int(self.lineEdit1.text()) not in range(1, 11):
-                        raise ValueError 
+                        raise ValueError
                 except ValueError:
                     return self.lineEdit1.setText('Error: Invalid Input')
-                
+
                 maxStorage = int(self.lineEdit1.text()) * 50
 
                 rate: str = self.durationDropDown.currentText()
@@ -352,7 +352,7 @@ class addTimer(qtw.QDockWidget):
                 days: str|int = self.lineEdit1.text() if self.lineEdit1.text().isdigit() else 0
                 hours: str|int = self.lineEdit2.text() if self.lineEdit2.text().isdigit() else 0
                 minutes: str|int = self.lineEdit3.text() if self.lineEdit3.text().isdigit() else 0
-                
+
                 days = abs(int(days))
                 hours = abs(int(hours))
                 minutes = abs(int(minutes))
@@ -366,7 +366,7 @@ class addTimer(qtw.QDockWidget):
                 else:
 
                     amountOfStamina = int(amountOfStamina)
-                    
+
                     minutes = (160 - amountOfStamina) * 8
 
             case _:
@@ -375,7 +375,7 @@ class addTimer(qtw.QDockWidget):
 
                 if duration == 'Nothing Selected':
                     return
-                
+
                 duration = duration.split()
 
                 if duration[1] == 'Days' or duration[1] == 'Day':
@@ -394,8 +394,8 @@ class addTimer(qtw.QDockWidget):
         centralWidget_: centralWidget = self.parent().findChild(qtw.QWidget, 'central widget')
 
         centralWidget_.addStopWatch(timeObject, duration, name, duration, color)
-    
-    
+
+
     def hideEvent(self, a0: qtg.QHideEvent) -> None:
 
         if self.parent().isHidden():
@@ -412,11 +412,11 @@ class addTimer(qtw.QDockWidget):
             if not parent.isMinimized():
 
                 config['QOL']['addtimer open on startup'] = 'False'
-                
+
                 saveConfig()
 
         return super().hideEvent(a0)
-    
+
     def showEvent(self, a0: qtg.QShowEvent) -> None:
 
         parent: qtw.QMainWindow = self.parent()
@@ -430,12 +430,12 @@ class addTimer(qtw.QDockWidget):
         if not parent.isMinimized():
 
             config['QOL']['addtimer open on startup'] = 'True'
-            
+
             saveConfig()
 
         return super().showEvent(a0)
-    
-class optionsDock(qtw.QDockWidget): 
+
+class optionsDock(qtw.QDockWidget):
     def __init__(self, parent=None | qtw.QMainWindow):
         super().__init__(parent)
 
@@ -446,7 +446,7 @@ class optionsDock(qtw.QDockWidget):
 
         self.setStyleSheet(
             '''
-            
+
             QLabel, QPushButton{
                 font-size: 18px;
             }
@@ -468,7 +468,7 @@ class optionsDock(qtw.QDockWidget):
         # Topic Frame
         self.topicFrame = qtw.QFrame(self.centralFrame)
         verticalLayout.addWidget(self.topicFrame)
-        
+
         # Form Layout (For Topic Frame)
         self.formLayout = qtw.QFormLayout()
         self.formLayout.setVerticalSpacing(20)
@@ -506,17 +506,17 @@ class optionsDock(qtw.QDockWidget):
         verticalLayout.addWidget(self.applyButton, alignment=Qt.AlignTop)
 
         self.setWidget(self.centralFrame)
-    
+
     def settingChanged(self, on: bool):
 
         if on:
             self.applyButton.setStyleSheet('color: yellow;')
-            
+
         else:
             self.applyButton.setStyleSheet('color: #94F3E4;')
-        
+
         self.applyButton.ensurePolished()
-    
+
     def applySettings(self):
 
         updatedConfig = {
@@ -526,17 +526,17 @@ class optionsDock(qtw.QDockWidget):
                         }
 
         config['OPTIONS'] = updatedConfig
-        
+
         saveConfig()
         self.settingChanged(False)
-    
+
     def hideEvent(self, a0: qtg.QHideEvent) -> None:
 
         if self.parent().isHidden():
             a0.ignore()
-        
+
         else:
-        
+
             parent: qtw.QMainWindow = self.parent()
             toolbar: qtw.QToolBar = parent.findChild(qtw.QToolBar)
             optionsButton: qtw.QAction = toolbar.findChild(qtw.QAction, 'optionsButton')
@@ -544,11 +544,11 @@ class optionsDock(qtw.QDockWidget):
             optionsButton.setChecked(False)
 
             config['QOL']['settings open on startup'] = 'False'
-            
+
             saveConfig()
 
         return super().hideEvent(a0)
-    
+
     def showEvent(self, a0: qtg.QShowEvent) -> None:
 
         parent: qtw.QMainWindow = self.parent()
@@ -558,7 +558,7 @@ class optionsDock(qtw.QDockWidget):
         optionsButton.setChecked(True)
 
         config['QOL']['settings open on startup'] = 'True'
-        
+
         saveConfig()
         return super().showEvent(a0)
 
@@ -594,7 +594,7 @@ class toolbar(qtw.QToolBar):
         self.optionsButton.setChecked(config['QOL'].getboolean('settings open on startup'))
         self.optionsButton.triggered.connect(lambda: self.button_Clicked('optionsDockWidget', self.optionsButton.isChecked() ) )
         self.addAction(self.optionsButton)
-    
+
     def button_Clicked(self, dockObjectName: str, buttonisChecked: bool):
 
         addDockWidget: qtw.QDockWidget = self.parent().findChild(qtw.QDockWidget, dockObjectName)
@@ -602,7 +602,7 @@ class toolbar(qtw.QToolBar):
         if buttonisChecked:
 
             addDockWidget.show()
-            
+
         else:
 
             addDockWidget.hide()
@@ -625,7 +625,7 @@ class centralWidget(qtw.QWidget):
                 width: 14px;
                 margin: 15px 0 15px 0;
                 border-radius: 0px;
-                
+
             }
 
             QScrollBar::handle:vertical {
@@ -692,7 +692,7 @@ class centralWidget(qtw.QWidget):
         self.scrollAreaLayout.addWidget(self.scrollArea)
 
     def addStopWatch(self, timeObject: str, duration: datetime.timedelta, name: str, startDuration: datetime.timedelta, color: str, notepadContents: str = '', index: int | None = None, save: bool = True) -> None:
-        
+
         self.frame = qtw.QFrame(self.scrollAreaWidgetContents)
         self.frame.setStyleSheet('''
 
@@ -717,7 +717,7 @@ class centralWidget(qtw.QWidget):
                 background-color: #37AA9C;
             }}
 
-            
+
 
         '''.format(color))
         id_ = str(id(self.frame))
@@ -735,12 +735,12 @@ class centralWidget(qtw.QWidget):
             startDurationMinutes = str(startDurationMinutes) + '0'
 
         if startDuration >= datetime.timedelta(hours=24): # startDuration gives the days but not in total hours, needed so that loadSaveData() can work
-    
+
             parent.setProperty('originalDuration', f'{startDurationDays * 24}:{startDurationMinutes}:00')
 
         else:
             parent.setProperty('originalDuration', startDuration)
-    
+
 
         frameLayout = qtw.QGridLayout()
         frameLayout.setContentsMargins(20,20,20,20)
@@ -826,7 +826,7 @@ class centralWidget(qtw.QWidget):
                 difference -= one
 
                 if difference > zero:
-                    
+
                     countDownLabel.setText(str(difference))
 
                     QTimer_.singleShot(1000, lambda: countDownTimer(self, difference))
@@ -840,24 +840,24 @@ class centralWidget(qtw.QWidget):
 
                         n.show_toast('Stopwatch Finished', f"{name} has finished!", 'icon.ico', 10, True)
 
-                
+
             except RuntimeError: # If timer is deleted, will traceback a runtime error
                 return
 
-        
+
         countDownTimer(self, difference)
 
         if save:
             self.parent().saveData()
-    
+
     def deleteTimer(self, id_: str):
         self.findChild(qtw.QFrame, id_).deleteLater()
 
         # There is a 1ms delay to call saveData() so that the deleteLater() method can finish, otherwise saveData() won't save anything
         QTimer.singleShot(1, lambda: self.parent().saveData())
-    
+
     def resetTimer(self, timeObject: str, name: str, startDuration: datetime.timedelta, id: str, color: str, notes: str = ''):
-        
+
         frame: qtw.QFrame = self.findChild(qtw.QFrame, id)
 
         index = self.verticalLayout.indexOf(frame)
@@ -870,7 +870,7 @@ class centralWidget(qtw.QWidget):
 
         self.addStopWatch(timeObject, difference, name, startDuration, color, notepadContents=notes, index=index)
 
-        
+
 
 class window(qtw.QMainWindow):
     def __init__(self):
@@ -984,7 +984,7 @@ class window(qtw.QMainWindow):
 
             # Create stopwatch
             self.central.addStopWatch(name, timeFinished, name, originalDuration, borderColor, notes, save=False)
-        
+
         # Update the savefile (Old IDs are removed)
         with open('save.txt', 'w') as f:
             data.write(f)
@@ -999,7 +999,7 @@ class window(qtw.QMainWindow):
         for qtObject in self.central.findChildren(qtw.QFrame):
 
             objectName: str = qtObject.objectName()
-            
+
             if len(objectName) == 13: # Length of a stopwatch's name which is their id() value
 
                 data[objectName] = {
@@ -1012,18 +1012,18 @@ class window(qtw.QMainWindow):
 
         with open('save.txt', 'w') as f:
             data.write(f)
-    
+
     def sizeApplyTimerTimeout(self):
 
         self.windowSizeApplyTimer.stop()
-        
+
         config['WINDOW SIZE'] = {'width' : str(mw.width()), 'height' : str(mw.height())}
-        
+
         saveConfig()
 
 
     def closeEvent(self, a0: qtg.QCloseEvent) -> None:
-        
+
         if not config['OPTIONS'].getboolean('shutdown app on close'):
 
             trayMenu.openClose_Pressed()
@@ -1033,15 +1033,15 @@ class window(qtw.QMainWindow):
             self.saveData()
             app.exit()
 
-    
+
     def resizeEvent(self, a0: qtg.QResizeEvent) -> None:
 
         if not self.windowSizeApplyTimer.isActive():
 
             self.windowSizeApplyTimer.start(1000)
-        
+
         return super().resizeEvent(a0)
-    
+
 class trayMen(qtw.QMenu):
     def __init__(self):
         super(trayMen, self).__init__()
@@ -1057,7 +1057,7 @@ class trayMen(qtw.QMenu):
 
         self.addAction(self.openCloseButton)
         self.addAction(self.quitAppButton)
-    
+
     def shutdownApp(self):
         mw.saveData()
         app.quit()
@@ -1104,7 +1104,7 @@ if __name__ == '__main__':
     app.exec_()
 
 # Color Pallete
-# Background: #1A1A1B 
+# Background: #1A1A1B
 # Frame Background: #333F44
 # Foreground: #37AA9C
 # Text: #94F3E4
