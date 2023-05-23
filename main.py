@@ -1,11 +1,11 @@
-import PyQt5.QtWidgets as qtw
-import PyQt5.QtGui as qtg
-from PyQt5.QtCore import Qt, QPoint, QTimer
-
-import datetime
 from configparser import ConfigParser
+import datetime
 
+from PyQt5.QtCore import QPoint, QTimer, Qt
+import PyQt5.QtGui as qtg
+import PyQt5.QtWidgets as qtw
 from win10toast import ToastNotifier
+
 
 class addTimer(qtw.QDockWidget):
     def __init__(self, parent=None | qtw.QMainWindow):
