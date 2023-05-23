@@ -194,14 +194,23 @@ class addTimer(qtw.QDockWidget):
         self.setWidget(self.centralFrame)
 
     def hideRealmCurrency(self):
+        """
+        Hides realm currency label
+        """
         self.lineEditLabel1.hide()
         self.lineEdit1.hide()
 
     def showRealmCurrency(self):
+        """
+        Reveals realm currency label
+        """
         self.lineEditLabel1.show()
         self.lineEdit1.show()
 
     def hideCustom(self):
+        """
+        Hides custom labels
+        """
         self.lineEditLabel1.hide()
         self.lineEdit1.hide()
 
@@ -212,6 +221,9 @@ class addTimer(qtw.QDockWidget):
         self.lineEdit3.hide()
 
     def showCustom(self):
+        """
+        Reveals custom labels
+        """
         self.lineEditLabel1.show()
         self.lineEdit1.show()
 
@@ -222,14 +234,24 @@ class addTimer(qtw.QDockWidget):
         self.lineEdit3.show()
 
     def hideNormalDurations(self):
+        """
+        Hide duration labels for normal and dropdown
+        """
         self.durationLabel.hide()
         self.durationDropDown.hide()
 
     def showNormalDurations(self):
+        """
+        Reveal duration labels for normal and dropdown
+        """
         self.durationLabel.show()
         self.durationDropDown.show()
 
     def dropDownSelected(self, topic: str):
+        """Toggle drop down menu dependant on `topic`.
+
+        :param topic: Name of drop down menu.
+        """
         selectedTopic = self.topicSelectionDict[topic]["durations"]
 
         self.durationDropDown.clear()
