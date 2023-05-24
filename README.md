@@ -31,6 +31,8 @@ Here is an example of a stopwatch's save data in `save.txt`:
 ## What platforms is this compatible with?
 
 At the moment only Windows machines can run this program, I'm not sure if I plan on making mobile versions.
+<br>
+**There are plans to support Linux and MacOS. (see [#8](https://github.com/Wolfmyths/Genshin-Stopwatch/issues/8))**
 
 ## It doesn't work!
 
@@ -59,6 +61,9 @@ If you found a bug or crash, please report it to me and show how to replicate th
 ## Future Plans?
 
 + Touch up on the UI a tiny bit for more clarity
++ MacOS/Linux Support
++ Increase usefulness of stamina category (Asking how much stamina you want before being notified which will be max by default)
++ Slightly better notifications
 + Make a guide on which timer is used for by showing examples
 + Color Themes?
 + Background pictures to choose from for the timers?
