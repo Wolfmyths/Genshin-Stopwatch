@@ -1,4 +1,3 @@
-from PyQt5 import QtGui
 import PyQt5.QtWidgets as qtw
 import PyQt5.QtGui as qtg
 from PyQt5.QtCore import Qt, QPoint, QTimer
@@ -472,8 +471,8 @@ class optionsDock(qtw.QDockWidget):
 
         # Dropdown
         self.colorPallet = qtw.QComboBox()
-        self.colorPallet.addItems(styles.getColorPallets())
-        self.colorPallet.setCurrentText(config.get('OPTIONS', 'color pallet', fallback='dark'))
+        self.colorPallet.addItems([x.title() for x in styles.getColorPallets()])
+        self.colorPallet.setCurrentText(config.get('OPTIONS', 'color pallet', fallback='dark').title())
         self.colorPallet.currentTextChanged.connect(lambda: self.settingChanged('true'))
         self.colorPallet.setFocusPolicy(Qt.NoFocus)
         # Form Row
@@ -502,13 +501,13 @@ class optionsDock(qtw.QDockWidget):
                             'shutdown app on close' : str(self.appOnCloseCheckbox.isChecked()),
                             'show on startup'       : str(self.showOnOpenCheckbox.isChecked()),
                             'desktop notifications' : str(self.notifyCheckbox.isChecked()),
-                            'color pallet'          : self.colorPallet.currentText()
+                            'color pallet'          : self.colorPallet.currentText().lower()
                         }
         
         # Checking to see if the user wants to change the color scheme
         if self.colorPallet.currentText() != config.get('OPTIONS', 'color pallet', fallback='dark'):
 
-            styles.changeColorPallet(self.colorPallet.currentText())
+            styles.changeColorPallet(updatedConfig['color pallet'])
 
             for stopwatch in mw.central.findChildren(qtw.QFrame):
 
