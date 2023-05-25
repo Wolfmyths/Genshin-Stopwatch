@@ -21,7 +21,7 @@ class StyleManager:
         # 3 : Text
         # 4 : Alt Text
 
-        self.colorPallets: dict[str:list[str]] = {
+        self.colorPallets: dict[str:tuple[str]] = {
             'dark' : ('#1A1A1B', '#333F44', '#37AA9C', '#94F3E4', '#FCB3FC'),
             'light': ('#FAFAFA', '#E4E5F1', '#D2D3DB', '#9394A5', '#484B6A')
         }
@@ -41,6 +41,7 @@ class StyleManager:
                 border: none;
             }}
 
+
             QToolButton, QPushButton{{
                 background-color: {1};
                 color: {3};
@@ -53,6 +54,10 @@ class StyleManager:
 
             QToolButton:pressed, QPushButton:pressed {{
                 background-color: {2}
+            }}
+
+            QPushButton#applySettingsButton[unsavedChanges="true"]{{
+                color: {4};
             }}
 
             QCheckBox::indictator{{
@@ -75,7 +80,7 @@ class StyleManager:
             }}
 
             QListView, QAbstractScrollArea {{
-                background-color: #333F44;
+                background-color: {1};
                 color: {3};
                 border: none;
             }}
@@ -165,6 +170,19 @@ class StyleManager:
                     background-color: {1};
                 }}
 
+                QLabel#nameLabel{{
+                    font-size: 60px;
+                }}
+
+                QLabel#CountDownLabel{{
+                    font-size: 70px;
+                }}
+
+                QLabel#CountDownLabel[finished="true"]{{
+                    color: {4};
+                    font-size: 70px;
+                }}
+
                 QLabel {{
                     font-size: 30px;
                     color: {3};
@@ -174,10 +192,14 @@ class StyleManager:
 
                 QTextEdit {{
                     background-color: {0};
-                    color: #94F3E4;
+                    color: {3};
                     font-size: 24px;
                     border: none;
                 }}   
+
+                QPushButton#resetButton{{
+                    font-size: 25px;
+                }}
 
                 QPushButton:pressed{{
                     background-color: {2};
@@ -230,6 +252,9 @@ class StyleManager:
         '''Updates the color pallet'''
         self.selectedColorPallet = pallet
 
+        # Reinitializing to update format changes
+        # Update stopwatch stylesheet attribute
         self.stopwatchStyleSheet_formatted = self.stopwatchStyleSheet.format(self.colorPallets[self.selectedColorPallet][0], self.colorPallets[self.selectedColorPallet][1], self.colorPallets[self.selectedColorPallet][2], self.colorPallets[self.selectedColorPallet][3], self.colorPallets[self.selectedColorPallet][4], self.stopwatchBorderColor)
+        # Update application stylesheet attribute
         self.appStyleSheet_formatted = self.appStyleSheet.format(self.colorPallets[self.selectedColorPallet][0], self.colorPallets[self.selectedColorPallet][1], self.colorPallets[self.selectedColorPallet][2], self.colorPallets[self.selectedColorPallet][3], self.colorPallets[self.selectedColorPallet][4])
 
