@@ -162,8 +162,7 @@ class StyleManager:
             }}
 
                 '''
-        self.appStyleSheet_formatted: str = self.appStyleSheet.format(self.colorPallets[self.selectedColorPallet][0], self.colorPallets[self.selectedColorPallet][1], self.colorPallets[self.selectedColorPallet][2], self.colorPallets[self.selectedColorPallet][3], self.colorPallets[self.selectedColorPallet][4])
-        
+        self.appStyleSheet_formatted = self.formatStyleSheet(self.appStyleSheet, self.selectedColorPallet)
         
         self.stopwatchColorsDict: dict[str:str] = {
 
@@ -226,8 +225,7 @@ class StyleManager:
                 
 
             '''
-        self.stopwatchStyleSheet_formatted: str = self.stopwatchStyleSheet.format(self.colorPallets[self.selectedColorPallet][0], self.colorPallets[self.selectedColorPallet][1], self.colorPallets[self.selectedColorPallet][2], self.colorPallets[self.selectedColorPallet][3], self.colorPallets[self.selectedColorPallet][4], self.stopwatchBorderColor)
-    
+        self.stopwatchStyleSheet_formatted = self.formatStyleSheet(self.stopwatchStyleSheet, self.selectedColorPallet)
     
     def getStyleSheet(self, styleSheet: str) -> str:
         '''Returns stylesheet specified, to see stylesheet options, run `getStyleSheetNames()`'''
@@ -263,16 +261,16 @@ class StyleManager:
         self.stopwatchBorderColor = self.getStopwatchColor(color)
         
         # Reinitializing to update format changes
-        self.stopwatchStyleSheet_formatted = self.stopwatchStyleSheet.format(self.colorPallets[self.selectedColorPallet][0], self.colorPallets[self.selectedColorPallet][1], self.colorPallets[self.selectedColorPallet][2], self.colorPallets[self.selectedColorPallet][3], self.colorPallets[self.selectedColorPallet][4], self.stopwatchBorderColor)
+        self.stopwatchStyleSheet_formatted = self.formatStyleSheet(self.stopwatchStyleSheet, self.selectedColorPallet)
         
-    
     def changeColorPallet(self, pallet: str) -> None:
         '''Updates the color pallet'''
         self.selectedColorPallet = pallet
+        self.stopwatchStyleSheet_formatted = self.formatStyleSheet(self.stopwatchStyleSheet, self.selectedColorPallet)
+        self.appStyleSheet_formatted = self.formatStyleSheet(self.appStyleSheet, self.selectedColorPallet)
 
-        # Reinitializing to update format changes
-        # Update stopwatch stylesheet attribute
-        self.stopwatchStyleSheet_formatted = self.stopwatchStyleSheet.format(self.colorPallets[self.selectedColorPallet][0], self.colorPallets[self.selectedColorPallet][1], self.colorPallets[self.selectedColorPallet][2], self.colorPallets[self.selectedColorPallet][3], self.colorPallets[self.selectedColorPallet][4], self.stopwatchBorderColor)
-        # Update application stylesheet attribute
-        self.appStyleSheet_formatted = self.appStyleSheet.format(self.colorPallets[self.selectedColorPallet][0], self.colorPallets[self.selectedColorPallet][1], self.colorPallets[self.selectedColorPallet][2], self.colorPallets[self.selectedColorPallet][3], self.colorPallets[self.selectedColorPallet][4])
 
+    def formatStyleSheet(self, styleSheet: str, colorPallet: str) -> str:
+        '''Formats the stylesheet with the specified color pallet'''
+        colorPalletValues = self.colorPallets[colorPallet]
+        return styleSheet.format(*colorPalletValues, self.stopwatchBorderColor)
