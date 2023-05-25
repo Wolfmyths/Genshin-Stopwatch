@@ -4,8 +4,20 @@ from PyQt5.QtCore import Qt, QPoint, QTimer
 
 import datetime
 from configparser import ConfigParser
-
 from win10toast import ToastNotifier
+
+import style
+
+# Global style manager
+styleManager: style.StyleManager = style.StyleManager()
+
+styleManager.appendGlobalStyle(style.label)
+styleManager.appendGlobalStyle(style.checkbox)
+styleManager.appendGlobalStyle(style.toolButton)
+
+styleManager.appendLocalStyle('window', style.window)
+styleManager.appendLocalStyle('stopwatch', style.stopwatch)
+styleManager.appendLocalStyle('central widget', style.centralWidget)
 
 class addTimer(qtw.QDockWidget):
     def __init__(self, parent=None | qtw.QMainWindow):
@@ -16,14 +28,7 @@ class addTimer(qtw.QDockWidget):
         self.setAllowedAreas(Qt.RightDockWidgetArea)
         self.setFeatures(self.DockWidgetClosable)
 
-        self.setStyleSheet(
-            '''
-            
-            QLabel, QPushButton{
-                font-size: 18px;
-            }
-
-            ''')
+        self.setStyleSheet(styleManager.getGlobalStyleString())
 
         # Central Frame
         self.centralFrame = qtw.QFrame(self)
@@ -444,19 +449,7 @@ class optionsDock(qtw.QDockWidget):
         self.setAllowedAreas(Qt.RightDockWidgetArea)
         self.setFeatures(self.DockWidgetClosable)
 
-        self.setStyleSheet(
-            '''
-            
-            QLabel, QPushButton{
-                font-size: 18px;
-            }
-
-            QCheckBox::indictator{
-                width: 40px;
-                length: 40px;
-            }
-
-            ''')
+        self.setStyleSheet(styleManager.getGlobalStyleString())
 
         # Central Frame
         self.centralFrame = qtw.QFrame(self)
@@ -572,12 +565,7 @@ class toolbar(qtw.QToolBar):
 
         self.layout().setSpacing(20)
 
-        self.setStyleSheet(
-            '''
-            QToolButton{
-                font-size: 18px;
-            }
-            ''')
+        self.setStyleSheet(styleManager.getGlobalStyleString())
 
         # Add Timer Button
         self.addTimerButton = qtw.QAction('Add Timer', self)
@@ -612,67 +600,7 @@ class centralWidget(qtw.QWidget):
     def __init__(self, parent=None | qtw.QMainWindow):
         super().__init__(parent)
 
-        self.setStyleSheet(
-            '''
-            QWidget{
-                background-color: #1A1A1B;
-                border: none;
-            }
-
-            QScrollBar:vertical {
-                border: none;
-                background-color: #1A1A1B;
-                width: 14px;
-                margin: 15px 0 15px 0;
-                border-radius: 0px;
-                
-            }
-
-            QScrollBar::handle:vertical {
-                background-color: #37AA9C;
-                min-height: 30px;
-                border-radius: 7px;
-            }
-
-            QScrollBar::handle:vertical:hover {
-                background-color: #37AA9C;
-            }
-
-            QScrollBar::handle:vertical:pressed {
-                background-color: #94F3E4;
-                min-height: 30px;
-                border-radius: 7px;
-            }
-
-            QScrollBar::sub-line:vertical {
-                border: none;
-                background-color: #333F44;
-                height: 15px;
-                border-top-left-radius: 7px;
-                border-top-right-radius: 7px;
-                subcontrol-position: top;
-                subcontrol-origin: margin;
-            }
-
-            QScrollBar::add-line:vertical {
-                border: none;
-                background-color: #333F44;
-                height: 15px;
-                border-bottom-left-radius: 7px;
-                border-bottom-right-radius: 7px;
-                subcontrol-position: bottom;
-                subcontrol-origin: margin;
-            }
-
-            QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
-                background: none;
-            }
-
-            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-                background: none;
-            }
-
-            ''')
+        self.setStyleSheet(styleManager.getLocalStyleString('central widget'))
 
         self.setObjectName('central widget')
         self.scrollAreaLayout = qtw.QHBoxLayout(self)
@@ -694,32 +622,14 @@ class centralWidget(qtw.QWidget):
     def addStopWatch(self, timeObject: str, duration: datetime.timedelta, name: str, startDuration: datetime.timedelta, color: str, notepadContents: str = '', index: int | None = None, save: bool = True) -> None:
         
         self.frame = qtw.QFrame(self.scrollAreaWidgetContents)
-        self.frame.setStyleSheet('''
-
+        self.frame.setStyleSheet(styleManager.getLocalStyleString('stopwatch') + '''
             QFrame {{
                 border: 3px solid {0};
                 border-radius: 10px;
                 background-color: #333F44;
             }}
-
-            QLabel {{
-                font-size: 30px;
-                color: #94F3E4;
-                border: none;
-                text-align: center;
-            }}
-
-            QLabel[finished="true"]{{
-                color: #FCB3FC;
-            }}
-
-            QPushButton:pressed{{
-                background-color: #37AA9C;
-            }}
-
-            
-
         '''.format(color))
+
         id_ = str(id(self.frame))
         self.frame.setObjectName(id_)
         self.frame.setMaximumHeight(500)
@@ -877,58 +787,7 @@ class window(qtw.QMainWindow):
         super(window, self).__init__()
 
         # Application Stylesheet
-        self.setStyleSheet(
-            '''
-            QMainWindow{
-                background-color: #1A1A1B;
-            }
-
-            QToolBar{
-                background-color: #333F44;
-            }
-
-            QToolButton, QPushButton{
-                background-color: #333F44;
-                color: #94F3E4;
-                font-size: 15px;
-            }
-
-            QToolButton:hover, QPushButton:hover {
-                background-color: #333F44
-            }
-
-            QToolButton:pressed, QPushButton:pressed {
-                background-color: #37AA9C
-            }
-
-            QLineEdit{
-                font-size: 20px;
-                background-color: #333F44;
-                color: #94F3E4;
-            }
-
-            QComboBox{
-                background: #333F44;
-                color: #94F3E4;
-                font-size: 20px;
-            }
-
-            QListView{
-                background-color: #333F44;
-                color: #94F3E4;
-            }
-
-            QComboBox QAbstractItemView {
-                selection-background-color: #1A1A1B;
-                border: none;
-            }
-
-            QLabel{
-                color: #94F3E4;
-            }
-
-            '''
-        )
+        self.setStyleSheet(styleManager.getLocalStyleString('window'))
 
         self.toolBar = toolbar(self)
         self.addToolBar(self.toolBar)
