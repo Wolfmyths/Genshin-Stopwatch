@@ -2,11 +2,12 @@ import PyQt5.QtWidgets as qtw
 import PyQt5.QtGui as qtg
 from PyQt5.QtCore import Qt, QPoint, QTimer
 
+import threading
 import datetime
 import os
 from configparser import ConfigParser
 
-from win10toast import ToastNotifier
+from apprise import Apprise, AppriseAsset
 
 from style import StyleManager
 
@@ -719,7 +720,18 @@ class centralWidget(qtw.QWidget):
         QTimer_ = QTimer(parent)
         QTimer_.setObjectName('QTimer')
 
-        n = ToastNotifier()
+        # Initialize notification icon
+        notifyAsset: AppriseAsset = AppriseAsset(image_path_mask=icon_path, default_extension='.ico', app_id='Genshin Stopwatch', app_desc='Stopwatch has finished')
+
+        # Initialize notification and add Notification icon
+        notify: Apprise = Apprise(asset=notifyAsset)
+
+        # Adding possible platforms notification object should use to send
+        notify.add(('windows://', 'macosx://', 'gnome://', 'dbus://'))
+
+        # Create thread so program doesn't freeze while notification is active
+        notify_thread: threading.Thread = threading.Thread(target=notify.notify, kwargs={'body': f'{name} has finished!', 'title':'Stopwatch Finished'})
+        
 
         def countDownTimer(self: qtw.QWidget, difference: datetime) -> None:
 
@@ -740,7 +752,7 @@ class centralWidget(qtw.QWidget):
 
                     if config['OPTIONS'].getboolean('desktop notifications'):
 
-                        n.show_toast('Stopwatch Finished', f"{name} has finished!", 'icon.ico', 10, True)
+                        notify_thread.start()
 
                 
             except RuntimeError: # If timer is deleted, will traceback a runtime error
@@ -927,9 +939,9 @@ if __name__ == '__main__':
     styles = StyleManager()
 
     # Loading paths
-    config_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.ini')
-    saveFile_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'save.txt')
-    icon_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'icon.ico')
+    config_path = os.path.join(os.path.abspath(os.curdir), 'config.ini')
+    saveFile_path = os.path.join(os.path.abspath(os.curdir), 'save.txt')
+    icon_path = os.path.join(os.path.abspath(os.curdir), 'icon.ico')
 
     config = ConfigParser()
     config.read(config_path)
