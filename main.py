@@ -21,15 +21,6 @@ class addTimer(qtw.QDockWidget):
         self.setAllowedAreas(Qt.RightDockWidgetArea)
         self.setFeatures(self.DockWidgetClosable)
 
-        self.setStyleSheet(
-            '''
-
-            QLabel, QPushButton{
-                font-size: 18px;
-            }
-
-            ''')
-
         # Central Frame
         self.centralFrame = qtw.QFrame(self)
 
@@ -658,68 +649,6 @@ class centralWidget(qtw.QWidget):
     def __init__(self, parent=None | qtw.QMainWindow):
         super().__init__(parent)
         # Create the layout for the central widget
-
-        self.setStyleSheet(
-            '''
-            QWidget{
-                background-color: #1A1A1B;
-                border: none;
-            }
-
-            QScrollBar:vertical {
-                border: none;
-                background-color: #1A1A1B;
-                width: 14px;
-                margin: 15px 0 15px 0;
-                border-radius: 0px;
-
-            }
-
-            QScrollBar::handle:vertical {
-                background-color: #37AA9C;
-                min-height: 30px;
-                border-radius: 7px;
-            }
-
-            QScrollBar::handle:vertical:hover {
-                background-color: #37AA9C;
-            }
-
-            QScrollBar::handle:vertical:pressed {
-                background-color: #94F3E4;
-                min-height: 30px;
-                border-radius: 7px;
-            }
-
-            QScrollBar::sub-line:vertical {
-                border: none;
-                background-color: #333F44;
-                height: 15px;
-                border-top-left-radius: 7px;
-                border-top-right-radius: 7px;
-                subcontrol-position: top;
-                subcontrol-origin: margin;
-            }
-
-            QScrollBar::add-line:vertical {
-                border: none;
-                background-color: #333F44;
-                height: 15px;
-                border-bottom-left-radius: 7px;
-                border-bottom-right-radius: 7px;
-                subcontrol-position: bottom;
-                subcontrol-origin: margin;
-            }
-
-            QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
-                background: none;
-            }
-
-            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-                background: none;
-            }
-
-            ''')
 
         self.setObjectName('centralWidget')
         self.scrollAreaLayout = qtw.QHBoxLayout(self)
