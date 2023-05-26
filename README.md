@@ -41,7 +41,7 @@ At the moment only Windows machines can run this program, I'm not sure if I plan
 + Genshin Stopwatch only works on `Windows`.
 + Check `config.ini` and make sure it looks similar to when you downloaded the program.
 + If notifications aren't working, go to `action center` and `manage notifications`. `Focus assist settings` can disable notifications when they happen under certain conditions.
-+ If you updated your stopwatch version, please make sure the `config.ini` and `save.txt` has matching settings with the version you're using. Or just replace the whole file.
++ If you upgraded from a version below 1.4 to 1.4+ but kept your `save.txt` and `settings.txt` the same, then you have outdated save/setting file formats. Please see [save/settings rewrite](https://github.com/Wolfmyths/Genshin-Stopwatch/releases/tag/V1.4) if you want to keep your settings/stopwatches
 
 ## Does this program run on system startup?
 
@@ -61,11 +61,11 @@ If you found a bug or crash, please report it to me and show how to replicate th
 ## Future Plans?
 
 + Touch up on the UI a tiny bit for more clarity
-+ MacOS/Linux Support
-+ Increase usefulness of stamina category (Asking how much stamina you want before being notified which will be max by default)
++ MacOS/Linux Support **(Next update)**
++ Increase usefulness of stamina category (Asking how much stamina you want before being notified which will be max by default) **(Next update)**
 + Slightly better notifications
-+ Make a guide on which timer is used for by showing examples
-+ Color Themes?
++ Make a guide on which timer is used for by showing examples **(Next update)**
++ Color Themes? **(Next update)**
 + Background pictures to choose from for the timers?
 + Mobile version? (Hard maybe)
 
