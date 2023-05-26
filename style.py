@@ -176,7 +176,7 @@ class StyleManager:
             }}
 
                 '''
-        self.appStyleSheet_formatted = self.formatStyleSheet(self.appStyleSheet, self.selectedColorPallet
+        self.appStyleSheet_formatted = self.formatStyleSheet(self.appStyleSheet, self.selectedColorPallet)
         
         # The background color of QFrame is changed in `main.py` in `addStopWatch()`
         self.stopwatchStyleSheet: str = '''
