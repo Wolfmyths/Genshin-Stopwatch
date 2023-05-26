@@ -264,7 +264,6 @@ class addTimer(qtw.QDockWidget):
                 self.lineEditLabel2.setText('Desired stamina (Max 160)')
                 self.lineEditLabel2.show()
                 self.lineEdit2.setText(config['QOL'].get('desiredStamina', fallback='160'))
-                print('Loading desiredStamina:', config['QOL'].get('desiredStamina', fallback='160'))
                 self.lineEdit2.show()
 
             case 'Custom':
@@ -373,8 +372,6 @@ class addTimer(qtw.QDockWidget):
                 
                 # Program remembers how much stamina the user wants
                 config['QOL']['desiredStamina'] = desiredStamina
-                print('Desired Stamina:', desiredStamina)
-                print('Saving desiredStamina:', config['QOL'].get('desiredStamina', fallback='160'))
                 saveConfig()
 
                 # Example: (160 - 20 = 140), user needs 140 stamina until 160, stamina takes 8 minutes to regen 1 stamina
