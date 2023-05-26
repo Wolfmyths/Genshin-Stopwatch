@@ -43,6 +43,20 @@ class StyleManager:
             'electro'  : ('#000000', '#5f4886', '#8767bd', '#70b9fb', '#fe0094'),
             'geo'      : ('#111111', '#554433', '#aa6622', '#dd9933', '#88aa99'),
         }
+           
+        self.stopwatchColorsDict: dict[str:str] = {
+
+            'cryo'   :'#37AA9C',
+            'dendro' :'#32B85C',
+            'pyro'   :'#AB413F',
+            'hydro'  :'#3F7EAB',
+            'geo'    :'#F7A936',
+            'electro':'#8156E3',
+            'anemo'  :'#60FD75'
+
+            }
+        
+        self.stopwatchBorderColor: str = self.stopwatchColorsDict['anemo']
 
         self.appStyleSheet: str = '''
 
@@ -162,21 +176,7 @@ class StyleManager:
             }}
 
                 '''
-        self.appStyleSheet_formatted = self.formatStyleSheet(self.appStyleSheet, self.selectedColorPallet)
-        
-        self.stopwatchColorsDict: dict[str:str] = {
-
-            'cryo'   :'#37AA9C',
-            'dendro' :'#32B85C',
-            'pyro'   :'#AB413F',
-            'hydro'  :'#3F7EAB',
-            'geo'    :'#F7A936',
-            'electro':'#8156E3',
-            'anemo'  :'#60FD75'
-
-            }
-        
-        self.stopwatchBorderColor: str = self.stopwatchColorsDict['anemo']
+        self.appStyleSheet_formatted = self.formatStyleSheet(self.appStyleSheet, self.selectedColorPallet
         
         # The background color of QFrame is changed in `main.py` in `addStopWatch()`
         self.stopwatchStyleSheet: str = '''
