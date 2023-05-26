@@ -1,6 +1,16 @@
 from configparser import ConfigParser
 import os
 
+# COLOR PALLET CREDITS:
+# Dark by archer: https://lospec.com/palette-list/timeless
+# Light by wcburgess: https://www.color-hex.com/color-palette/106748
+# Hydro by |NOXITIVE|: https://lospec.com/palette-list/pola5
+# Dendro by green guy: https://lospec.com/palette-list/slimy-05
+# Pyro by NicoFerra: https://lospec.com/palette-list/spanish-sunset
+# Cryo by finn: https://lospec.com/palette-list/sadness
+# Anemo by Isa: https://lospec.com/palette-list/hypernova-5
+# Electro by Interprete-me: https://lospec.com/palette-list/neon-moon-tarot
+# Geo by namida: https://lospec.com/palette-list/koukasita
 
 class StyleManager:
 
@@ -21,9 +31,17 @@ class StyleManager:
         # 3 : Text
         # 4 : Alt Text
 
-        self.colorPallets: dict[str:list[str]] = {
-            'dark' : ('#1A1A1B', '#333F44', '#37AA9C', '#94F3E4', '#FCB3FC'),
-            'light': ('#FAFAFA', '#E4E5F1', '#D2D3DB', '#9394A5', '#484B6A')
+        self.colorPallets: dict[str:tuple[str]] = {
+            'dark'     : ('#212124', '#464c54', '#5b8087', '#76add8', '#a3e7f0'),
+            'light'    : ('#fafafa', '#e4e5f1', '#d2d3db', '#9394a5', '#484b6a'),
+            'original' : ('#1A1A1B', '#333F44', '#37AA9C', '#94F3E4', '#FCB3FC'),
+            'hydro'    : ('#070810', '#18284A', '#52A5DE', '#ACD6F6', '#EBF9FF'),
+            'dendro'   : ('#0a1a2f', '#04373b', '#1a644e', '#40985e', '#d1cb95'),
+            'pyro'     : ('#5f2f45', '#a02f40', '#e56f15', '#eda94a', '#f5ddbc'),
+            'cryo'     : ('#2e364d', '#425d87', '#7d95de', '#ddc8f9', '#fbfef9'),
+            'anemo'    : ('#2e3b43', '#486970', '#5a9e89', '#9adcae', '#f9fcf1'),
+            'electro'  : ('#000000', '#5f4886', '#8767bd', '#70b9fb', '#fe0094'),
+            'geo'      : ('#111111', '#554433', '#aa6622', '#dd9933', '#88aa99'),
         }
 
         self.appStyleSheet: str = '''
@@ -41,6 +59,7 @@ class StyleManager:
                 border: none;
             }}
 
+
             QToolButton, QPushButton{{
                 background-color: {1};
                 color: {3};
@@ -53,6 +72,10 @@ class StyleManager:
 
             QToolButton:pressed, QPushButton:pressed {{
                 background-color: {2}
+            }}
+
+            QPushButton#applySettingsButton[unsavedChanges="true"]{{
+                color: {4};
             }}
 
             QCheckBox::indictator{{
@@ -75,7 +98,7 @@ class StyleManager:
             }}
 
             QListView, QAbstractScrollArea {{
-                background-color: #333F44;
+                background-color: {1};
                 color: {3};
                 border: none;
             }}
@@ -146,8 +169,8 @@ class StyleManager:
 
             'cryo'   :'#37AA9C',
             'dendro' :'#32B85C',
-            'fire'   :'#AB413F',
-            'water'  :'#3F7EAB',
+            'pyro'   :'#AB413F',
+            'hydro'  :'#3F7EAB',
             'geo'    :'#F7A936',
             'electro':'#8156E3',
             'anemo'  :'#60FD75'
@@ -165,6 +188,19 @@ class StyleManager:
                     background-color: {1};
                 }}
 
+                QLabel#nameLabel{{
+                    font-size: 60px;
+                }}
+
+                QLabel#CountDownLabel{{
+                    font-size: 70px;
+                }}
+
+                QLabel#CountDownLabel[finished="true"]{{
+                    color: {4};
+                    font-size: 70px;
+                }}
+
                 QLabel {{
                     font-size: 30px;
                     color: {3};
@@ -174,10 +210,14 @@ class StyleManager:
 
                 QTextEdit {{
                     background-color: {0};
-                    color: #94F3E4;
+                    color: {3};
                     font-size: 24px;
                     border: none;
                 }}   
+
+                QPushButton#resetButton{{
+                    font-size: 25px;
+                }}
 
                 QPushButton:pressed{{
                     background-color: {2};
@@ -230,6 +270,9 @@ class StyleManager:
         '''Updates the color pallet'''
         self.selectedColorPallet = pallet
 
+        # Reinitializing to update format changes
+        # Update stopwatch stylesheet attribute
         self.stopwatchStyleSheet_formatted = self.stopwatchStyleSheet.format(self.colorPallets[self.selectedColorPallet][0], self.colorPallets[self.selectedColorPallet][1], self.colorPallets[self.selectedColorPallet][2], self.colorPallets[self.selectedColorPallet][3], self.colorPallets[self.selectedColorPallet][4], self.stopwatchBorderColor)
+        # Update application stylesheet attribute
         self.appStyleSheet_formatted = self.appStyleSheet.format(self.colorPallets[self.selectedColorPallet][0], self.colorPallets[self.selectedColorPallet][1], self.colorPallets[self.selectedColorPallet][2], self.colorPallets[self.selectedColorPallet][3], self.colorPallets[self.selectedColorPallet][4])
 
