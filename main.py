@@ -448,20 +448,6 @@ class optionsDock(qtw.QDockWidget):
         self.setAllowedAreas(Qt.RightDockWidgetArea)
         self.setFeatures(self.DockWidgetClosable)
 
-        self.setStyleSheet(
-            '''
-
-            QLabel, QPushButton{
-                font-size: 18px;
-            }
-
-            QCheckBox::indictator{
-                width: 40px;
-                length: 40px;
-            }
-
-            ''')
-
         # Central Frame
         self.centralFrame = qtw.QFrame(self)
 
