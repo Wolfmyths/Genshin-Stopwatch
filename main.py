@@ -257,9 +257,15 @@ class addTimer(qtw.QDockWidget):
                 self.hideRealmCurrency()
                 self.hideNormalDurations()
 
+                self.lineEditLabel1.setText('Current Stamina (Max 160)')
                 self.lineEditLabel1.show()
-                self.lineEditLabel1.setText('Current Stamina')
                 self.lineEdit1.show()
+
+                self.lineEditLabel2.setText('Desired stamina (Max 160)')
+                self.lineEditLabel2.show()
+                self.lineEdit2.setText(config['QOL'].get('desiredStamina', fallback='160'))
+                print('Loading desiredStamina:', config['QOL'].get('desiredStamina', fallback='160'))
+                self.lineEdit2.show()
 
             case 'Custom':
 
@@ -353,16 +359,26 @@ class addTimer(qtw.QDockWidget):
                 minutes = abs(int(minutes))
 
             case 'Stamina':
-
+                
+                # Get inputs
                 amountOfStamina: str = self.lineEdit1.text()
+                desiredStamina: str = self.lineEdit2.text()
 
-                if not amountOfStamina.isdigit():
-                    return self.lineEdit1.setText('Invalid Input')
-                else:
+                # Checking for valid inputs
+                if amountOfStamina.isdigit() == False or int(amountOfStamina) > 160 or int(amountOfStamina) < 0:
+                    return self.lineEdit1.setText('Error: Invalid Input')
+                
+                elif desiredStamina.isdigit() == False or int(desiredStamina) > 160 or int(desiredStamina) < 0:
+                    return self.lineEdit2.setText('Error: Invalid Input')
+                
+                # Program remembers how much stamina the user wants
+                config['QOL']['desiredStamina'] = desiredStamina
+                print('Desired Stamina:', desiredStamina)
+                print('Saving desiredStamina:', config['QOL'].get('desiredStamina', fallback='160'))
+                saveConfig()
 
-                    amountOfStamina = int(amountOfStamina)
-
-                    minutes = (160 - amountOfStamina) * 8
+                # Example: (160 - 20 = 140), user needs 140 stamina until 160, stamina takes 8 minutes to regen 1 stamina
+                minutes = (int(desiredStamina) - int(amountOfStamina)) * 8
                     
             # Case: default
             case _:

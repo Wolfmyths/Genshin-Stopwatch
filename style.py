@@ -17,7 +17,7 @@ class StyleManager:
     def __init__(self) -> None:
 
         config = ConfigParser()
-        config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.ini'))
+        config.read(os.path.join(os.path.abspath(os.curdir), 'config.ini'))
         
 
         # Attribute Definitions
