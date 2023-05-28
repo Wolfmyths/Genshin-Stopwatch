@@ -3,7 +3,8 @@ import threading
 import datetime
 import os
 from configparser import ConfigParser
-import datetime
+import requests
+import webbrowser
 
 from PyQt5.QtCore import QPoint, QTimer, Qt
 import PyQt5.QtGui as qtg
@@ -494,6 +495,12 @@ class optionsDock(qtw.QDockWidget):
         # Form Row
         self.formLayout.addRow('Show on app start: ', self.showOnOpenCheckbox)
 
+        self.updateCheckBox = qtw.QCheckBox()
+        self.updateCheckBox.setChecked(config['OPTIONS'].getboolean('checkVersionOnStartup', fallback=True))
+        self.updateCheckBox.clicked.connect(lambda: self.settingChanged('true'))
+        self.updateCheckBox.setToolTip('When the program starts it will go online to check and see if your client is up-to-date')
+        self.formLayout.addRow('Check for update on startup: ', self.updateCheckBox)
+
         # Checkbox
         self.notifyCheckbox = qtw.QCheckBox()
         self.notifyCheckbox.setChecked(config['OPTIONS'].getboolean('desktop notifications'))
@@ -511,14 +518,19 @@ class optionsDock(qtw.QDockWidget):
         # Form Row
         self.formLayout.addRow('Color Scheme: ', self.colorPallet)
 
-        # Button
+        # Apply Settings Button
         self.applyButton = qtw.QPushButton('Apply', self)
         self.applyButton.setObjectName('applySettingsButton')
         self.applyButton.clicked.connect(lambda: self.applySettings())
         self.applyButton.clicked.connect(lambda: self.settingChanged("false"))
         self.applyButton.setProperty('unsavedChanges', "false")
-        
         verticalLayout.addWidget(self.applyButton, alignment=Qt.AlignTop)
+
+        # Check for updates button
+        self.updateButton = qtw.QPushButton('Check for updates', self)
+        self.updateButton.setObjectName('checkUpdateButton')
+        self.updateButton.clicked.connect(lambda: self.checkUpdate(button=True))
+        verticalLayout.addWidget(self.updateButton, alignment=Qt.AlignTop)
 
         self.setWidget(self.centralFrame)
     
@@ -529,6 +541,21 @@ class optionsDock(qtw.QDockWidget):
         
         self.style().polish(self.applyButton)
     
+    def checkUpdate(self, button: bool = False) -> None:
+
+        if float(version) < float(version_check) and config['OPTIONS'].getboolean('checkVersionOnStart', fallback=True):
+
+            updateNotify: qtw.QDialog = UpdateAlert(self)
+
+            updateNotify.exec()
+
+            return
+        
+        # Checking if the function was started by the "check for update button"
+        if button:
+            self.updateButton.setText('On latest version ^_^')
+            QTimer.singleShot(3000, lambda: self.updateButton.setText('Check for updates'))
+    
     def applySettings(self):
         # Create a dictionary with updated configuration settings
 
@@ -536,7 +563,8 @@ class optionsDock(qtw.QDockWidget):
                             'shutdown app on close' : str(self.appOnCloseCheckbox.isChecked()),
                             'show on startup'       : str(self.showOnOpenCheckbox.isChecked()),
                             'desktop notifications' : str(self.notifyCheckbox.isChecked()),
-                            'color pallet'          : self.colorPallet.currentText().lower()
+                            'color pallet'          : self.colorPallet.currentText().lower(),
+                            'checkversiononstartup' : str(self.updateCheckBox.isChecked())
                         }
         
         # Checking to see if the user wants to change the color scheme
@@ -578,11 +606,12 @@ class optionsDock(qtw.QDockWidget):
 
             optionsButton.setChecked(False)
             
-            # Update the configuration setting 'settings open on startup' to 'False'
-            config['QOL']['settings open on startup'] = 'False'
-            
-            # Save the updated configuration
-            saveConfig()
+            if not parent.isMinimized():
+                # Update the configuration setting 'settings open on startup' to 'False'
+                config['QOL']['settings open on startup'] = 'False'
+                
+                # Save the updated configuration
+                saveConfig()
 
         return super().hideEvent(a0)
 
@@ -595,10 +624,94 @@ class optionsDock(qtw.QDockWidget):
         # Set the optionsButton as checked
 
         optionsButton.setChecked(True)
-        
+
         # Update the configuration setting 'settings open on startup' to 'True'
-        config['QOL']['settings open on startup'] = 'True'
-        saveConfig()
+        if not parent.isMinimized():
+            
+            config['QOL']['settings open on startup'] = 'True'
+            saveConfig()
+        return super().showEvent(a0)
+
+class Guide(qtw.QDockWidget):
+    def __init__(self, parent=None | qtw.QMainWindow):
+        super().__init__(parent)
+
+        self.setWindowTitle('Guide')
+        self.setObjectName('guideDockWidget')
+        self.setAllowedAreas(Qt.RightDockWidgetArea)
+        self.setFeatures(self.DockWidgetClosable)
+
+        # Central Frame
+        self.centralFrame: qtw.QFrame = qtw.QFrame(self)
+
+        # Vertical Box Layout
+        verticalLayout: qtw.QVBoxLayout = qtw.QVBoxLayout()
+        self.centralFrame.setLayout(verticalLayout)
+
+        self.textFile: qtw.QTextBrowser = qtw.QTextBrowser(self.centralFrame)
+        self.textFile.setReadOnly(True)
+
+        # Reading html guide
+        try:
+            with open(os.path.join( os.path.abspath(os.path.dirname(__file__)), 'guide.html'), 'r') as html:
+                    
+                    # The guide is packaged into the .exe so it is always updated
+                    self.textFile.setHtml(html.read())
+
+        except Exception as e:
+            print(e)
+
+            self.textFile.setHtml(
+                f'''
+                <h1>Error. Could not find Guide:</h1>
+                <br><br>
+                {e}
+                ''')
+        
+        verticalLayout.addWidget(self.textFile)
+
+        self.setWidget(self.centralFrame)
+    
+    def hideEvent(self, a0: qtg.QHideEvent) -> None:
+        # Check if the parent widget is hidden
+        
+        if self.parent().isHidden():
+            a0.ignore()
+
+        else:
+            
+            parent: qtw.QMainWindow = self.parent()
+            toolbar: qtw.QToolBar = parent.findChild(qtw.QToolBar)
+            # Uncheck the guideButton
+            
+            guideButton: qtw.QAction = toolbar.findChild(qtw.QAction, 'guideButton')
+
+            guideButton.setChecked(False)
+
+            if not parent.isMinimized():
+
+                config['QOL']['guide open on startup'] = 'False'
+                saveConfig()
+
+        return super().hideEvent(a0)
+
+    def showEvent(self, a0: qtg.QShowEvent) -> None:
+
+        parent: qtw.QMainWindow = self.parent()
+        toolbar: qtw.QToolBar = parent.findChild(qtw.QToolBar)
+        guideButton: qtw.QAction = toolbar.findChild(qtw.QAction, 'guideButton')
+        # Check the guideButton
+
+        guideButton.setChecked(True)
+
+        # Check if the parent widget is minimized
+        if not parent.isMinimized():
+
+            config['QOL']['guide open on startup'] = 'True'
+
+            saveConfig()
+        # Call the base class's showEvent method
+        
         return super().showEvent(a0)
 
 
@@ -627,6 +740,14 @@ class toolbar(qtw.QToolBar):
         self.optionsButton.setChecked(config['QOL'].getboolean('settings open on startup'))
         self.optionsButton.triggered.connect(lambda: self.button_Clicked('optionsDockWidget', self.optionsButton.isChecked() ) )
         self.addAction(self.optionsButton)
+
+        # Guide Button
+        self.guideButton = qtw.QAction('Guide', self)
+        self.guideButton.setObjectName('guideButton')
+        self.guideButton.setCheckable(True)
+        self.guideButton.setChecked(config['QOL'].getboolean('guide open on startup', fallback=False))
+        self.guideButton.triggered.connect(lambda: self.button_Clicked('guideDockWidget', self.guideButton.isChecked()))
+        self.addAction(self.guideButton)
 
     def button_Clicked(self, dockObjectName: str, buttonisChecked: bool):
         # Find the QDockWidget based on the dockObjectName
@@ -689,8 +810,8 @@ class centralWidget(qtw.QWidget):
         parent.setProperty('border-color', color)
         # Extract the start duration in days and minutes
 
-        startDurationDays = int(startDuration.__str__().split(':')[0].split()[0])
-        startDurationMinutes = int(startDuration.__str__().split(':')[1].split(':')[0])
+        startDurationDays = int( str(startDuration).split(':')[0].split()[0] )
+        startDurationMinutes = int( str(startDuration).split(':')[1].split(':')[0] )
         # Adjust the start duration minutes to have two digits
 
         if len(str(startDurationMinutes)) == 1:
@@ -816,8 +937,8 @@ class centralWidget(qtw.QWidget):
 
                         notify_thread.start()
 
-
-            except RuntimeError: # If timer is deleted, will traceback a runtime error
+            # If timer is deleted, will traceback a runtime error because the function is trying to locate objects that don't exist anymore
+            except RuntimeError: 
                 return
 
 
@@ -865,6 +986,10 @@ class window(qtw.QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidgetOptions)
         self.dockWidgetOptions.setVisible(config['QOL'].getboolean('settings open on startup'))
 
+        self.dockWidgetGuide = Guide(self)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidgetGuide)
+        self.dockWidgetGuide.setVisible(config['QOL'].getboolean('guide open on startup', fallback=False))
+
         # So the resize event doesn't spam the save window resolution function (see sizeApplyTimerTimeout() )
         self.windowSizeApplyTimer = QTimer(self)
         self.windowSizeApplyTimer.setObjectName('windowSizeApplyTimer')
@@ -873,6 +998,9 @@ class window(qtw.QMainWindow):
         self.resize(config['WINDOW SIZE'].getint('width'), config['WINDOW SIZE'].getint('height'))
 
         self.loadSaveData()
+
+        # Checking to see if the client is the latest version
+        self.dockWidgetOptions.checkUpdate()
 
     def loadSaveData(self):
         data = ConfigParser()
@@ -1007,12 +1135,48 @@ class trayMen(qtw.QMenu):
             mw.setVisible(True)
 
 
+class UpdateAlert(qtw.QDialog):
+    def __init__(self, parent) -> None:
+        super().__init__(parent)
+
+        self.setWindowTitle('Genshin Stopwatch: New Version Update!')
+        self.setWindowIcon(qtg.QIcon(icon_path))
+
+        layout = qtw.QVBoxLayout()
+
+        self.message = qtw.QLabel(self, text=f'The latest update {version_check} has been released! Would you like to install it?')
+        layout.addWidget(self.message)
+
+        self.checkBox = qtw.QCheckBox(self, text='Do not automatically check for updates')
+        self.checkBox.clicked.connect(lambda: self.checkBoxClicked())
+        layout.addWidget(self.checkBox)
+
+        self.buttons = qtw.QDialogButtonBox.Ok | qtw.QDialogButtonBox.No
+        self.buttonBox = qtw.QDialogButtonBox(self.buttons, self)
+        self.buttonBox.accepted.connect(lambda: webbrowser.open_new_tab('https://github.com/Wolfmyths/Genshin-Stopwatch/releases/latest'))
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox)
+
+        self.setLayout(layout)
+    
+    def checkBoxClicked(self) -> None:
+        if self.checkBox.isChecked():
+            config['OPTIONS']['checkVersionOnStartup'] = 'False'
+        else:
+            config['OPTIONS']['checkVersionOnStartup'] = 'True'
+        
+        saveConfig()
+
+
+
 if __name__ == '__main__':
     import sys
 
+    ### ENVIRONMENT PATHS AND STYLEMANAGER INIT ###
     styles = StyleManager()
 
-    # Loading paths
+    # Loading paths, using `os.curdir` instead of `os.dirname(__file__)` because the file dir is in a temp dir
     config_path = os.path.join(os.path.abspath(os.curdir), 'config.ini')
     saveFile_path = os.path.join(os.path.abspath(os.curdir), 'save.txt')
     icon_path = os.path.join(os.path.abspath(os.curdir), 'icon.ico')
@@ -1024,24 +1188,35 @@ if __name__ == '__main__':
         with open(config_path, 'w') as f:
             config.write(f)
     
+    ### APPLICATION INIT ###
     # Create a QApplication instance
     app: qtw.QApplication = qtw.QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
     app.setStyleSheet(styles.getStyleSheet('app'))
-    
+
+    ### VERSION DEFINING###
+    # Client Version
+    version = '1.5'
+
+    # Getting the latest version
+    try:
+        # Parsed to remove the "V" in the tag
+        version_check: str = requests.get('https://api.github.com/repos/Wolfmyths/Genshin-Stopwatch/releases/latest').json()['tag_name'][1:]
+    except Exception as e:
+        print(e)
+
+    ### WINDOW & SYSTEM TRAY INIT ###
     # Create an instance of the 'window' class
     mw = window()
 
-    version = '1.4'
-    
-    #Initialize window
+    # Initialize window
     mw.setWindowTitle(f'Genshin Stopwatch V{version}')
     mw.setWindowIcon(qtg.QIcon(icon_path))
     mw.show() if config['OPTIONS'].getboolean('show on startup') else mw.hide()
 
     tray: qtw.QSystemTrayIcon = qtw.QSystemTrayIcon()
     tray.setIcon(qtg.QIcon(icon_path))
-    tray.setToolTip('Genshin Impact Stopwatch')
+    tray.setToolTip('Genshin Stopwatch')
     tray.setVisible(True)
 
     trayMenu: qtw.QMenu = trayMen()
@@ -1049,10 +1224,3 @@ if __name__ == '__main__':
     tray.setContextMenu(trayMenu)
 
     app.exec_()
-
-# Background: #1A1A1B
-# Frame Background: #333F44
-# Foreground: #37AA9C
-# Text: #94F3E4
-# Alt Text: #FCB3FC
-
