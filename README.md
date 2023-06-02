@@ -75,6 +75,8 @@ If you have a suggestion let me know!
 
 If you want to Contribute you can as long as I have an issue posted its up for grabs! Just make a fork and submit a pull request of your contribution.
 
+If you want to test the exe with PyInstaller, `pip install pyinstaller` and then go to the directory where you cloned the repo and type `pyinstaller main.spec` to package the program
+
 ## Credits
 
 Thanks to [PyQt5](https://pypi.org/project/PyQt5/) for making an open source easy-to-use framework.
