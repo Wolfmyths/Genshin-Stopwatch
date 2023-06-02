@@ -62,6 +62,7 @@ If you found a bug or crash, please report it to me and show how to replicate th
 
 + Touch up on the UI a tiny bit for more clarity
 + MacOS/Linux Support **(Next update)**
++ Static Timers *(examples: Daily/Weekly resets)* **(Next update)**
 + Increase usefulness of stamina category (Asking how much stamina you want before being notified which will be max by default) **(Next update)**
 + Slightly better notifications
 + Make a guide on which timer is used for by showing examples **(Next update)**
