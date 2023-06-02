@@ -1,6 +1,6 @@
 
 import threading
-import datetime
+from datetime import datetime, timedelta, date
 import os
 from configparser import ConfigParser
 import requests
@@ -398,7 +398,7 @@ class addTimer(qtw.QDockWidget):
                 hours = duration
                 
         # Create a timedelta object with the calculated duration
-        duration = datetime.timedelta(days=days, hours=hours, minutes=minutes)
+        duration = timedelta(days=days, hours=hours, minutes=minutes)
         
         # Get the text from the nameLineEdit and use it as the name if it is not empty, otherwise use timeObject
         nameText = self.nameLineEdit.text()
@@ -509,6 +509,22 @@ class optionsDock(qtw.QDockWidget):
         # Form Row
         self.formLayout.addRow('Desktop notifications: ', self.notifyCheckbox)
 
+        # Checkbox
+        self.staticDailyNotifyCheckbox = qtw.QCheckBox()
+        self.staticDailyNotifyCheckbox.setChecked(config['OPTIONS'].getboolean('dailyResetNotify', fallback=False))
+        self.staticDailyNotifyCheckbox.clicked.connect(lambda: self.settingChanged('true'))
+        self.staticDailyNotifyCheckbox.setToolTip('Will recieve a notification when there is a daily reset.')
+        # Form Row
+        self.formLayout.addRow('Daily Reset Notifications: ', self.staticDailyNotifyCheckbox)
+
+        # Checkbox
+        self.staticWeeklyNotifyCheckbox = qtw.QCheckBox()
+        self.staticWeeklyNotifyCheckbox.setChecked(config['OPTIONS'].getboolean('weeklyResetNotify', fallback=False))
+        self.staticWeeklyNotifyCheckbox.clicked.connect(lambda: self.settingChanged('true'))
+        self.staticWeeklyNotifyCheckbox.setToolTip('Will recieve a notification when there is a daily reset.')
+        # Form Row
+        self.formLayout.addRow('Weekly Reset Notifications: ', self.staticWeeklyNotifyCheckbox)
+
         # Dropdown
         self.colorPallet = qtw.QComboBox()
         self.colorPallet.addItems([x.title() for x in styles.getColorPallets()])
@@ -542,7 +558,8 @@ class optionsDock(qtw.QDockWidget):
         self.style().polish(self.applyButton)
     
     def checkUpdate(self, button: bool = False) -> None:
-
+        
+        # Will create a dialog window if there's a version update unless specified not to
         if float(version) < float(version_check) and config['OPTIONS'].getboolean('checkVersionOnStart', fallback=True):
 
             updateNotify: qtw.QDialog = UpdateAlert(self)
@@ -564,7 +581,9 @@ class optionsDock(qtw.QDockWidget):
                             'show on startup'       : str(self.showOnOpenCheckbox.isChecked()),
                             'desktop notifications' : str(self.notifyCheckbox.isChecked()),
                             'color pallet'          : self.colorPallet.currentText().lower(),
-                            'checkversiononstartup' : str(self.updateCheckBox.isChecked())
+                            'checkversiononstartup' : str(self.updateCheckBox.isChecked()),
+                            'dailyResetNotify'      : str(self.staticDailyNotifyCheckbox.isChecked()),
+                            'weeklyResetNotify'     : str(self.staticWeeklyNotifyCheckbox.isChecked())
                         }
         
         # Checking to see if the user wants to change the color scheme
@@ -653,7 +672,7 @@ class Guide(qtw.QDockWidget):
 
         # Reading html guide
         try:
-            with open(os.path.join( os.path.abspath(os.path.dirname(__file__)), 'guide.html'), 'r') as html:
+            with open(os.path.join( os.path.abspath(os.path.curdir), 'guide.html'), 'r') as html:
                     
                     # The guide is packaged into the .exe so it is always updated
                     self.textFile.setHtml(html.read())
@@ -715,6 +734,241 @@ class Guide(qtw.QDockWidget):
         return super().showEvent(a0)
 
 
+class staticTimers(qtw.QDockWidget):
+    def __init__(self, parent=None | qtw.QMainWindow):
+        super().__init__(parent)
+
+        self.setWindowTitle('Static Timers')
+        self.setObjectName('staticTimersDockWidget')
+        self.setAllowedAreas(Qt.RightDockWidgetArea)
+        self.setFeatures(self.DockWidgetClosable)
+
+        # Central Frame
+        self.centralFrame: qtw.QFrame = qtw.QFrame(self)
+
+        # Form Layout
+        formlayout: qtw.QFormLayout = qtw.QFormLayout()
+        self.centralFrame.setLayout(formlayout)
+
+        # Daily reset timer
+        self.dailyReset = qtw.QLabel(self, text='00:00:00')
+        self.dailyReset.setObjectName('dailyResetTimer')
+        formlayout.addRow(qtw.QLabel(self, text='Daily Reset: '), self.dailyReset)
+
+        # Weekly reset timer
+        self.weeklyReset = qtw.QLabel(self, text='00:00:00')
+        self.weeklyReset.setObjectName('weeklyResetTimer')
+        formlayout.addRow(qtw.QLabel(self, text='Weekly Reset: '), self.weeklyReset)
+
+        # Server's UTC offsets
+        self.serverTimezones: dict[str:int|float] = {
+            'Asia' : 8,
+            'EU'   : 1,
+            'NA'   : -5
+        }
+
+        # Dropdown
+        chooseServerDropDown = qtw.QComboBox(self)
+        chooseServerDropDown.addItems(list(self.serverTimezones.keys()))
+        chooseServerDropDown.setCurrentText(config['QOL'].get('gameServer', fallback='NA'))
+        chooseServerDropDown.currentTextChanged.connect(lambda server: self.changeServer(server))
+        formlayout.addRow('Server: ', chooseServerDropDown)
+
+        self.setWidget(self.centralFrame)
+
+        self.notifyName = 'daily reset'
+
+        # Create thread so program doesn't freeze while notification is active
+        self.notify_thread: threading.Thread = threading.Thread(target=notify.notify, kwargs={'body': f'There was a {self.notifyName}!', 'title':'Reset Happened'})
+
+        # Checking to see if resets happened while the program was shutdown
+
+        # Checking to see if 'STATIC_TIMERS' is a valid section in config.ini
+        try:
+            config['STATIC_TIMERS'].keys()
+        except KeyError:
+            config.add_section('STATIC_TIMERS')
+            saveConfig()
+
+        for name in config['STATIC_TIMERS'].keys():
+
+            notification: bool = config['OPTIONS'].getboolean('{0}ResetNotify'.format(name.split('Deadline')[0]), fallback=False)
+            staticNotify: bool = config['OPTIONS'].getboolean('desktop notifications', fallback=True)
+
+            settingsCheck = (notification, staticNotify)
+
+            deadline: datetime = datetime.strptime(config['STATIC_TIMERS'].get(name), '%d %H:%M:%S')
+            
+            # If time has passed the static timer's deadline and if the notification settings are set to true
+            if deadline < datetime.today() and all(settingsCheck):
+
+                self.notifyName = f'{name} while you were gone!'
+                self.notify_thread.start()
+
+        # Defining variables for timers
+        self.dailyQTimer = QTimer(self)
+        self.weeklyQTimer = QTimer(self)
+
+        self.one = timedelta(seconds=1)
+        self.zero = timedelta(seconds=0)
+
+        self.serverChange = False
+        
+        # Start Static Timers
+        self.staticTimerStart()
+
+    def staticTimerStart(self):
+
+        self.serverChange = False
+
+        # Update perferred server setting
+        self.selectedServer: str = config['QOL'].get('gameServer', fallback='NA')
+
+        # Define today's date and time
+        self.today = datetime.today().replace(microsecond=0)
+
+        ### Daily Timer
+
+        # Calculating the deadline of the daily reset with their choice of server
+        self.dailyDeadline = datetime(year=self.today.year, month=self.today.month, day=self.today.day, hour=9) + timedelta(hours=self.serverTimezones[self.selectedServer])
+        config['STATIC_TIMERS']['dailyDeadline'] = datetime.strftime(self.dailyDeadline, '%d %H:%M:%S')
+
+        # If the program starts after the reset time happened, add a day to the deadline 
+        if self.dailyDeadline < self.today:
+
+            self.dailyDeadline += timedelta(days=1)
+
+        self.difference = self.dailyDeadline - self.today
+
+        ### Weekly Timer
+
+        # Calculating how many days left until sunday (Days go from 0-6)
+        self.weeklyDayDifference: int = 6 - date.weekday(self.today)
+
+        # Calculating the deadline of the weekly reset with their choice of server
+        self.weeklyDeadline = datetime(year=self.today.year, month=self.today.month, day=(self.today.day + self.weeklyDayDifference), hour=9) + timedelta(hours=self.serverTimezones[self.selectedServer])
+        config['STATIC_TIMERS']['weeklyDeadline'] = datetime.strftime(self.weeklyDeadline, '%d %H:%M:%S')
+
+        self.weeklyDifference = self.weeklyDeadline - self.today
+        
+        saveConfig()
+
+        self.dailyResetTimer()
+        self.weeklyResetTimer()
+        
+    
+    def dailyResetTimer(self):
+        
+        if self.difference > self.zero and not self.serverChange:
+
+            self.difference -= self.one
+
+            self.dailyReset.setText(str(self.difference))
+
+            self.dailyQTimer.singleShot(1000, lambda: self.dailyResetTimer())
+        
+        elif self.difference <= self.zero:
+            
+            today = datetime.today()
+
+            self.dailyDeadline += timedelta(days=1)
+            config['STATIC_TIMERS']['dailyDeadline'] = datetime.strftime(self.weeklyDeadline, '%d %H:%M:%S')
+            saveConfig()
+
+            self.difference = self.dailyDeadline - today
+
+            self.dailyQTimer.singleShot(1000, lambda: self.dailyResetTimer())
+
+            if config['OPTIONS'].getboolean('dailyResetNotify', fallback=False) and config['OPTIONS'].getboolean('desktop notifications', fallback=True):
+
+                self.notifyName = 'daily reset'
+                self.notify_thread.start()
+        
+        # Else is triggered when the user changes the server
+        else:
+            return
+
+    def weeklyResetTimer(self):
+
+        if self.weeklyDifference > self.zero and not self.serverChange:
+
+            self.weeklyDifference -= self.one
+
+            self.weeklyReset.setText(str(self.weeklyDifference))
+
+            self.weeklyQTimer.singleShot(1000, lambda: self.weeklyResetTimer())
+        
+        elif self.weeklyDifference <= self.zero:
+
+            today = datetime.today()
+
+            self.weeklyDeadline += timedelta(days=7)
+            config['STATIC_TIMERS']['weeklyDeadline'] = datetime.strftime(self.weeklyDeadline, '%d %H:%M:%S')
+            saveConfig()
+
+            self.weeklyDifference = self.weeklyDeadline - today
+
+            self.weeklyQTimer.singleShot(1000, lambda: self.weeklyResetTimer())
+
+            if config['OPTIONS'].getboolean('weeklyResetNotify', fallback=False) and config['OPTIONS'].getboolean('desktop notifications', fallback=True):
+
+                self.notifyName = 'weekly reset'
+                self.notify_thread.start()
+            
+        # Else is triggered when the user changes the server
+        else:
+            return
+    
+    def changeServer(self, server: str):
+        
+        config['QOL']['gameServer'] = server
+        saveConfig()
+
+        self.serverChange = True
+
+        QTimer.singleShot(1000, lambda: self.staticTimerStart())
+
+    def hideEvent(self, a0: qtg.QHideEvent) -> None:
+        # Check if the parent widget is hidden
+
+        if self.parent().isHidden():
+            a0.ignore()
+
+        else:
+
+            parent: qtw.QMainWindow = self.parent()
+            toolbar: qtw.QToolBar = parent.findChild(qtw.QToolBar)
+            staticTimersButton: qtw.QAction = toolbar.findChild(qtw.QAction, 'staticTimersButton')
+
+            staticTimersButton.setChecked(False)
+            
+            if not parent.isMinimized():
+                # Update the configuration setting 'settings open on startup' to 'False'
+                config['QOL']['static timers open on startup'] = 'False'
+                
+                # Save the updated configuration
+                saveConfig()
+
+        return super().hideEvent(a0)
+
+    def showEvent(self, a0: qtg.QShowEvent) -> None:
+        # Get references to the parent widget, toolbar, and optionsButton
+
+        parent: qtw.QMainWindow = self.parent()
+        toolbar: qtw.QToolBar = parent.findChild(qtw.QToolBar)
+        staticTimersButton: qtw.QAction = toolbar.findChild(qtw.QAction, 'staticTimersButton')
+        # Set the optionsButton as checked
+
+        staticTimersButton.setChecked(True)
+
+        # Update the configuration setting 'settings open on startup' to 'True'
+        if not parent.isMinimized():
+            
+            config['QOL']['static timers open on startup'] = 'True'
+            saveConfig()
+        return super().showEvent(a0)
+
+
 class toolbar(qtw.QToolBar):
     def __init__(self, parent=None | qtw.QMainWindow):
         super().__init__(parent)
@@ -748,6 +1002,14 @@ class toolbar(qtw.QToolBar):
         self.guideButton.setChecked(config['QOL'].getboolean('guide open on startup', fallback=False))
         self.guideButton.triggered.connect(lambda: self.button_Clicked('guideDockWidget', self.guideButton.isChecked()))
         self.addAction(self.guideButton)
+
+        # Static Timers Button
+        self.staticButton = qtw.QAction('Static Timers', self)
+        self.staticButton.setObjectName('staticTimersButton')
+        self.staticButton.setCheckable(True)
+        self.staticButton.setChecked(config['QOL'].getboolean('static timers open on startup', fallback=False))
+        self.staticButton.triggered.connect(lambda: self.button_Clicked('staticTimersDockWidget', self.staticButton.isChecked()))
+        self.addAction(self.staticButton)
 
     def button_Clicked(self, dockObjectName: str, buttonisChecked: bool):
         # Find the QDockWidget based on the dockObjectName
@@ -790,7 +1052,7 @@ class centralWidget(qtw.QWidget):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.scrollAreaLayout.addWidget(self.scrollArea)
 
-    def addStopWatch(self, timeObject: str, duration: datetime.timedelta, name: str, startDuration: datetime.timedelta, color: str, notepadContents: str = '', index: int | None = None, save: bool = True) -> None:
+    def addStopWatch(self, timeObject: str, duration: timedelta, name: str, startDuration: timedelta, color: str, notepadContents: str = '', index: int | None = None, save: bool = True) -> None:
         # Create a QFrame to hold the stopwatch
         
         styles.changeStopwatchBorderColor(color)
@@ -818,7 +1080,7 @@ class centralWidget(qtw.QWidget):
             startDurationMinutes = str(startDurationMinutes) + '0'
         # Set the original duration property of the frame
 
-        if startDuration >= datetime.timedelta(hours=24): # startDuration gives the days but not in total hours, needed so that loadSaveData() can work
+        if startDuration >= timedelta(hours=24): # startDuration gives the days but not in total hours, needed so that loadSaveData() can work
             parent.setProperty('originalDuration', f'{startDurationDays * 24}:{startDurationMinutes}:00')
 
         else:
@@ -854,7 +1116,7 @@ class centralWidget(qtw.QWidget):
         frameLayout.addWidget(resetButton, 2,0, alignment=Qt.AlignBottom)
         
         # Create a QLabel for the finished date
-        finishedDate = datetime.datetime.now() + duration
+        finishedDate = datetime.now() + duration
         finishedDateLabel = qtw.QLabel(f'Finished on: {finishedDate.strftime("%B %d @ %I:%M %p")}')
         finishedDateLabel.setObjectName('finishedDateLabel')
         frameLayout.addWidget(finishedDateLabel, 2, 1, alignment=Qt.AlignCenter)
@@ -881,11 +1143,11 @@ class centralWidget(qtw.QWidget):
         self.frame.show()
 
 
-        currentTime = datetime.datetime.today()
+        currentTime = datetime.today()
 
         finishedTime = currentTime + duration
 
-        parent.setProperty('finishedTime', datetime.datetime.strftime(finishedTime, '%Y-%m-%d %H:%M:%S'))
+        parent.setProperty('finishedTime', datetime.strftime(finishedTime, '%Y-%m-%d %H:%M:%S'))
 
         difference =  finishedTime - currentTime
     
@@ -893,25 +1155,15 @@ class centralWidget(qtw.QWidget):
         resetButton: qtw.QPushButton = parent.findChild(qtw.QPushButton, 'resetButton')
         countDownLabel: qtw.QLabel = parent.findChild(qtw.QLabel, 'CountDownLabel')
 
-        zero = datetime.timedelta(days=0, hours=0, seconds=0)
-        one = datetime.timedelta(seconds=1)
+        zero = timedelta(days=0, hours=0, seconds=0)
+        one = timedelta(seconds=1)
         
         # Create a QTimer for updating the countdown label
         QTimer_ = QTimer(parent)
         QTimer_.setObjectName('QTimer')
 
-        # Initialize notification icon
-        notifyAsset: AppriseAsset = AppriseAsset(image_path_mask=icon_path, default_extension='.ico', app_id='Genshin Stopwatch', app_desc='Stopwatch has finished')
-
-        # Initialize notification and add Notification icon
-        notify: Apprise = Apprise(asset=notifyAsset)
-
-        # Adding possible platforms notification object should use to send
-        notify.add(('windows://', 'macosx://', 'gnome://', 'dbus://'))
-
         # Create thread so program doesn't freeze while notification is active
         notify_thread: threading.Thread = threading.Thread(target=notify.notify, kwargs={'body': f'{name} has finished!', 'title':'Stopwatch Finished'})
-        
 
         def countDownTimer(self: qtw.QWidget, difference: datetime) -> None:
 
@@ -952,7 +1204,7 @@ class centralWidget(qtw.QWidget):
         # There is a 1ms delay to call saveData() so that the deleteLater() method can finish, otherwise saveData() won't save anything
         QTimer.singleShot(1, lambda: self.parent().saveData())
 
-    def resetTimer(self, timeObject: str, name: str, startDuration: datetime.timedelta, id: str, color: str, notes: str = ''):
+    def resetTimer(self, timeObject: str, name: str, startDuration: timedelta, id: str, color: str, notes: str = ''):
         # Find the frame associated with the given ID
         frame: qtw.QFrame = self.findChild(qtw.QFrame, id)
 
@@ -960,7 +1212,7 @@ class centralWidget(qtw.QWidget):
 
         self.findChild(qtw.QFrame, id).deleteLater()
 
-        currentTime = datetime.datetime.today()
+        currentTime = datetime.today()
 
         difference =  (currentTime + startDuration) - currentTime
 
@@ -990,6 +1242,10 @@ class window(qtw.QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidgetGuide)
         self.dockWidgetGuide.setVisible(config['QOL'].getboolean('guide open on startup', fallback=False))
 
+        self.dockWidgetStaticTimer = staticTimers(self)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidgetStaticTimer)
+        self.dockWidgetStaticTimer.setVisible(config['QOL'].getboolean('static timers open on startup', fallback=False))
+
         # So the resize event doesn't spam the save window resolution function (see sizeApplyTimerTimeout() )
         self.windowSizeApplyTimer = QTimer(self)
         self.windowSizeApplyTimer.setObjectName('windowSizeApplyTimer')
@@ -1013,12 +1269,12 @@ class window(qtw.QMainWindow):
 
             # Changing the timer's destination into a datetime type
             timeFinished = data[timerID]['time finished']
-            timeFinished = datetime.datetime.strptime(timeFinished, '%Y-%m-%d %H:%M:%S')
-            timeFinished = timeFinished - datetime.datetime.today().replace(microsecond=0)
+            timeFinished = datetime.strptime(timeFinished, '%Y-%m-%d %H:%M:%S')
+            timeFinished = timeFinished - datetime.today().replace(microsecond=0)
 
             # The original duration (For resetting the timer) and changing into a timedelta type
             originalDuration = data[timerID]['time original duration'].split(':')
-            originalDuration = datetime.timedelta(hours= int(originalDuration[0]), minutes= int(originalDuration[1]))
+            originalDuration = timedelta(hours= int(originalDuration[0]), minutes= int(originalDuration[1]))
 
             # Border color (In hexcode format)
             borderColor = data[timerID]['border color']
@@ -1187,6 +1443,16 @@ if __name__ == '__main__':
     def saveConfig():
         with open(config_path, 'w') as f:
             config.write(f)
+
+    ### INIT NOTIFICATIONS
+    # Initialize notification icon
+    notifyAsset: AppriseAsset = AppriseAsset(image_path_mask=icon_path, default_extension='.ico', app_id='Genshin Stopwatch', app_desc='Stopwatch has finished')
+
+    # Initialize notification and add Notification icon
+    notify: Apprise = Apprise(asset=notifyAsset)
+
+    # Adding possible platforms notification object should use to send
+    notify.add(('windows://', 'macosx://', 'gnome://', 'dbus://'))
     
     ### APPLICATION INIT ###
     # Create a QApplication instance
