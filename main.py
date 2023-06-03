@@ -743,6 +743,17 @@ class staticTimers(qtw.QDockWidget):
         self.setAllowedAreas(Qt.RightDockWidgetArea)
         self.setFeatures(self.DockWidgetClosable)
 
+        # Checking to see if 'STATIC_TIMERS' is a valid section in config.ini
+        try:
+            config['STATIC_TIMERS'].keys()
+        except KeyError:
+            config.add_section('STATIC_TIMERS')
+            saveConfig()
+
+        # Instancing the deadlines that may or may have not been reached to make room for the new deadlines
+        # This is for checkNotify()
+        self.oldDeadlines: dict[str:str] = {k:v for (k, v) in config['STATIC_TIMERS'].items()}
+
         # Central Frame
         self.centralFrame: qtw.QFrame = qtw.QFrame(self)
 
@@ -768,44 +779,19 @@ class staticTimers(qtw.QDockWidget):
         }
 
         # Dropdown
-        chooseServerDropDown = qtw.QComboBox(self)
-        chooseServerDropDown.addItems(list(self.serverTimezones.keys()))
-        chooseServerDropDown.setCurrentText(config['QOL'].get('gameServer', fallback='NA'))
-        chooseServerDropDown.currentTextChanged.connect(lambda server: self.changeServer(server))
-        formlayout.addRow('Server: ', chooseServerDropDown)
+        self.chooseServerDropDown = qtw.QComboBox(self)
+        self.chooseServerDropDown.addItems(list(self.serverTimezones.keys()))
+        self.chooseServerDropDown.setCurrentText(config['QOL'].get('gameServer', fallback='NA'))
+        self.chooseServerDropDown.currentTextChanged.connect(lambda server: self.changeServer(server))
+        formlayout.addRow('Server: ', self.chooseServerDropDown)
 
         self.setWidget(self.centralFrame)
 
-        self.notifyName = 'daily reset'
-
-        # Create thread so program doesn't freeze while notification is active
-        self.notify_thread: threading.Thread = threading.Thread(target=notify.notify, kwargs={'body': f'There was a {self.notifyName}!', 'title':'Reset Happened'})
-
-        # Checking to see if resets happened while the program was shutdown
-
-        # Checking to see if 'STATIC_TIMERS' is a valid section in config.ini
-        try:
-            config['STATIC_TIMERS'].keys()
-        except KeyError:
-            config.add_section('STATIC_TIMERS')
-            saveConfig()
-
-        for name in config['STATIC_TIMERS'].keys():
-
-            notification: bool = config['OPTIONS'].getboolean('{0}ResetNotify'.format(name.split('Deadline')[0]), fallback=False)
-            staticNotify: bool = config['OPTIONS'].getboolean('desktop notifications', fallback=True)
-
-            settingsCheck = (notification, staticNotify)
-
-            deadline: datetime = datetime.strptime(config['STATIC_TIMERS'].get(name), '%d %H:%M:%S')
-            
-            # If time has passed the static timer's deadline and if the notification settings are set to true
-            if deadline < datetime.today() and all(settingsCheck):
-
-                self.notifyName = f'{name} while you were gone!'
-                self.notify_thread.start()
-
         # Defining variables for timers
+
+        # Set notification name for later
+        self.notifyName = ' '
+
         self.dailyQTimer = QTimer(self)
         self.weeklyQTimer = QTimer(self)
 
@@ -831,23 +817,27 @@ class staticTimers(qtw.QDockWidget):
 
         # Calculating the deadline of the daily reset with their choice of server
         self.dailyDeadline = datetime(year=self.today.year, month=self.today.month, day=self.today.day, hour=9) + timedelta(hours=self.serverTimezones[self.selectedServer])
-        config['STATIC_TIMERS']['dailyDeadline'] = datetime.strftime(self.dailyDeadline, '%d %H:%M:%S')
 
         # If the program starts after the reset time happened, add a day to the deadline 
         if self.dailyDeadline < self.today:
 
             self.dailyDeadline += timedelta(days=1)
+        
+        config['STATIC_TIMERS']['dailyDeadline'] = datetime.strftime(self.dailyDeadline, '%Y-%m-%d %I:%M:%S')
 
         self.difference = self.dailyDeadline - self.today
 
         ### Weekly Timer
 
-        # Calculating how many days left until sunday (Days go from 0-6)
-        self.weeklyDayDifference: int = 6 - date.weekday(self.today)
+        # Calculating how many days left until Monday
+        self.weeklyDayDifference: int = 7 - date.weekday(self.today)
+        # For datetime 0 is considered Monday, so if `self.weeklyDayDifference` is 7 then just make it 0 otherwise leave it alone
+        self.weeklyDayDifference = 0 if self.weeklyDayDifference == 7 else self.weeklyDayDifference
+        
 
         # Calculating the deadline of the weekly reset with their choice of server
         self.weeklyDeadline = datetime(year=self.today.year, month=self.today.month, day=(self.today.day + self.weeklyDayDifference), hour=9) + timedelta(hours=self.serverTimezones[self.selectedServer])
-        config['STATIC_TIMERS']['weeklyDeadline'] = datetime.strftime(self.weeklyDeadline, '%d %H:%M:%S')
+        config['STATIC_TIMERS']['weeklyDeadline'] = datetime.strftime(self.weeklyDeadline, '%Y-%m-%d %I:%M:%S')
 
         self.weeklyDifference = self.weeklyDeadline - self.today
         
@@ -855,19 +845,26 @@ class staticTimers(qtw.QDockWidget):
 
         self.dailyResetTimer()
         self.weeklyResetTimer()
+
+        # Renabling server selection
+        self.chooseServerDropDown.setEnabled(True)
         
     
     def dailyResetTimer(self):
         
-        if self.difference > self.zero and not self.serverChange:
+        if self.difference > self.zero:
 
             self.difference -= self.one
 
             self.dailyReset.setText(str(self.difference))
 
-            self.dailyQTimer.singleShot(1000, lambda: self.dailyResetTimer())
+            # Returns when the user changes the server to prevent timer being called multiple times
+            if not self.serverChange:
+                self.dailyQTimer.singleShot(1000, lambda: self.dailyResetTimer())
+            else:
+                return
         
-        elif self.difference <= self.zero:
+        else:
             
             today = datetime.today()
 
@@ -882,23 +879,26 @@ class staticTimers(qtw.QDockWidget):
             if config['OPTIONS'].getboolean('dailyResetNotify', fallback=False) and config['OPTIONS'].getboolean('desktop notifications', fallback=True):
 
                 self.notifyName = 'daily reset'
+
+                # Create thread so program doesn't freeze while notification is active
+                self.notify_thread: threading.Thread = threading.Thread(target=notify.notify, kwargs={'body': f'Reset(s): {self.notifyName}', 'title':'Reset Happened'})
                 self.notify_thread.start()
-        
-        # Else is triggered when the user changes the server
-        else:
-            return
 
     def weeklyResetTimer(self):
 
-        if self.weeklyDifference > self.zero and not self.serverChange:
+        if self.weeklyDifference > self.zero:
 
             self.weeklyDifference -= self.one
 
             self.weeklyReset.setText(str(self.weeklyDifference))
 
-            self.weeklyQTimer.singleShot(1000, lambda: self.weeklyResetTimer())
+            # Returns when the user changes the server to prevent timer being called multiple times
+            if not self.serverChange:
+                self.weeklyQTimer.singleShot(1000, lambda: self.weeklyResetTimer())
+            else:
+                return
         
-        elif self.weeklyDifference <= self.zero:
+        else:
 
             today = datetime.today()
 
@@ -913,20 +913,52 @@ class staticTimers(qtw.QDockWidget):
             if config['OPTIONS'].getboolean('weeklyResetNotify', fallback=False) and config['OPTIONS'].getboolean('desktop notifications', fallback=True):
 
                 self.notifyName = 'weekly reset'
+                # Create thread so program doesn't freeze while notification is active
+                self.notify_thread: threading.Thread = threading.Thread(target=notify.notify, kwargs={'body': f'Reset(s): {self.notifyName}', 'title':'Reset Happened'})
                 self.notify_thread.start()
-            
-        # Else is triggered when the user changes the server
-        else:
-            return
     
     def changeServer(self, server: str):
         
+        # Prevent the selection from being spammed which would break the timers
+        self.chooseServerDropDown.setEnabled(False)
+        
+
         config['QOL']['gameServer'] = server
         saveConfig()
 
         self.serverChange = True
 
         QTimer.singleShot(1000, lambda: self.staticTimerStart())
+    
+    def checkNotify(self):
+        '''Checking to see if resets happened while the program was shutdown'''
+
+        static_timers: list[str] = []
+
+        for name, date in self.oldDeadlines.items():
+
+            # Getting notification setting bool
+            notification: bool = config['OPTIONS'].getboolean('{0}ResetNotify'.format(name.split('deadline')[0]), fallback=False)
+            staticNotify: bool = config['OPTIONS'].getboolean('desktop notifications', fallback=True)
+            
+            # Putting every notification setting in a tuple so that the if condition is easier to read below by using all()
+            settingsCheck = (notification, staticNotify)
+
+            deadline: datetime = datetime.strptime(date, '%Y-%m-%d %I:%M:%S')
+            
+            # If time has passed the static timer's deadline and if the notification settings are set to true
+            if deadline < self.today and all(settingsCheck):
+
+                static_timers.append(name.split('deadline')[0].title())
+
+        # Empty lists return false
+        if not static_timers:
+            return
+        
+        else:
+            self.notify_thread: threading.Thread = threading.Thread(target=notify.notify, kwargs={'body': f'Reset(s): {self.notifyName.join(static_timers)}', 'title':'Reset Happened'})
+            self.notify_thread.start()
+        
 
     def hideEvent(self, a0: qtg.QHideEvent) -> None:
         # Check if the parent widget is hidden
@@ -1257,6 +1289,9 @@ class window(qtw.QMainWindow):
 
         # Checking to see if the client is the latest version
         self.dockWidgetOptions.checkUpdate()
+
+        # Checking to see if any static timers went off while the program was shutdown
+        self.dockWidgetStaticTimer.checkNotify()
 
     def loadSaveData(self):
         data = ConfigParser()
