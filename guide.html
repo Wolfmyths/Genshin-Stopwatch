@@ -1,4 +1,3 @@
-
 <!-- CONTRIBUTORS: PyQt5 uses a limited version of HTML 4 to parse HTML, for more see here: https://doc.qt.io/qt-5/richtext-html-subset.html -->
 
 <!DOCTYPE html>
@@ -19,33 +18,61 @@
         </h3>
             <ul>
                 <li>
-                    <a href="#stamina">#</a>Stamina
+                    <a href="#dynamic_timer">#</a>Dynamic Timers
                 </li>
+
+                <ul>
+                    <li>
+                        <a href="#stamina">#</a>Stamina
+                    </li>
+                    <li>
+                        <a href="#paratrans">#</a>Parametric Transformer
+                    </li>
+                    <li>
+                        <a href="#respawns">#</a>Respawn
+                    </li>
+                    <li>
+                        <a href="#expedition">#</a>Expedition
+                    </li>
+                    <li>
+                        <a href="#teapot">#</a>Teapot Gardening/Construction
+                    </li>
+                    <li>
+                        <a href="#realmcurrency">#</a>Realm Currency
+                    </li>
+                    <li>
+                        <a href="#realmxp">#</a>Realm Companionship XP
+                    </li>
+                    <li>
+                        <a href="#fishing">#</a>Fishing
+                    </li>
+                    <li>
+                        <a href="#custom">#</a>Custom
+                    </li>
+                </ul>
+
+                <br>
+
                 <li>
-                    <a href="#paratrans">#</a>Parametric Transformer
+                    <a href="#static_timer">#</a>Static Timers
                 </li>
-                <li>
-                    <a href="#respawns">#</a>Respawn
-                </li>
-                <li>
-                    <a href="#expedition">#</a>Expedition
-                </li>
-                <li>
-                    <a href="#teapot">#</a>Teapot Gardening/Construction
-                </li>
-                <li>
-                    <a href="#realmcurrency">#</a>Realm Currency
-                </li>
-                <li>
-                    <a href="#realmxp">#</a>Realm Companionship XP
-                </li>
-                <li>
-                    <a href="#fishing">#</a>Fishing
-                </li>
-                <li>
-                    <a href="#custom">#</a>Custom
-                </li>
+                <ul>
+                    <li>
+                        <a href="#daily">#</a>Daily Reset
+                    </li>
+                    <li>
+                        <a href="#weekly">#</a>Weekly Reset
+                    </li>
+                </ul>
+                
             </ul>
+            
+            <h1 id="dynamic_timer">
+                Dynamic Timers
+            </h1>
+            <h3>
+                Timers that start depending on the player's actions
+            </h3>
 
             <h2 id="stamina">
                 Stamina
@@ -150,7 +177,7 @@
                 </ul>
                 
             
-            <h2 id="#fishing">
+            <h2 id="fishing">
                 Fishing
             </h2>
                 
@@ -158,12 +185,35 @@
                     Fishes respawn cooldown is usually 1 day once caught. Some have 3 day respawn times however. (Keep in mind that some fish appear only at day or night.)
                 </p>
             
-            <h2 id="#custom">
+            <h2 id="custom">
                 Custom
             </h2>
                 
                 <p>
                     The custom timer allows for people to make their own timers for whatever reason. There are three inputs: days, hours, minutes. You can put in over 24 hours or 60 minutes and it will still take it into account.
+                </p>
+        
+            <h1 id="static_timer">
+                Static Timers
+            </h1>
+            <h3>
+                Timers that are dependent on the game server's clock and cannot be changed
+            </h3>
+
+            <h2 id="daily">
+                Daily Reset
+            </h2>
+                
+                <p>
+                    Daily commissions, Daily battlepass missions, etc...
+                </p>
+
+            <h2 id="weekly">
+                Weekly Reset
+            </h2>
+                
+                <p>
+                    Boss rewards, Weekly battlepass missions, etc...
                 </p>
 
 
