@@ -228,6 +228,9 @@ class addTimer(qtw.QDockWidget):
 
         self.durationDropDown.clear()
 
+        # Clearning line edits to prevent text from carrying over
+        self.lineEdit1.clear(), self.lineEdit2.clear(), self.lineEdit3.clear()
+
         match topic:
 
             case 'Realm Currency':
@@ -560,7 +563,7 @@ class optionsDock(qtw.QDockWidget):
     def checkUpdate(self, button: bool = False) -> None:
         
         # Will create a dialog window if there's a version update unless specified not to
-        if float(version) < float(version_check) and config['OPTIONS'].getboolean('checkVersionOnStart', fallback=True):
+        if version < version_check and config['OPTIONS'].getboolean('checkVersionOnStart', fallback=True):
 
             updateNotify: qtw.QDialog = UpdateAlert(self)
 
@@ -672,7 +675,7 @@ class Guide(qtw.QDockWidget):
 
         # Reading html guide
         try:
-            with open(os.path.join( os.path.abspath(os.path.curdir), 'guide.html'), 'r') as html:
+            with open(os.path.join( os.path.abspath(os.path.dirname(__file__)), 'guide.html'), 'r') as html:
                     
                     # The guide is packaged into the .exe so it is always updated
                     self.textFile.setHtml(html.read())
@@ -762,12 +765,12 @@ class staticTimers(qtw.QDockWidget):
         self.centralFrame.setLayout(formlayout)
 
         # Daily reset timer
-        self.dailyReset = qtw.QLabel(self, text='00:00:00')
+        self.dailyReset = qtw.QLabel(self, text='Loading...')
         self.dailyReset.setObjectName('dailyResetTimer')
         formlayout.addRow(qtw.QLabel(self, text='Daily Reset: '), self.dailyReset)
 
         # Weekly reset timer
-        self.weeklyReset = qtw.QLabel(self, text='00:00:00')
+        self.weeklyReset = qtw.QLabel(self, text='Loading...')
         self.weeklyReset.setObjectName('weeklyResetTimer')
         formlayout.addRow(qtw.QLabel(self, text='Weekly Reset: '), self.weeklyReset)
 
@@ -823,21 +826,21 @@ class staticTimers(qtw.QDockWidget):
 
             self.dailyDeadline += timedelta(days=1)
         
-        config['STATIC_TIMERS']['dailyDeadline'] = datetime.strftime(self.dailyDeadline, '%Y-%m-%d %I:%M:%S')
+        config['STATIC_TIMERS']['dailydeadline'] = datetime.strftime(self.dailyDeadline, '%Y-%m-%d %I:%M:%S')
 
         self.difference = self.dailyDeadline - self.today
 
         ### Weekly Timer
 
         # Calculating how many days left until Monday
-        self.weeklyDayDifference: int = 7 - date.weekday(self.today)
-        # For datetime 0 is considered Monday, so if `self.weeklyDayDifference` is 7 then just make it 0 otherwise leave it alone
-        self.weeklyDayDifference = 0 if self.weeklyDayDifference == 7 else self.weeklyDayDifference
-        
+        # date.weekday starts at 0
+        dayOfTheWeek = date.weekday(self.today) + 1
+        self.weeklyDayDifference: int = 7 - dayOfTheWeek
 
         # Calculating the deadline of the weekly reset with their choice of server
         self.weeklyDeadline = datetime(year=self.today.year, month=self.today.month, day=(self.today.day + self.weeklyDayDifference), hour=9) + timedelta(hours=self.serverTimezones[self.selectedServer])
-        config['STATIC_TIMERS']['weeklyDeadline'] = datetime.strftime(self.weeklyDeadline, '%Y-%m-%d %I:%M:%S')
+
+        config['STATIC_TIMERS']['weeklydeadline'] = datetime.strftime(self.weeklyDeadline, '%Y-%m-%d %I:%M:%S')
 
         self.weeklyDifference = self.weeklyDeadline - self.today
         
@@ -851,7 +854,7 @@ class staticTimers(qtw.QDockWidget):
         
     
     def dailyResetTimer(self):
-        
+
         if self.difference > self.zero:
 
             self.difference -= self.one
@@ -869,7 +872,7 @@ class staticTimers(qtw.QDockWidget):
             today = datetime.today()
 
             self.dailyDeadline += timedelta(days=1)
-            config['STATIC_TIMERS']['dailyDeadline'] = datetime.strftime(self.weeklyDeadline, '%d %H:%M:%S')
+            config['STATIC_TIMERS']['dailyDeadline'] = datetime.strftime(self.weeklyDeadline, '%Y-%m-%d %I:%M:%S')
             saveConfig()
 
             self.difference = self.dailyDeadline - today
@@ -890,7 +893,8 @@ class staticTimers(qtw.QDockWidget):
 
             self.weeklyDifference -= self.one
 
-            self.weeklyReset.setText(str(self.weeklyDifference))
+            # Used formatted string because you only need to see the days since `daily reset` tells you the time
+            self.weeklyReset.setText(f'{self.weeklyDifference.days} Day(s) left')
 
             # Returns when the user changes the server to prevent timer being called multiple times
             if not self.serverChange:
@@ -903,7 +907,7 @@ class staticTimers(qtw.QDockWidget):
             today = datetime.today()
 
             self.weeklyDeadline += timedelta(days=7)
-            config['STATIC_TIMERS']['weeklyDeadline'] = datetime.strftime(self.weeklyDeadline, '%d %H:%M:%S')
+            config['STATIC_TIMERS']['weeklyDeadline'] = datetime.strftime(self.weeklyDeadline, '%Y-%m-%d %I:%M:%S')
             saveConfig()
 
             self.weeklyDifference = self.weeklyDeadline - today
@@ -935,19 +939,27 @@ class staticTimers(qtw.QDockWidget):
 
         static_timers: list[str] = []
 
+        # Getting desktop notification setting bool
+        staticNotify: bool = config['OPTIONS'].getboolean('desktop notifications', fallback=True)
+
         for name, date in self.oldDeadlines.items():
 
             # Getting notification setting bool
             notification: bool = config['OPTIONS'].getboolean('{0}ResetNotify'.format(name.split('deadline')[0]), fallback=False)
-            staticNotify: bool = config['OPTIONS'].getboolean('desktop notifications', fallback=True)
             
             # Putting every notification setting in a tuple so that the if condition is easier to read below by using all()
             settingsCheck = (notification, staticNotify)
 
-            deadline: datetime = datetime.strptime(date, '%Y-%m-%d %I:%M:%S')
-            
+            # If date isn't valid then skip to the next iteration
+            try:
+                deadline: datetime = datetime.strptime(date, '%Y-%m-%d %I:%M:%S')
+            except ValueError as e:
+                print(e)
+                continue
+
             # If time has passed the static timer's deadline and if the notification settings are set to true
             if deadline < self.today and all(settingsCheck):
+
 
                 static_timers.append(name.split('deadline')[0].title())
 
@@ -956,6 +968,7 @@ class staticTimers(qtw.QDockWidget):
             return
         
         else:
+
             self.notify_thread: threading.Thread = threading.Thread(target=notify.notify, kwargs={'body': f'Reset(s): {self.notifyName.join(static_timers)}', 'title':'Reset Happened'})
             self.notify_thread.start()
         
@@ -1497,7 +1510,7 @@ if __name__ == '__main__':
 
     ### VERSION DEFINING###
     # Client Version
-    version = '1.5'
+    version = '1.5.1'
 
     # Getting the latest version
     try:
