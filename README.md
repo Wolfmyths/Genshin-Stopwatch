@@ -65,7 +65,7 @@ If you found a bug or crash, please report it to me and show how to replicate th
 + Slightly better notifications
 + Background pictures to choose from for the timers?
 + Translations? *(Not sure if this is necessary but if people want it I will make an effort)*
-+ Mobile version? *(Hard maybe)*
++ Mobile version? *In development! Release is still ETA*
 
 If you have a suggestion let me know!
 
