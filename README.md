@@ -30,9 +30,11 @@ Here is an example of a stopwatch's save data in `save.txt`:
 
 ## What platforms is this compatible with?
 
-At the moment only Windows machines can run this program, I'm not sure if I plan on making mobile versions.
+At the moment only Windows machines can run this program, ~~I'm not sure if I plan on making mobile versions.~~
 <br>
 **There are plans to support Linux and MacOS. (see [#8](https://github.com/Wolfmyths/Genshin-Stopwatch/issues/8))**
+
+**Android and iOS is also underway! Release TBD**
 
 ## It doesn't work!
 
@@ -65,7 +67,7 @@ If you found a bug or crash, please report it to me and show how to replicate th
 + Slightly better notifications
 + Background pictures to choose from for the timers?
 + Translations? *(Not sure if this is necessary but if people want it I will make an effort)*
-+ Mobile version? *In development! Release is still ETA*
++ Mobile version? *In development! Release is still TBD*
 
 If you have a suggestion let me know!
 
