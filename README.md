@@ -62,6 +62,7 @@ If you found a bug or crash, please report it to me and show how to replicate th
 
 ## Future Plans?
 
++ Add an option in expeditions to account for characters making expeditions 25% faster
 + Touch up on the UI a tiny bit for more clarity
 + MacOS/Linux Support **(Next update)**
 + Slightly better notifications
