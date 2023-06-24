@@ -120,7 +120,7 @@ class addTimer(qtw.QDockWidget):
         # Dict of Realm Statuses and their corresponding income rates
         # {status:rate/hr}
 
-        self.rCRateValuesDict = {k:v for (k,v) in zip(self.topicSelectionDict['Realm Currency']['durations'], (4, 8, 16, 20, 22, 24, 26, 28, 30))}
+        self.rCRateValuesDict = {k:v for (k,v) in zip(self.topicSelectionDict['Realm Currency']['durations'], (4, 8, 12, 16, 20, 22, 24, 26, 28, 30))}
 
         # Dict of Adeptal Energy thresholds and their corresponding income rates for companionship XP
         # {adeptal energy range:rate/hr}
