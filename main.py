@@ -688,10 +688,11 @@ class Guide(qtw.QDockWidget):
         self.textFile.setReadOnly(True)
 
         # Reading html guide
-        try:
+        try: # The guide is packaged into the .exe so it is always updated
+             # If you want to debug the HTML file with the program, then change the path to be in the main.py directory
             with open(os.path.join( os.path.abspath(os.path.dirname(__file__)), 'guide.html'), 'r') as html:
                     
-                    # The guide is packaged into the .exe so it is always updated
+                    
                     self.textFile.setHtml(html.read())
 
         except Exception as e:
