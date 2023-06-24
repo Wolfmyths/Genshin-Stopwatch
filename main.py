@@ -5,6 +5,7 @@ import os
 from configparser import ConfigParser
 import requests
 import webbrowser
+from random import choice as randChoice
 
 from PyQt5.QtCore import QPoint, QTimer, Qt
 import PyQt5.QtGui as qtg
@@ -102,6 +103,16 @@ class addTimer(qtw.QDockWidget):
 
         self.formLayout.addRow(self.durationLabel, self.durationDropDown)
 
+        # Values for when the player has characters that have a 25% time discount
+        # {'4 Hours': 3}
+        self.expeditionTwentyFivePercentOffDict = {k:v for (k,v) in zip(self.topicSelectionDict['Expedition']['durations'], ('3 Hours', '6 Hours', '9 Hours', '15 Hours'))}
+
+        self.expeditionLabel = qtw.QLabel('Using a 25% Time Reduction Character')
+        self.expeditionCheckBox = qtw.QCheckBox()
+        self.expeditionCheckBox.setChecked(config['QOL'].getboolean('expedition_checkbox', fallback=True))
+
+        self.formLayout.addRow(self.expeditionLabel, self.expeditionCheckBox)
+
         # Realm Currency Level (Hidden by default, see show/hide events)
         # {Trust Rank : Realm Currency Storage Limit}
         self.rCLevelValues = {
@@ -177,28 +188,25 @@ class addTimer(qtw.QDockWidget):
 
         self.setWidget(self.centralFrame)
 
-    def hideRealmCurrency(self):
-    # Hide realm currency elements
-
-        self.lineEditLabel1.hide()
-        self.lineEdit1.hide()
+    def hideAll(self):
+        for widget in (self.lineEdit1, 
+                       self.lineEdit2, 
+                       self.lineEdit3, 
+                       self.lineEditLabel1, 
+                       self.lineEditLabel2, 
+                       self.lineEditLabel3, 
+                       self.durationDropDown, 
+                       self.durationLabel,
+                       self.expeditionCheckBox,
+                       self.expeditionLabel):
+            
+            widget.hide()
 
     def showRealmCurrency(self):
     # Show realm currency elements
 
         self.lineEditLabel1.show()
         self.lineEdit1.show()
-
-    def hideCustom(self):
-
-        self.lineEditLabel1.hide()
-        self.lineEdit1.hide()
-
-        self.lineEditLabel2.hide()
-        self.lineEdit2.hide()
-
-        self.lineEditLabel3.hide()
-        self.lineEdit3.hide()
 
     def showCustom(self):
     # Show custom elements
@@ -212,30 +220,38 @@ class addTimer(qtw.QDockWidget):
         self.lineEditLabel3.show()
         self.lineEdit3.show()
 
-    def hideNormalDurations(self):
-    # Show normal duration elements
-
-        self.durationLabel.hide()
-        self.durationDropDown.hide()
-
     def showNormalDurations(self):
 
         self.durationLabel.show()
         self.durationDropDown.show()
+    
+    def showExpedition(self):
+
+        self.durationLabel.show()
+        self.durationDropDown.show()
+
+        self.expeditionLabel.show()
+        self.expeditionCheckBox.show()
 
     def dropDownSelected(self, topic: str):
         selectedTopic = self.topicSelectionDict[topic]['durations']
 
         self.durationDropDown.clear()
 
+        #Hiding all elements
+        self.hideAll()
+
         # Clearning line edits to prevent text from carrying over
         self.lineEdit1.clear(), self.lineEdit2.clear(), self.lineEdit3.clear()
 
         match topic:
 
-            case 'Realm Currency':
+            case 'Expedition':
 
-                self.hideCustom()
+                self.showExpedition()
+                self.durationDropDown.addItems(selectedTopic)
+
+            case 'Realm Currency':
 
                 self.showNormalDurations()
                 self.durationLabel.setText('Realm Status:')
@@ -246,8 +262,6 @@ class addTimer(qtw.QDockWidget):
 
             case 'Realm Companionship XP':
 
-                self.hideCustom()
-
                 self.showNormalDurations()
                 self.durationLabel.setText('Adeptal Energy:')
                 self.durationDropDown.addItems(selectedTopic)
@@ -256,10 +270,6 @@ class addTimer(qtw.QDockWidget):
                 self.lineEditLabel1.setText('Realm Trust Level (1-10)')
 
             case 'Stamina':
-
-                self.hideCustom()
-                self.hideRealmCurrency()
-                self.hideNormalDurations()
 
                 self.lineEditLabel1.setText('Current Stamina (Max 160)')
                 self.lineEditLabel1.show()
@@ -272,19 +282,12 @@ class addTimer(qtw.QDockWidget):
 
             case 'Custom':
 
-                self.hideNormalDurations()
-
-                self.hideRealmCurrency()
-
                 self.showCustom()
                 self.lineEditLabel1.setText('Days:')
                 self.lineEditLabel2.setText('Hours:')
                 self.lineEditLabel3.setText('Minutes:')
 
             case _:
-
-                self.hideCustom()
-                self.hideRealmCurrency()
 
                 self.durationLabel.setText('Duration:')
 
@@ -296,11 +299,14 @@ class addTimer(qtw.QDockWidget):
 
 
     def startStopWatch(self):
+        ''' Fired when the addTimer button is pressed. This gathers then transforms the current data suitable for the stopwatch's parameters and begins the stopwatch '''
+
         # Get the selected time object and outline color
         
         timeObject = self.topicDropDown.currentText()
 
-        color = self.outlineColorDropDown.currentText()
+        # self.colorsDict is excluding index 0 because that would be the 'random' key value in the dict
+        color: str = randChoice(self.colorsDict[1:]) if self.outlineColorDropDown.currentText() == 'Random' else self.outlineColorDropDown.currentText()
 
         days: int = 0
         hours: int = 0
@@ -311,6 +317,14 @@ class addTimer(qtw.QDockWidget):
             
         # Match the selected time object
         match timeObject:
+
+            case 'Expedition':
+                
+                duration: str = self.durationDropDown.currentText()
+
+                hours = duration if not self.expeditionCheckBox.isChecked() else self.expeditionTwentyFivePercentOffDict[duration]
+
+                hours = int(hours.split()[0])
 
             case 'Realm Currency':
                 
