@@ -62,9 +62,8 @@ If you found a bug or crash, please report it to me and show how to replicate th
 
 ## Future Plans?
 
-+ Add an option in expeditions to account for characters making expeditions 25% faster
 + Touch up on the UI a tiny bit for more clarity
-+ MacOS/Linux Support **(Next update)**
++ MacOS/Linux Support *In development! Release TBD*
 + Slightly better notifications
 + Background pictures to choose from for the timers?
 + Translations? *(Not sure if this is necessary but if people want it I will make an effort)*
@@ -76,7 +75,7 @@ If you have a suggestion let me know!
 
 If you want to Contribute you can as long as I have an issue posted its up for grabs! Just make a fork and submit a pull request of your contribution.
 
-If you want to test the exe with PyInstaller, `pip install pyinstaller` and then go to the directory where you cloned the repo and type `pyinstaller main.spec` to package the program
+If you want to test the exe with PyInstaller, `pip install pyinstaller` and then go to the directory where you cloned the repo and type `pyinstaller --clean main.spec` to package the program
 
 ## Credits
 
