@@ -1524,7 +1524,7 @@ if __name__ == '__main__':
 
     ### VERSION DEFINING###
     # Client Version
-    version = '1.5.1'
+    version = '1.5.4'
 
     # Getting the latest version
     try:
