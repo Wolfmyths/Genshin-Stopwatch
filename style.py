@@ -46,6 +46,7 @@ class StyleManager:
            
         self.stopwatchColorsDict: dict[str:str] = {
 
+            'random' :'random' ,
             'cryo'   :'#37AA9C',
             'dendro' :'#32B85C',
             'pyro'   :'#AB413F',
