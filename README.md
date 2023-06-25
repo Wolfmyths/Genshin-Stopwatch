@@ -32,7 +32,7 @@ Here is an example of a stopwatch's save data in `save.txt`:
 
 At the moment only Windows machines can run this program, ~~I'm not sure if I plan on making mobile versions.~~
 <br>
-**There are plans to support Linux and MacOS, please see the latest pre release for QA testing and issue #26**
+**There are plans to support Linux and MacOS, please see the latest pre release for QA testing and [issue #26](https://github.com/Wolfmyths/Genshin-Stopwatch/issues/26)**
 
 **Android and iOS is also underway! Release TBD**
 
@@ -58,7 +58,7 @@ Yes! But you have to do a couple steps to do so, follow the instructions below.
 **You can disable run on startup by going to** `task manager -> startup` 
 
 If you found a bug or crash, please report it to me and show how to replicate the issue if possible.<br>
-**Before submitting a bug report please check the known bugs in the release notes before telling me.**
+**Before submitting a bug report please check the known bugs in the latest release notes before telling me.**
 
 ## Future Plans?
 
@@ -75,7 +75,7 @@ If you have a suggestion let me know!
 
 If you want to Contribute you can as long as I have an issue posted its up for grabs! Just make a fork and submit a pull request of your contribution.
 
-If you want to test the exe with PyInstaller, `pip install pyinstaller` and then go to the directory where you cloned the repo and type `pyinstaller --clean main.spec` to package the program
+If you want to test the exe with PyInstaller, `pip install pyinstaller` and then use the change dir command to where you cloned the repo and type `pyinstaller --clean main.spec` to package the program
 
 ## Credits
 
