@@ -1,5 +1,10 @@
 # Genshin Stopwatch
-### A program to help keep track of Genshin Impact's time gates. <img src="icon.png" width="150" height="150">
+### A program to help keep track of Genshin Impact's time gates.
+
+<img src="icon.png" width="150" height="150"> ![GitHub all releases](https://img.shields.io/github/downloads/Wolfmyths/Genshin-Stopwatch/total)
+                                              ![GitHub contributors](https://img.shields.io/github/contributors/Wolfmyths/Genshin-Stopwatch)
+                                              ![Python](https://img.shields.io/badge/Python-3.11-blue)
+                                              [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C4MJZS9)
 
 ## What does Genshin Stopwatch do?
 
