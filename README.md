@@ -1,7 +1,7 @@
 # Genshin Stopwatch
 ### A program to help keep track of Genshin Impact's time gates.
 
-<img src="img/icon.png" width="150" height="150"> ![GitHub all releases](https://img.shields.io/github/downloads/Wolfmyths/Genshin-Stopwatch/total)
+<img src="/img/icon.png" width="150" height="150"> ![GitHub all releases](https://img.shields.io/github/downloads/Wolfmyths/Genshin-Stopwatch/total)
                                               ![GitHub contributors](https://img.shields.io/github/contributors/Wolfmyths/Genshin-Stopwatch)
                                               ![Python](https://img.shields.io/badge/Python-3.11-blue)
                                               ![HTML](https://img.shields.io/badge/HTML-4-orange)
@@ -17,8 +17,6 @@
 ## What does Genshin Stopwatch do?
 
 Genshin Stopwatch is a program that makes checking timers easier without launching the game (Examples: Stamina, Fishing, Gardening, Enemy Respawns, Parametric Transformer, etc...).
-
-The only caviat is that you have to start the stopwatch yourself!
 
 **The program is accessible through the system tray** (Up arrow next to the volume mixer) **when running in the background.**
 
