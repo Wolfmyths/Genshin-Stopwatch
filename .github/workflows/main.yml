@@ -44,8 +44,8 @@ jobs:
         with:
           name: Genshin-Stopwatch-Assets-${{ matrix.os }}
           path: |
-            "dist\Genshin Stopwatch.exe"
-            "dist/Genshin Stopwatch"
+            dist\GenshinStopwatch.exe
+            dist/GenshinStopwatch
             config.ini
             save.txt
             icon.ico
@@ -66,21 +66,21 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           echo "AssetPath=Genshin-Stopwatch-Assets-ubuntu-latest" >> "$GITHUB_ENV"
-          echo "genshin_exe=Genshin Stopwatch" >> "$GITHUB_ENV"
+          echo "genshin_exe=GenshinStopwatch" >> "$GITHUB_ENV"
           echo "zipname=Ubuntu" >> "$GITHUB_ENV"
           
       - name: Define Windows Extension Var
         if: matrix.os == 'windows-latest'
         run: |
           echo "AssetPath=Genshin-Stopwatch-Assets-windows-latest" >> "$GITHUB_ENV"
-          echo "genshin_exe=Genshin Stopwatch.exe" >> "$GITHUB_ENV"
+          echo "genshin_exe=GenshinStopwatch.exe" >> "$GITHUB_ENV"
           echo "zipname=Windows" >> "$GITHUB_ENV"
           
       - name: Define MacOS Extension Var
         if: matrix.os == 'macos-latest'
         run: |
           echo "AssetPath=Genshin-Stopwatch-Assets-macos-latest" >> "$GITHUB_ENV"
-          echo "genshin_exe=Genshin Stopwatch" >> "$GITHUB_ENV"
+          echo "genshin_exe=GenshinStopwatch" >> "$GITHUB_ENV"
           echo "zipname=MacOS" >> "$GITHUB_ENV"
     
       - name: Create Directory
