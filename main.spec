@@ -35,7 +35,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='GenshinStopwatch',
+    name='Genshin Stopwatch',
     icon='icon.ico',
     debug=False,
     bootloader_ignore_signals=False,
