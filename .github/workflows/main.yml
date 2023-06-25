@@ -44,8 +44,8 @@ jobs:
         with:
           name: Genshin-Stopwatch-Assets-${{ matrix.os }}
           path: |
-            dist\GenshinStopwatch.exe
-            dist/GenshinStopwatch
+            "dist\Genshin Stopwatch.exe"
+            "dist/Genshin Stopwatch"
             config.ini
             save.txt
             icon.ico
@@ -66,31 +66,31 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           echo "AssetPath=Genshin-Stopwatch-Assets-ubuntu-latest" >> "$GITHUB_ENV"
-          echo "genshin_exe=GenshinStopwatch" >> "$GITHUB_ENV"
+          echo "genshin_exe=Genshin Stopwatch" >> "$GITHUB_ENV"
           echo "zipname=Ubuntu" >> "$GITHUB_ENV"
           
       - name: Define Windows Extension Var
         if: matrix.os == 'windows-latest'
         run: |
           echo "AssetPath=Genshin-Stopwatch-Assets-windows-latest" >> "$GITHUB_ENV"
-          echo "genshin_exe=GenshinStopwatch.exe" >> "$GITHUB_ENV"
+          echo "genshin_exe=Genshin Stopwatch.exe" >> "$GITHUB_ENV"
           echo "zipname=Windows" >> "$GITHUB_ENV"
           
       - name: Define MacOS Extension Var
         if: matrix.os == 'macos-latest'
         run: |
           echo "AssetPath=Genshin-Stopwatch-Assets-macos-latest" >> "$GITHUB_ENV"
-          echo "genshin_exe=GenshinStopwatch" >> "$GITHUB_ENV"
+          echo "genshin_exe=Genshin Stopwatch" >> "$GITHUB_ENV"
           echo "zipname=MacOS" >> "$GITHUB_ENV"
     
       - name: Create Directory
-        run: mkdir -p Genshin-Stopwatch-${{ matrix.os }}
+        run: mkdir -p "Genshin-Stopwatch-${{ matrix.os }}"
     
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
-          name: Genshin-Stopwatch-Assets-${{ matrix.os }}
-          path: Genshin-Stopwatch-${{ matrix.os }}
+          name: "Genshin-Stopwatch-Assets-${{ matrix.os }}"
+          path: "Genshin-Stopwatch-${{ matrix.os }}"
       
       - name: List Dir
         run: |
@@ -98,20 +98,20 @@ jobs:
           echo "This is Main Dir"
           ls
           echo "This is within the program dir, where the artifact's contents are"
-          ls Genshin-Stopwatch-${{ matrix.os }}
+          ls "Genshin-Stopwatch-${{ matrix.os }}"
           echo "This is within the dist file, where the exe should be"
-          ls Genshin-Stopwatch-${{ matrix.os }}/dist
+          ls "Genshin-Stopwatch-${{ matrix.os }}/dist"
       
       - name: Move Executable to correct folder
-        run: cp -rf Genshin-Stopwatch-${{ matrix.os }}/dist/${{ env.genshin_exe }} Genshin-Stopwatch-${{ matrix.os }}
+        run: cp -rf "Genshin-Stopwatch-${{ matrix.os }}/dist/${{ env.genshin_exe }}" "Genshin-Stopwatch-${{ matrix.os }}"
 
       - name: Delete dist directory
-        run: rm -r Genshin-Stopwatch-${{ matrix.os }}/dist
+        run: rm -r "Genshin-Stopwatch-${{ matrix.os }}/dist"
         
       - name: Zipping directory
         uses: montudor/action-zip@v1
         with:
-          args: zip -qq -r Genshin-Stopwatch-${{ env.zipname }}.zip Genshin-Stopwatch-${{ matrix.os }}
+          args: zip -qq -r "Genshin-Stopwatch-${{ env.zipname }}.zip" "Genshin-Stopwatch-${{ matrix.os }}"
     
       - name: Upload Artifact to Release Assets
         uses: softprops/action-gh-release@v1
