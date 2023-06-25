@@ -6,6 +6,12 @@
                                               ![Python](https://img.shields.io/badge/Python-3.11-blue)
                                               ![HTML](https://img.shields.io/badge/HTML-4-orange)
                                               
+![Windows](https://img.shields.io/badge/Windows-Supported-green)
+![MacOS](https://img.shields.io/badge/MacOS-Pre--Release-blue)
+![Linux](https://img.shields.io/badge/Linux-Pre--Release-blue)
+![iOS](https://img.shields.io/badge/iOS-TBD-lightgray)
+![Android](https://img.shields.io/badge/Android-TBD-lightgray)
+                                              
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C4MJZS9)
 
 ## What does Genshin Stopwatch do?
