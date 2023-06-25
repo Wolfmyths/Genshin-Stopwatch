@@ -32,7 +32,7 @@ Here is an example of a stopwatch's save data in `save.txt`:
 
 At the moment only Windows machines can run this program, ~~I'm not sure if I plan on making mobile versions.~~
 <br>
-**There are plans to support Linux and MacOS. (see [#8](https://github.com/Wolfmyths/Genshin-Stopwatch/issues/8))**
+**There are plans to support Linux and MacOS, please see the latest pre release for QA testing and issue #26**
 
 **Android and iOS is also underway! Release TBD**
 
