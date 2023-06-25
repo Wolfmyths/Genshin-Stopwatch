@@ -3,6 +3,8 @@ name: Build into Executables And Release
 on:
   release:
     types: [published]
+  workflow_dispatch:
+  
 jobs:
   buildDesktop:
     runs-on: ${{ matrix.os }}
