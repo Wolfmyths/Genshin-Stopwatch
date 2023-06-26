@@ -498,7 +498,7 @@ class optionsDock(qtw.QDockWidget):
 
         # Checkbox
         self.appOnCloseCheckbox = qtw.QCheckBox()
-        self.appOnCloseCheckbox.setChecked(config['OPTIONS'].getboolean('shutdown app on close'))
+        self.appOnCloseCheckbox.setChecked(config['OPTIONS'].getboolean('shutdown app on close', fallback=False))
         self.appOnCloseCheckbox.clicked.connect(lambda: self.settingChanged('true'))
         self.appOnCloseCheckbox.setToolTip('The app will close and not run in the background.')
         # Form Row
@@ -506,7 +506,7 @@ class optionsDock(qtw.QDockWidget):
 
         # Checkbox
         self.showOnOpenCheckbox = qtw.QCheckBox()
-        self.showOnOpenCheckbox.setChecked(config['OPTIONS'].getboolean('show on startup'))
+        self.showOnOpenCheckbox.setChecked(config['OPTIONS'].getboolean('show on startup', fallback=True))
         self.showOnOpenCheckbox.clicked.connect(lambda: self.settingChanged('true'))
         self.showOnOpenCheckbox.setToolTip('Program will automatically show or hide when starting.')
         # Form Row
@@ -520,7 +520,7 @@ class optionsDock(qtw.QDockWidget):
 
         # Checkbox
         self.notifyCheckbox = qtw.QCheckBox()
-        self.notifyCheckbox.setChecked(config['OPTIONS'].getboolean('desktop notifications'))
+        self.notifyCheckbox.setChecked(config['OPTIONS'].getboolean('desktop notifications', fallback=True))
         self.notifyCheckbox.clicked.connect(lambda: self.settingChanged('true'))
         self.notifyCheckbox.setToolTip('A windows desktop notification will appear when a stopwatch finishes.')
         # Form Row
@@ -849,11 +849,18 @@ class staticTimers(qtw.QDockWidget):
 
         # Calculating how many days left until Monday
         # date.weekday starts at 0
-        dayOfTheWeek = date.weekday(self.today) + 1
+        dayOfTheWeek = date.weekday(self.today)
         self.weeklyDayDifference: int = 7 - dayOfTheWeek
 
         # Calculating the deadline of the weekly reset with their choice of server
-        self.weeklyDeadline = datetime(year=self.today.year, month=self.today.month, day=(self.today.day + self.weeklyDayDifference), hour=9) + timedelta(hours=self.serverTimezones[self.selectedServer])
+        # Creating datetime object, hour 9 is the time for UTC+0 for weekly reset
+        self.weeklyDeadline = datetime(year=self.today.year, month=self.today.month, day=self.today.day, hour=9)
+
+        # Adding UTC Offset depepending on server selected
+        self.weeklyDeadline += timedelta(hours=self.serverTimezones[self.selectedServer])
+
+        # Adding days left until upcoming Sunday
+        self.weeklyDeadline += timedelta(days=self.weeklyDayDifference)
 
         config['STATIC_TIMERS']['weeklydeadline'] = datetime.strftime(self.weeklyDeadline, '%Y-%m-%d %I:%M:%S')
 
@@ -1043,7 +1050,7 @@ class toolbar(qtw.QToolBar):
         self.addTimerButton = qtw.QAction('Add Timer', self)
         self.addTimerButton.setObjectName('addTimerButton')
         self.addTimerButton.setCheckable(True)
-        self.addTimerButton.setChecked(config['QOL'].getboolean('addtimer open on startup'))
+        self.addTimerButton.setChecked(config['QOL'].getboolean('addtimer open on startup', fallback=True))
         self.addTimerButton.triggered.connect(lambda: self.button_Clicked('addTimerDockWidget', self.addTimerButton.isChecked() ) )
         self.addAction(self.addTimerButton)
 
@@ -1051,7 +1058,7 @@ class toolbar(qtw.QToolBar):
         self.optionsButton = qtw.QAction('Options', self)
         self.optionsButton.setObjectName('optionsButton')
         self.optionsButton.setCheckable(True)
-        self.optionsButton.setChecked(config['QOL'].getboolean('settings open on startup'))
+        self.optionsButton.setChecked(config['QOL'].getboolean('settings open on startup', fallback=False))
         self.optionsButton.triggered.connect(lambda: self.button_Clicked('optionsDockWidget', self.optionsButton.isChecked() ) )
         self.addAction(self.optionsButton)
 
@@ -1245,7 +1252,7 @@ class centralWidget(qtw.QWidget):
                     parent.style().polish(countDownLabel)
                     
                     # Show desktop notification if the 'desktop notifications' option is enabled
-                    if config['OPTIONS'].getboolean('desktop notifications'):
+                    if config['OPTIONS'].getboolean('desktop notifications', fallback=True):
 
                         notify_thread.start()
 
@@ -1292,11 +1299,11 @@ class window(qtw.QMainWindow):
 
         self.dockWidgetAddTimer = addTimer(self)
         self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidgetAddTimer)
-        self.dockWidgetAddTimer.setVisible(config['QOL'].getboolean('addtimer open on startup'))
+        self.dockWidgetAddTimer.setVisible(config['QOL'].getboolean('addtimer open on startup', fallback=True))
 
         self.dockWidgetOptions = optionsDock(self)
         self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidgetOptions)
-        self.dockWidgetOptions.setVisible(config['QOL'].getboolean('settings open on startup'))
+        self.dockWidgetOptions.setVisible(config['QOL'].getboolean('settings open on startup', fallback=False))
 
         self.dockWidgetGuide = Guide(self)
         self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidgetGuide)
@@ -1311,7 +1318,7 @@ class window(qtw.QMainWindow):
         self.windowSizeApplyTimer.setObjectName('windowSizeApplyTimer')
         self.windowSizeApplyTimer.timeout.connect(lambda: self.sizeApplyTimerTimeout())
 
-        self.resize(config['WINDOW SIZE'].getint('width'), config['WINDOW SIZE'].getint('height'))
+        self.resize(config['WINDOW SIZE'].getint('width', fallback=1920), config['WINDOW SIZE'].getint('height', fallback=1080))
 
         self.loadSaveData()
 
@@ -1392,7 +1399,7 @@ class window(qtw.QMainWindow):
 
     def closeEvent(self, a0: qtg.QCloseEvent) -> None:
 
-        if not config['OPTIONS'].getboolean('shutdown app on close'):
+        if not config['OPTIONS'].getboolean('shutdown app on close', fallback=False):
         # Trigger the "openClose_Pressed" function of the trayMenu (assuming trayMenu is an instance)
 
             trayMenu.openClose_Pressed()
@@ -1421,7 +1428,7 @@ class trayMen(qtw.QMenu):
         self.setObjectName('System Tray')
         # Determine the label for the open/close button based on a configuration option
 
-        openOrClose = 'Close' if config['OPTIONS'].getboolean('show on startup') else 'Open'
+        openOrClose = 'Close' if config['OPTIONS'].getboolean('show on startup', fallback=True) else 'Open'
         # Create the open/close button QAction and connect it to the openClose_Pressed method
 
         self.openCloseButton = qtw.QAction(openOrClose)
@@ -1541,7 +1548,7 @@ if __name__ == '__main__':
     # Initialize window
     mw.setWindowTitle(f'Genshin Stopwatch V{version}')
     mw.setWindowIcon(qtg.QIcon(icon_path))
-    mw.show() if config['OPTIONS'].getboolean('show on startup') else mw.hide()
+    mw.show() if config['OPTIONS'].getboolean('show on startup', fallback=True) else mw.hide()
 
     tray: qtw.QSystemTrayIcon = qtw.QSystemTrayIcon()
     tray.setIcon(qtg.QIcon(icon_path))
