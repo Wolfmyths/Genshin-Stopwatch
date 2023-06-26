@@ -4,7 +4,10 @@
 <img src="/img/icon.png" width="150" height="150"> ![GitHub all releases](https://img.shields.io/github/downloads/Wolfmyths/Genshin-Stopwatch/total)
                                               ![GitHub contributors](https://img.shields.io/github/contributors/Wolfmyths/Genshin-Stopwatch)
                                               ![Python](https://img.shields.io/badge/Python-3.11-blue)
+                                              ![CSharp](https://img.shields.io/badge/CSharp(soon!)-.NET_7-purple)
                                               ![HTML](https://img.shields.io/badge/HTML-4-orange)
+                                              ![Desktop Framework](https://img.shields.io/badge/Desktop_Framework-PyQt5-green)
+                                              ![Mobile Framework](https://img.shields.io/badge/Mobile_Framework-.NET_Maui-purple)
                                               
 ![Windows](https://img.shields.io/badge/Windows-Supported-green)
 ![MacOS](https://img.shields.io/badge/MacOS-Pre--Release-blue)
@@ -14,12 +17,26 @@
                                               
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C4MJZS9)
 
+# FAQ Table of Contents
+* [What does Genshin Stopwatch do?](#what-does-genshin-stopwatch-do)
+* [How are my stopwatches saved?](#how-are-my-stopwatches-saved)
+* [What platforms is this compatible with?](#what-platforms-is-this-compatible-with)
+* [It doesn't work!](#it-doesnt-work)
+* [Does this program run on system startup?](#does-this-program-run-on-system-startup)
+    + [Windows](#on-windows)
+    + [MacOS](#on-macos)
+    + [Linux](#on-linux)
+* [Future Plans?](#future-plans)
+* [Contributing](#contributing)
+* [Credits](#credits)
+
 ## What does Genshin Stopwatch do?
 
 Genshin Stopwatch is a program that makes checking timers easier without launching the game (Examples: Stamina, Fishing, Gardening, Enemy Respawns, Parametric Transformer, etc...).
 
-**The program is accessible through the system tray** (Up arrow next to the volume mixer) **when running in the background.**
+<img src="/img/stopwatch_demo.PNG" alt="Windows version of Genshin Stopwatch">
 
+## How are my stopwatches saved?
 When you create a stopwatch or close the application, your stopwatches will save to the `save.txt` file. The save file is easily configurable and easy to read.
 
 Here is an example of a stopwatch's save data in `save.txt`:
@@ -34,13 +51,15 @@ notes = Hilichurl Camps
 
 ## What platforms is this compatible with?
 
-At the moment only Windows machines can run this program, ~~I'm not sure if I plan on making mobile versions.~~
-<br>
+At the moment only Windows machines can run this program.
+
 **There are plans to support Linux and MacOS, please see the latest [pre release](https://github.com/Wolfmyths/Genshin-Stopwatch/releases/tag/V1.5.5-pre) for QA testing and [issue #26](https://github.com/Wolfmyths/Genshin-Stopwatch/issues/26)**
 
 **Android and iOS is also underway! Release TBD**
 
 ## It doesn't work!
+
+**On Windows: The program is accessible through the system tray** *(Up arrow next to the volume mixer)* **when running in the background.**
 
 + Check `save.txt` and make sure it looks in a similar format to the example above.
 + The program needs `save.txt` and `config.ini` to start, so if there isn't one in the directory create a text file with the same name or redownload the program.
@@ -49,11 +68,14 @@ At the moment only Windows machines can run this program, ~~I'm not sure if I pl
 + If notifications aren't working on windows, go to `action center` and `manage notifications`. `Focus assist settings` can disable notifications when they happen under certain conditions.
 + If you upgraded from a version below 1.4 to 1.4+ but kept your `save.txt` and `settings.txt` the same, then you have outdated save/setting file formats. Please see [save/settings rewrite](https://github.com/Wolfmyths/Genshin-Stopwatch/releases/tag/V1.4) if you want to keep your settings/stopwatches
 
+If you found a bug or crash, please report it to me and show how to replicate the issue if possible.<br>
+**Before submitting a bug report please check the known bugs in the latest release notes before telling me.**
+
 ## Does this program run on system startup?
 
-**For Windows:** Yes! But you have to do a couple steps to do so, follow the instructions below.
+Yes! But you have to do a couple steps to do so, follow the instructions below.
 
-### How to run program on system startup:
+### On Windows:
 1. Create a shortcut of the .exe
 2. Press `win + r`
 3. Type in `shell:startup` this will take you to your startup directory
@@ -61,8 +83,15 @@ At the moment only Windows machines can run this program, ~~I'm not sure if I pl
 
 **You can disable run on startup by going to** `task manager -> startup` 
 
-If you found a bug or crash, please report it to me and show how to replicate the issue if possible.<br>
-**Before submitting a bug report please check the known bugs in the latest release notes before telling me.**
+### On MacOS:
+1. Click the Apple icon and click `System Settings`
+2. Go to `General -> Login Items`
+3. Click the plus button then `Applications -> Select the app -> Open`
+
+**You may need to enable** `Allow in the Background`
+
+### On Linux:
+Every distro is different so you have to do this research on your own, sorry. 😓
 
 ## Future Plans?
 
