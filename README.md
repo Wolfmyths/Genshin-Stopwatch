@@ -6,8 +6,9 @@
                                               ![Python](https://img.shields.io/badge/Python-3.11-blue)
                                               ![CSharp](https://img.shields.io/badge/CSharp(soon!)-.NET_7-purple)
                                               ![HTML](https://img.shields.io/badge/HTML-4-orange)
-                                              ![Desktop Framework](https://img.shields.io/badge/Desktop_Framework-PyQt5-green)
-                                              ![Mobile Framework](https://img.shields.io/badge/Mobile_Framework-.NET_Maui-purple)
+                                              
+![Desktop Framework](https://img.shields.io/badge/Desktop_Framework-PyQt5-green)
+![Mobile Framework](https://img.shields.io/badge/Mobile_Framework-.NET_Maui-purple)
                                               
 ![Windows](https://img.shields.io/badge/Windows-Supported-green)
 ![MacOS](https://img.shields.io/badge/MacOS-Pre--Release-blue)
