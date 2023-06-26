@@ -1,3 +1,6 @@
+# Images for README.md
+img/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

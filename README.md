@@ -1,55 +1,82 @@
 # Genshin Stopwatch
-### A program to help keep track of Genshin Impact's time gates. <img src="icon.png" width="150" height="150">
+### A program to help keep track of Genshin Impact's time gates.
+
+<img src="/img/icon.png" width="150" height="150"> ![GitHub all releases](https://img.shields.io/github/downloads/Wolfmyths/Genshin-Stopwatch/total)
+                                              ![GitHub contributors](https://img.shields.io/github/contributors/Wolfmyths/Genshin-Stopwatch)
+                                              ![Python](https://img.shields.io/badge/Python-3.11-blue)
+                                              ![CSharp](https://img.shields.io/badge/CSharp(soon!)-.NET_7-purple)
+                                              ![HTML](https://img.shields.io/badge/HTML-4-orange)
+                                              
+![Desktop Framework](https://img.shields.io/badge/Desktop_Framework-PyQt5-green)
+![Mobile Framework](https://img.shields.io/badge/Mobile_Framework(soon!)-.NET_Maui-purple)
+                                              
+![Windows](https://img.shields.io/badge/Windows-Supported-green)
+![MacOS](https://img.shields.io/badge/MacOS-Pre--Release-blue)
+![Linux](https://img.shields.io/badge/Linux-Pre--Release-blue)
+![iOS](https://img.shields.io/badge/iOS-TBD-lightgray)
+![Android](https://img.shields.io/badge/Android-TBD-lightgray)
+                                              
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C4MJZS9)
+
+# FAQ Table of Contents
+* [What does Genshin Stopwatch do?](#what-does-genshin-stopwatch-do)
+* [How are my stopwatches saved?](#how-are-my-stopwatches-saved)
+* [What platforms is this compatible with?](#what-platforms-is-this-compatible-with)
+* [It doesn't work!](#it-doesnt-work)
+* [Does this program run on system startup?](#does-this-program-run-on-system-startup)
+    + [Windows](#on-windows)
+    + [MacOS](#on-macos)
+    + [Linux](#on-linux)
+* [Future Plans?](#future-plans)
+* [Contributing](#contributing)
+* [Credits](#credits)
 
 ## What does Genshin Stopwatch do?
 
 Genshin Stopwatch is a program that makes checking timers easier without launching the game (Examples: Stamina, Fishing, Gardening, Enemy Respawns, Parametric Transformer, etc...).
 
-The only caviat is that you have to start the stopwatch yourself!
+<img src="/img/stopwatch_demo.PNG" alt="Windows version of Genshin Stopwatch">
 
-## How does it work?
-
-Genshin Stopwatch is a program that *does not require an internet connection* to use. When you start up the program it will calculate the difference between when you started the program and when the destination of said timer is.
-
-*You can run the program in the background* or disable it in the settings if you want.
-
-**The program is accessible through the system tray** (Up arrow next to the volume mixer) **when running in the background.**
-
-When a stopwatch finishes, a desktop notification will be played *(Check your windows notification and focus assist settings to make sure they will go off.)*
-
+## How are my stopwatches saved?
 When you create a stopwatch or close the application, your stopwatches will save to the `save.txt` file. The save file is easily configurable and easy to read.
 
 Here is an example of a stopwatch's save data in `save.txt`:
-
-> [2589221199520] <- This is a unique ID, this is for the computer to read and shouldn't be changed by the user!<br>
-> name = Parametric Transformer<br>
-> time finished = 2023-05-28 11:34:14<br>
-> time original duration = 168:00:00<br>
-> border color = #37AA9C<br>
-> notes = <br>
+```
+[2589221199520]
+name = Respawns
+time finished = 2023-05-28 11:34:14
+time original duration = 12:00:00
+border color = #37AA9C
+notes = Hilichurl Camps
+```
 
 ## What platforms is this compatible with?
 
-At the moment only Windows machines can run this program, ~~I'm not sure if I plan on making mobile versions.~~
-<br>
+At the moment only Windows machines can run this program.
+
 **There are plans to support Linux and MacOS, please see the latest [pre release](https://github.com/Wolfmyths/Genshin-Stopwatch/releases/tag/V1.5.5-pre) for QA testing and [issue #26](https://github.com/Wolfmyths/Genshin-Stopwatch/issues/26)**
 
 **Android and iOS is also underway! Release TBD**
 
 ## It doesn't work!
 
+**On Windows: The program is accessible through the system tray** *(Up arrow next to the volume mixer)* **when running in the background.**
+
 + Check `save.txt` and make sure it looks in a similar format to the example above.
 + The program needs `save.txt` and `config.ini` to start, so if there isn't one in the directory create a text file with the same name or redownload the program.
 + Genshin Stopwatch only works on `Windows`.
 + Check `config.ini` and make sure it looks similar to when you downloaded the program.
-+ If notifications aren't working, go to `action center` and `manage notifications`. `Focus assist settings` can disable notifications when they happen under certain conditions.
++ If notifications aren't working on windows, go to `action center` and `manage notifications`. `Focus assist settings` can disable notifications when they happen under certain conditions.
 + If you upgraded from a version below 1.4 to 1.4+ but kept your `save.txt` and `settings.txt` the same, then you have outdated save/setting file formats. Please see [save/settings rewrite](https://github.com/Wolfmyths/Genshin-Stopwatch/releases/tag/V1.4) if you want to keep your settings/stopwatches
+
+If you found a bug or crash, please report it to me and show how to replicate the issue if possible.<br>
+**Before submitting a bug report please check the known bugs in the latest release notes before telling me.**
 
 ## Does this program run on system startup?
 
 Yes! But you have to do a couple steps to do so, follow the instructions below.
 
-### How to run program on system startup:
+### On Windows:
 1. Create a shortcut of the .exe
 2. Press `win + r`
 3. Type in `shell:startup` this will take you to your startup directory
@@ -57,19 +84,26 @@ Yes! But you have to do a couple steps to do so, follow the instructions below.
 
 **You can disable run on startup by going to** `task manager -> startup` 
 
-If you found a bug or crash, please report it to me and show how to replicate the issue if possible.<br>
-**Before submitting a bug report please check the known bugs in the latest release notes before telling me.**
+### On MacOS:
+1. Click the Apple icon and click `System Settings`
+2. Go to `General -> Login Items`
+3. Click the plus button then `Applications -> Select the app -> Open`
+
+**You may need to enable** `Allow in the Background`
+
+### On Linux:
+Every distro is different so you have to do this research on your own, sorry. 😓
 
 ## Future Plans?
 
 + Touch up on the UI a tiny bit for more clarity
-+ MacOS/Linux Support *In development! Release TBD*
++ MacOS/Linux Support *In Pre-Release Stage!*
 + Slightly better notifications
 + Background pictures to choose from for the timers?
 + Translations? *(Not sure if this is necessary but if people want it I will make an effort)*
 + Mobile version? *In development! Release is still TBD*
 
-If you have a suggestion let me know!
+If you have a suggestion let me know on the issues page or DM me on my socials!
 
 ## Contributing
 
@@ -77,10 +111,15 @@ If you want to Contribute you can as long as I have an issue posted its up for g
 
 If you want to test the exe with PyInstaller, `pip install pyinstaller` and then use the change dir command to where you cloned the repo and type `pyinstaller --clean main.spec` to package the program
 
+Depending on which operating system you run pyinstaller on, will determine the platform you will be testing.
+
 ## Credits
 
-Thanks to [PyQt5](https://pypi.org/project/PyQt5/) for making an open source easy-to-use framework.
++ [Contributors!](https://github.com/Wolfmyths/Genshin-Stopwatch/graphs/contributors) Without you guys I wouldn't have gotten as far into this project as I would have on my own. <br> You guys have taught me a lot. ❤️
 
-Thanks to [Win10toast](https://pypi.org/project/win10toast/) and [Apprise](https://pypi.org/project/apprise/) for making it easy to include deskstop notifications.
++ [PyQt5](https://pypi.org/project/PyQt5/) for creating an open source easy-to-use framework.
 
-[Pyinstaller](https://pypi.org/project/pyinstaller/) for creating a way to change python programs into an exe
++ [Apprise](https://pypi.org/project/apprise/) for creating an all-in-one notification module.
+  - *(Previously used)* [Win10Toast](https://pypi.org/project/win10toast/) for creating an easy way to implement windows notifications.
+
++ [Pyinstaller](https://pypi.org/project/pyinstaller/) for creating a way to change python programs into an exe
