@@ -115,8 +115,11 @@ Depending on which operating system you run pyinstaller on, will determine the p
 
 ## Credits
 
-Thanks to [PyQt5](https://pypi.org/project/PyQt5/) for making an open source easy-to-use framework.
++ [Contributors!](https://github.com/Wolfmyths/Genshin-Stopwatch/graphs/contributors) Without you guys I wouldn't have gotten as far into this project as I would have on my own. <br> You guys have taught me a lot. ❤️
 
-Thanks to [Win10toast](https://pypi.org/project/win10toast/) and [Apprise](https://pypi.org/project/apprise/) for making it easy to include deskstop notifications.
++ [PyQt5](https://pypi.org/project/PyQt5/) for creating an open source easy-to-use framework.
 
-[Pyinstaller](https://pypi.org/project/pyinstaller/) for creating a way to change python programs into an exe
++ [Apprise](https://pypi.org/project/apprise/) for creating an all-in-one notification module.
+  - *(Previously used)* [Win10Toast](https://pypi.org/project/win10toast/) for creating an easy way to implement windows notifications.
+
++ [Pyinstaller](https://pypi.org/project/pyinstaller/) for creating a way to change python programs into an exe
