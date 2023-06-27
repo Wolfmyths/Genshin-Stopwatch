@@ -122,4 +122,15 @@ Depending on which operating system you run pyinstaller on, will determine the p
 + [Apprise](https://pypi.org/project/apprise/) for creating an all-in-one notification module.
   - *(Previously used)* [Win10Toast](https://pypi.org/project/win10toast/) for creating an easy way to implement windows notifications.
 
++ Color Pallets
+  - [Timeless](https://lospec.com/palette-list/timeless) AKA Dark by Archer on lospec.com
+  - [Light](https://www.color-hex.com/color-palette/106748) by wcburgess on color-hex.com
+  - [Pola 5](https://lospec.com/palette-list/pola5) AKA Hydro by |NOXITIVE| on lospec.com
+  - [slimy 05](https://lospec.com/palette-list/slimy-05) AKA Dendro by green guy on lospec.com
+  - [Spanish Sunset](https://lospec.com/palette-list/spanish-sunset) AKA Pyro by NicoFerra on lospec.com
+  - [Sadness](https://lospec.com/palette-list/sadness) AKA Cryo by finn on lospec.com
+  - [Hypernova 5](https://lospec.com/palette-list/hypernova-5) AKA Anemo by Isa on lospec.com
+  - [Neon Moon Tarot](https://lospec.com/palette-list/neon-moon-tarot) AKA Electro by Interprete-me on lospec.com
+  - [Koukasita](https://lospec.com/palette-list/koukasita) AKA Geo by namida on lospec.com
+
 + [Pyinstaller](https://pypi.org/project/pyinstaller/) for creating a way to change python programs into an exe
