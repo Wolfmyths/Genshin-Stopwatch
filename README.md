@@ -119,8 +119,11 @@ Depending on which operating system you run pyinstaller on, will determine the p
 
 + [PyQt5](https://pypi.org/project/PyQt5/) for creating an open source easy-to-use framework.
 
-+ [Apprise](https://pypi.org/project/apprise/) for creating an all-in-one notification module.
-  - *(Previously used)* [Win10Toast](https://pypi.org/project/win10toast/) for creating an easy way to implement windows notifications.
++ [Pyinstaller](https://pypi.org/project/pyinstaller/) for creating a way to change python programs into an exe.
+
++ [Playsound](https://pypi.org/project/playsound/1.2.2/) for creating a cross platform module to easily play sound files.
+
++ [Itemize](https://freesound.org/people/Scrampunk/sounds/345297/) for creating this sound that is used for notifications
 
 + Color Pallets
   - [Timeless](https://lospec.com/palette-list/timeless) AKA Dark by Archer on lospec.com
@@ -133,4 +136,6 @@ Depending on which operating system you run pyinstaller on, will determine the p
   - [Neon Moon Tarot](https://lospec.com/palette-list/neon-moon-tarot) AKA Electro by Interprete-me on lospec.com
   - [Koukasita](https://lospec.com/palette-list/koukasita) AKA Geo by namida on lospec.com
 
-+ [Pyinstaller](https://pypi.org/project/pyinstaller/) for creating a way to change python programs into an exe
++ *(Previously used)*
+  - [Apprise](https://pypi.org/project/apprise/) for creating an all-in-one notification module.
+  - [Win10Toast](https://pypi.org/project/win10toast/) for creating an easy way to implement windows notifications.
