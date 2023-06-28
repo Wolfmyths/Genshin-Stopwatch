@@ -1,11 +1,4 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_all
-
-datas = [('guide.html', '.')]
-binaries = []
-hiddenimports = []
-tmp_ret = collect_all('apprise')
-datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 block_cipher = None
@@ -14,9 +7,9 @@ block_cipher = None
 a = Analysis(
     ['main.py', 'style.py'],
     pathex=[],
-    binaries=binaries,
-    datas=datas,
-    hiddenimports=hiddenimports,
+    binaries=[],
+    datas=[('guide.html', '.'), ('notify.wav', '.')],
+    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

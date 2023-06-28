@@ -1,5 +1,4 @@
 
-import threading
 from datetime import datetime, timedelta, date
 import os
 from configparser import ConfigParser
@@ -7,12 +6,139 @@ import requests
 import webbrowser
 from random import choice as randChoice
 
+from playsound import playsound
+
 from PyQt5.QtCore import QPoint, QTimer, Qt
 import PyQt5.QtGui as qtg
 import PyQt5.QtWidgets as qtw
-from apprise import Apprise, AppriseAsset
 
 from style import StyleManager
+
+class NotificationPanel(qtw.QWidget):
+    pendingNotify = []
+
+    def __init__(self) -> None:
+        super().__init__()
+
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowDoesNotAcceptFocus)
+        self.setObjectName('NotificationPanel')
+        self.setStyleSheet(styles.getStyleSheet('notify'))
+
+        self.setWindowTitle('Stopwatch Notify')
+        self.setWindowIcon(qtg.QIcon(icon_path))
+
+        # Size
+        self.setFixedSize(400, 100)
+        
+        # Position
+        screenDim = qtw.QDesktopWidget().screenGeometry()
+        availableScreenDim = qtw.QDesktopWidget().availableGeometry()
+        x = availableScreenDim.width() - self.width()
+        y = 2 * availableScreenDim.height() - screenDim.height() - self.height()
+
+        self.move(x,y)
+
+        # Setup
+        self.windowLayout = qtw.QVBoxLayout()
+        self.windowLayout.setSpacing(0)
+        self.windowLayout.setContentsMargins(0,0,0,0)
+
+        # Window Frame
+        self.windowFrameLayout = qtw.QHBoxLayout()
+        self.windowFrameLayout.setSpacing(0)
+        self.windowFrameLayout.setContentsMargins(0,0,0,0)
+
+        self.windowFrame = qtw.QFrame(self)
+        self.windowFrame.setObjectName('windowFrame')
+
+        # Title Label
+        self.titleLabel = qtw.QLabel('Genshin Stopwatch', self.windowFrame)
+        self.titleLabel.setContentsMargins(10,0,0,0)
+        self.titleLabel.setObjectName('title')
+
+        self.windowFrameLayout.addWidget(self.titleLabel)
+
+        # Open Window Button
+
+        self.openButton = qtw.QPushButton('Open', self.windowFrame)
+        self.openButton.setToolTip('Open Genshin Stopwatch')
+        self.titleLabel.setContentsMargins(10,0,10,0)
+        self.openButton.clicked.connect(lambda: self.Stopwatch_Clicked())
+
+        self.windowFrameLayout.addWidget(self.openButton)
+
+        # Close Button
+        self.closeButton = qtw.QPushButton('x', self.windowFrame)
+        self.closeButton.setMinimumSize(50, 30)
+        self.closeButton.clicked.connect(lambda: self.hide())
+
+        self.windowFrameLayout.addWidget(self.closeButton, alignment=Qt.AlignmentFlag.AlignRight)
+
+        self.windowFrame.setLayout(self.windowFrameLayout)
+
+        # Central Widget
+
+        self.centralWidget = qtw.QFrame(self)
+        self.centralWidget.setObjectName('centralWidget')
+
+        self.centralWidgetLayout = qtw.QVBoxLayout()
+        self.centralWidgetLayout.setContentsMargins(0,0,0,0)
+
+        # Message Label
+        self.messageLabel = qtw.QLabel(self.centralWidget)
+        self.messageLabel.setContentsMargins(10,0,0,0)
+        self.messageLabel.setObjectName('message')
+        
+        self.centralWidgetLayout.addWidget(self.messageLabel)
+        
+        self.centralWidget.setLayout(self.centralWidgetLayout)
+
+        # Setting up Notification Panel Layout
+
+        self.windowLayout.addWidget(self.windowFrame)
+
+        self.windowLayout.addWidget(self.centralWidget)
+
+        self.setLayout(self.windowLayout)
+    
+    def Stopwatch_Clicked(self):
+
+        self.hide()
+
+        if not mw.isVisible():
+            mw.show()
+    
+    def Notify(self, message: str, mute: bool = False) -> None:
+        
+        # If desktop notifications are false then return
+        if not config['OPTIONS'].getboolean('desktop notifications', fallback=True):
+            return
+
+        self.pendingNotify.append(message)
+
+        # If the notification panel is visible, that means there is a notification already in place
+        if not self.isVisible():
+
+            self.messageLabel.setText(f'{message} has finished!')
+            self.show()
+
+        else:
+
+            self.messageLabel.setText(f'Multiple timers have finished!\n{", ".join(self.pendingNotify)}')
+
+        sound = os.path.join(root_path, 'notify.wav')
+
+        # This function is async because of the 2nd param
+        # The only instance mute will be true is when the app is loading notifications on startup so the user doesn't get spammed
+        if not mute:
+            playsound(sound, False)
+    
+    def hideEvent(self, a0: qtg.QHideEvent) -> None:
+
+        self.pendingNotify.clear()
+
+        return super().hideEvent(a0)
+
 
 class addTimer(qtw.QDockWidget):
     def __init__(self, parent=None | qtw.QMainWindow):
@@ -622,6 +748,10 @@ class optionsDock(qtw.QDockWidget):
             # Change global stylesheet        
             app.setStyleSheet(styles.getStyleSheet('app'))
             app.style().polish(app)
+        
+            # Change Notification Panel Stylesheet
+            notify.setStyleSheet(styles.getStyleSheet('notify'))
+            notify.style().polish(notify)
 
         config['OPTIONS'] = updatedConfig
 
@@ -688,9 +818,10 @@ class Guide(qtw.QDockWidget):
         self.textFile.setReadOnly(True)
 
         # Reading html guide
-        try: # The guide is packaged into the .exe so it is always updated
-             # If you want to debug the HTML file with the program, then change the path to be in the main.py directory
-            with open(os.path.join( os.path.abspath(os.path.dirname(__file__)), 'guide.html'), 'r') as html:
+        # The guide is packaged into the .exe so it is always updated
+        try: 
+
+            with open(os.path.join(root_path, 'guide.html'), 'r') as html:
                     
                     
                     self.textFile.setHtml(html.read())
@@ -807,9 +938,6 @@ class staticTimers(qtw.QDockWidget):
 
         # Defining variables for timers
 
-        # Set notification name for later
-        self.notifyName = ' '
-
         self.dailyQTimer = QTimer(self)
         self.weeklyQTimer = QTimer(self)
 
@@ -901,13 +1029,9 @@ class staticTimers(qtw.QDockWidget):
 
             self.dailyQTimer.singleShot(1000, lambda: self.dailyResetTimer())
 
-            if config['OPTIONS'].getboolean('dailyResetNotify', fallback=False) and config['OPTIONS'].getboolean('desktop notifications', fallback=True):
+            if config['OPTIONS'].getboolean('dailyResetNotify', fallback=False):
 
-                self.notifyName = 'daily reset'
-
-                # Create thread so program doesn't freeze while notification is active
-                self.notify_thread: threading.Thread = threading.Thread(target=notify.notify, kwargs={'body': f'Reset(s): {self.notifyName}', 'title':'Reset Happened'})
-                self.notify_thread.start()
+                notify.Notify('Daily Reset')
 
     def weeklyResetTimer(self):
 
@@ -936,12 +1060,9 @@ class staticTimers(qtw.QDockWidget):
 
             self.weeklyQTimer.singleShot(1000, lambda: self.weeklyResetTimer())
 
-            if config['OPTIONS'].getboolean('weeklyResetNotify', fallback=False) and config['OPTIONS'].getboolean('desktop notifications', fallback=True):
+            if config['OPTIONS'].getboolean('weeklyResetNotify', fallback=False):
 
-                self.notifyName = 'weekly reset'
-                # Create thread so program doesn't freeze while notification is active
-                self.notify_thread: threading.Thread = threading.Thread(target=notify.notify, kwargs={'body': f'Reset(s): {self.notifyName}', 'title':'Reset Happened'})
-                self.notify_thread.start()
+                notify.Notify('Weekly Reset')
     
     def changeServer(self, server: str):
         
@@ -961,16 +1082,10 @@ class staticTimers(qtw.QDockWidget):
 
         static_timers: list[str] = []
 
-        # Getting desktop notification setting bool
-        staticNotify: bool = config['OPTIONS'].getboolean('desktop notifications', fallback=True)
-
         for name, date in self.oldDeadlines.items():
 
             # Getting notification setting bool
             notification: bool = config['OPTIONS'].getboolean('{0}ResetNotify'.format(name.split('deadline')[0]), fallback=False)
-            
-            # Putting every notification setting in a tuple so that the if condition is easier to read below by using all()
-            settingsCheck = (notification, staticNotify)
 
             # If date isn't valid then skip to the next iteration
             try:
@@ -980,7 +1095,7 @@ class staticTimers(qtw.QDockWidget):
                 continue
 
             # If time has passed the static timer's deadline and if the notification settings are set to true
-            if deadline < self.today and all(settingsCheck):
+            if deadline < self.today and notification:
 
 
                 static_timers.append(name.split('deadline')[0].title())
@@ -990,9 +1105,7 @@ class staticTimers(qtw.QDockWidget):
             return
         
         else:
-
-            self.notify_thread: threading.Thread = threading.Thread(target=notify.notify, kwargs={'body': f'Reset(s): {self.notifyName.join(static_timers)}', 'title':'Reset Happened'})
-            self.notify_thread.start()
+            notify.Notify(", ".join(static_timers))
         
 
     def hideEvent(self, a0: qtg.QHideEvent) -> None:
@@ -1229,9 +1342,6 @@ class centralWidget(qtw.QWidget):
         QTimer_ = QTimer(parent)
         QTimer_.setObjectName('QTimer')
 
-        # Create thread so program doesn't freeze while notification is active
-        notify_thread: threading.Thread = threading.Thread(target=notify.notify, kwargs={'body': f'{name} has finished!', 'title':'Stopwatch Finished'})
-
         def countDownTimer(self: qtw.QWidget, difference: datetime) -> None:
 
             try:
@@ -1250,21 +1360,28 @@ class centralWidget(qtw.QWidget):
                     countDownLabel.setText('00:00:00')
                     countDownLabel.setProperty('finished', "true")
                     parent.style().polish(countDownLabel)
-                    
-                    # Show desktop notification if the 'desktop notifications' option is enabled
-                    if config['OPTIONS'].getboolean('desktop notifications', fallback=True):
-
-                        notify_thread.start()
+                        
+                    notify.Notify(name)
 
             # If timer is deleted, will traceback a runtime error because the function is trying to locate objects that don't exist anymore
             except RuntimeError: 
                 return
 
+        # If the time difference is already below 0 before countDownTimer starts
+        # Don't bother running the function and just send the notification
+        if difference <= zero:
+                
+                # If the program is set to show on startup then theres no point of showing a notification
+                if not config['OPTIONS'].getboolean('show on startup', fallback=True):
+                    notify.Notify(name, True)
 
-        countDownTimer(self, difference)
+        else:
+
+            countDownTimer(self, difference)
 
         if save:
             self.parent().saveData()
+
     def deleteTimer(self, id_: str):
         self.findChild(qtw.QFrame, id_).deleteLater()
 
@@ -1502,7 +1619,12 @@ if __name__ == '__main__':
     ### ENVIRONMENT PATHS AND STYLEMANAGER INIT ###
     styles = StyleManager()
 
+    # Used for debugging, flag to see if program is ran through the main.py script or an exe
+    # This is used for when dealing with files that are packaged within the exe such as guide.html
+    isScript: bool = os.path.exists(os.path.join(os.path.dirname(__file__), 'main.py'))
+
     # Loading paths, using `os.curdir` instead of `os.dirname(__file__)` because the file dir is in a temp dir
+    root_path = os.path.abspath(os.path.dirname(__file__)) if not isScript else os.curdir
     config_path = os.path.join(os.path.abspath(os.curdir), 'config.ini')
     saveFile_path = os.path.join(os.path.abspath(os.curdir), 'save.txt')
     icon_path = os.path.join(os.path.abspath(os.curdir), 'icon.ico')
@@ -1513,32 +1635,32 @@ if __name__ == '__main__':
     def saveConfig():
         with open(config_path, 'w') as f:
             config.write(f)
-
-    ### INIT NOTIFICATIONS
-    # Initialize notification icon
-    notifyAsset: AppriseAsset = AppriseAsset(image_path_mask=icon_path, default_extension='.ico', app_id='Genshin Stopwatch', app_desc='Stopwatch has finished')
-
-    # Initialize notification and add Notification icon
-    notify: Apprise = Apprise(asset=notifyAsset)
-
-    # Adding possible platforms notification object should use to send
-    notify.add(('windows://', 'macosx://', 'gnome://', 'dbus://'))
     
     ### APPLICATION INIT ###
+
     # Create a QApplication instance
     app: qtw.QApplication = qtw.QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
     app.setStyleSheet(styles.getStyleSheet('app'))
 
-    ### VERSION DEFINING###
+    ### INIT NOTIFICATIONS ###
+    notify = NotificationPanel()
+
+    ### VERSION DEFINING ###
+
     # Client Version
-    version = '1.5.5'
+    version = '1.6'
 
     # Getting the latest version
     try:
         # Parsed to remove the "V" in the tag
         version_check: str = requests.get('https://api.github.com/repos/Wolfmyths/Genshin-Stopwatch/releases/latest').json()['tag_name'][1:]
     except Exception as e:
+
+        # Has to set version_check to something otherwise it would result in a traceback
+        # Set to current version so the version check condition in window() would return false
+        version_check = version
+
         print(e)
 
     ### WINDOW & SYSTEM TRAY INIT ###

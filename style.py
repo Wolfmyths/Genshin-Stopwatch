@@ -227,19 +227,59 @@ class StyleManager:
 
             '''
         self.stopwatchStyleSheet_formatted = self.formatStyleSheet(self.stopwatchStyleSheet, self.selectedColorPallet)
-    
-    def getStyleSheet(self, styleSheet: str) -> str:
-        '''Returns stylesheet specified, to see stylesheet options, run `getStyleSheetNames()`'''
-        styleSheets: dict[str:str] = {'app' : self.appStyleSheet_formatted, 'stopwatch': self.stopwatchStyleSheet_formatted}
-        return styleSheets[styleSheet]
+
+        self.NotificationPanelStyleSheet = '''
+
+            QFrame {{
+                background-color: {1};
+            }}
+
+            QFrame#centralWidget{{
+                border: 0px solid {4};
+                border-radius: 0px;
+                background-color: {1};
+            }}
+
+            QLabel#message {{
+                font-size: 20px;
+                color: {3};
+            }}
+
+            QLabel#title {{
+                font-size: 25px;
+                color: {3};
+            }}
+        
+        '''
+        self.NotificationPanelStyleSheet_formatted = self.formatStyleSheet(self.NotificationPanelStyleSheet, self.selectedColorPallet)
+
+    def getStyleSheet(self, styleSheet: str | None = None) -> str | list[str]:
+        '''
+        if styleSheet:
+            Returns stylesheet specified
+        else:
+            Returns a list of the available color pallets
+        '''
+        styleSheets: dict[str:str] = {
+            'app'      : self.appStyleSheet_formatted,
+            'stopwatch': self.stopwatchStyleSheet_formatted,
+            'notify'   : self.NotificationPanelStyleSheet_formatted }
+
+        if styleSheet:
+            return styleSheets[styleSheet]
+        else:
+            return list(styleSheets.keys())
     
     def getColorPallets(self) -> list[str]:
         '''Returns a list of the available color pallets'''
         return list(self.colorPallets.keys())
     
     def getStyleSheetNames(self) -> list[str]:
-        '''Returns a list of stylesheet names'''
-        return list(x for x in self.styleSheets.keys())
+        '''
+        Returns a list of the available color pallets.
+        This function exists for naming convention and would be the same as calling `getStyleSheet()` with no parameter
+        '''
+        return self.getStyleSheet()
     
     def getCurrentColorPallet(self) -> str:
         '''Returns the color pallet being used'''
@@ -266,9 +306,14 @@ class StyleManager:
         
     def changeColorPallet(self, pallet: str) -> None:
         '''Updates the color pallet'''
+
+        # Updating the selected color pallet
         self.selectedColorPallet = pallet
+
+        # Updating formatted strings (The Style Sheets)
         self.stopwatchStyleSheet_formatted = self.formatStyleSheet(self.stopwatchStyleSheet, self.selectedColorPallet)
         self.appStyleSheet_formatted = self.formatStyleSheet(self.appStyleSheet, self.selectedColorPallet)
+        self.NotificationPanelStyleSheet_formatted = self.formatStyleSheet(self.NotificationPanelStyleSheet, self.selectedColorPallet)
 
 
     def formatStyleSheet(self, styleSheet: str, colorPallet: str) -> str:
