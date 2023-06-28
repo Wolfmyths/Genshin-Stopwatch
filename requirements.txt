@@ -2,3 +2,4 @@ pyinstaller==5.13
 PyQt5==5.15.9
 PyQt5_sip==12.12.1
 playsound==1.2.2
+requests==2.31.0
