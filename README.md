@@ -98,7 +98,6 @@ Every distro is different so you have to do this research on your own, sorry. ðŸ
 
 + Touch up on the UI a tiny bit for more clarity
 + MacOS/Linux Support *In Pre-Release Stage!*
-+ Slightly better notifications
 + Background pictures to choose from for the timers?
 + Translations? *(Not sure if this is necessary but if people want it I will make an effort)*
 + Mobile version? *In development! Release is still TBD*
