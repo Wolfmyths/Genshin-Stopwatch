@@ -8,7 +8,8 @@ from random import choice as randChoice
 
 from playsound import playsound
 
-from PyQt5.QtCore import QPoint, QTimer, Qt
+import math
+from PyQt5.QtCore import QPoint, QTimer, Qt, QSize
 import PyQt5.QtGui as qtg
 import PyQt5.QtWidgets as qtw
 
@@ -28,7 +29,7 @@ class NotificationPanel(qtw.QWidget):
         self.setWindowIcon(qtg.QIcon(icon_path))
 
         # Size
-        self.setFixedSize(400, 100)
+        # self.setFixedSize(400, 100)
         
         # Position
         screenDim = qtw.QDesktopWidget().screenGeometry()
@@ -36,8 +37,17 @@ class NotificationPanel(qtw.QWidget):
         x = availableScreenDim.width() - self.width()
         y = 2 * availableScreenDim.height() - screenDim.height() - self.height()
 
+        panelWidth = availableScreenDim.width() * 0.4  # Set the width to 40% of the screen width
+
+        panelHeight = panelWidth * 0.25  # Set the height to 25% of the panel width
+
+        self.resize(QSize(math.floor(panelWidth),math.floor(panelHeight)))
+
+
         self.move(x,y)
 
+        
+        
         # Setup
         self.windowLayout = qtw.QVBoxLayout()
         self.windowLayout.setSpacing(0)
