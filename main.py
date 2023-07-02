@@ -42,7 +42,6 @@ class NotificationPanel(qtw.QWidget):
         self.setFixedSize(QSize(math.floor(panelWidth), math.floor(panelHeight)))
         
         # Position
-
         x = availableScreenDim.width() - self.width()
         y = 2 * availableScreenDim.height() - screenDim.height() - self.height()
         self.move(x,y)
