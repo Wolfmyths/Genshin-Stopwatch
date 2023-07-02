@@ -28,26 +28,25 @@ class NotificationPanel(qtw.QWidget):
         self.setWindowTitle('Stopwatch Notify')
         self.setWindowIcon(qtg.QIcon(icon_path))
 
-        # Size
-        # self.setFixedSize(400, 100)
-        
-        # Position
+        # Get screen geometry
         screenDim = qtw.QDesktopWidget().screenGeometry()
         availableScreenDim = qtw.QDesktopWidget().availableGeometry()
+
+        # Size
+        
+        # Set the width to 20% of the screen width
+        panelWidth = availableScreenDim.width() * 0.20
+
+        # Set the height to 25% of the panel width
+        panelHeight = panelWidth * 0.25
+        self.setFixedSize(QSize(math.floor(panelWidth), math.floor(panelHeight)))
+        
+        # Position
+
         x = availableScreenDim.width() - self.width()
         y = 2 * availableScreenDim.height() - screenDim.height() - self.height()
-
-        panelWidth = availableScreenDim.width() * 0.4  # Set the width to 40% of the screen width
-
-        panelHeight = panelWidth * 0.25  # Set the height to 25% of the panel width
-
-        self.setFixedSize(QSize(math.floor(panelWidth),math.floor(panelHeight)))
-
-
         self.move(x,y)
 
-        
-        
         # Setup
         self.windowLayout = qtw.QVBoxLayout()
         self.windowLayout.setSpacing(0)
