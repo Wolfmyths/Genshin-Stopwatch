@@ -8,7 +8,8 @@ from random import choice as randChoice
 
 from playsound import playsound
 
-from PyQt5.QtCore import QPoint, QTimer, Qt
+import math
+from PyQt5.QtCore import QPoint, QTimer, Qt, QSize
 import PyQt5.QtGui as qtg
 import PyQt5.QtWidgets as qtw
 
@@ -27,15 +28,22 @@ class NotificationPanel(qtw.QWidget):
         self.setWindowTitle('Stopwatch Notify')
         self.setWindowIcon(qtg.QIcon(icon_path))
 
-        # Size
-        self.setFixedSize(400, 100)
-        
-        # Position
+        # Get screen geometry
         screenDim = qtw.QDesktopWidget().screenGeometry()
         availableScreenDim = qtw.QDesktopWidget().availableGeometry()
+
+        # Size
+        
+        # Set the width to 20% of the screen width
+        panelWidth = availableScreenDim.width() * 0.20
+
+        # Set the height to 25% of the panel width
+        panelHeight = panelWidth * 0.25
+        self.setFixedSize(QSize(math.floor(panelWidth), math.floor(panelHeight)))
+        
+        # Position
         x = availableScreenDim.width() - self.width()
         y = 2 * availableScreenDim.height() - screenDim.height() - self.height()
-
         self.move(x,y)
 
         # Setup
