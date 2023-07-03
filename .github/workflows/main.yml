@@ -27,28 +27,25 @@ jobs:
       - run: pip install -r requirements.txt
       
       - name: Build with PyInstaller
-        run: pyinstaller --clean main.spec
+        working-directory: ${{env.working-directory}}
+        run: pyinstaller --clean main.spec --distpath ./
         
       - name: List Dir if MacOS or Linux
         if: matrix.os != 'windows-latest'
-        run: |
-          cd ${{ github.workspace }}
-          ls 
-          ls ${{env.working-directory}}dist
+        working-directory: ${{env.working-directory}}
+        run: ls
       
       - name: List Dir if Windows
         if: matrix.os == 'windows-latest'
-        run: |
-          cd ${{ github.workspace }}
-          dir
-          dir ${{env.working-directory}}dist
+        working-directory: ${{env.working-directory}}
+        run: dir
 
       - name: Create release artifact
         uses: actions/upload-artifact@v3
         with:
           name: Genshin-Stopwatch-Assets-${{ matrix.os }}
           path: |
-            ${{env.working-directory}}dist/*
+            ${{env.working-directory}}Genshin*
             ${{env.working-directory}}config.ini
             ${{env.working-directory}}save.txt
             ${{env.working-directory}}icon.ico
