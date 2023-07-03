@@ -108,11 +108,10 @@ If you have a suggestion let me know on the issues page or DM me on my socials!
 
 ## Contributing
 
-If you want to Contribute you can as long as I have an issue posted its up for grabs! Just make a fork and submit a pull request of your contribution.
+If you want to Contribute you can as long as I have an issue posted its up for grabs!
+Just make a fork and submit a pull request of your contribution.
 
-If you want to test the exe with PyInstaller, `pip install pyinstaller` and then use the change dir command to where you cloned the repo and type `pyinstaller --clean main.spec` to package the program
-
-Depending on which operating system you run pyinstaller on, will determine the platform you will be testing.
+For more information and background knowledge of the program, see [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Credits
 
