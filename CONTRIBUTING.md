@@ -1,3 +1,5 @@
+# Read This First!
+
 Hello! I'm glad you're considering to contribute to Genshin Stopwatch!
 
 **Mobile contribution is a WIP at the moment, so please ignore any information reguarding it**
@@ -35,6 +37,7 @@ If you want a console to run to make debugging in the executable easier, edit th
 ```py
 console=True
 ```
+**Remember to discard changes or change this value back to False when pushing commits**
 
 ## Notifications
 
