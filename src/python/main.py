@@ -113,6 +113,9 @@ class NotificationPanel(qtw.QWidget):
 
         self.hide()
 
+        # Activating focus on the window
+        mw.activateWindow()
+
         if not mw.isVisible():
             mw.show()
     
@@ -1688,5 +1691,7 @@ if __name__ == '__main__':
     trayMenu: qtw.QMenu = trayMen()
 
     tray.setContextMenu(trayMenu)
+
+    notify.Notify('Settings')
 
     app.exec_()

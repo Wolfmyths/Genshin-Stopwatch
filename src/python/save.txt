@@ -1,7 +1,0 @@
-[2625737886592]
-name = Custom
-time finished = 2023-07-01 14:32:54
-time original duration = 0:01:00
-border color = #60FD75
-notes = 
-
