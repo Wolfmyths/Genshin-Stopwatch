@@ -1,4 +1,4 @@
-pyinstaller==5.13
+pyinstaller==5.13.0
 PyQt5==5.15.9
 PyQt5_sip==12.12.1
 playsound==1.2.2

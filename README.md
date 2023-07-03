@@ -60,17 +60,19 @@ At the moment only Windows machines can run this program.
 
 ## It doesn't work!
 
+**Please make sure you're on the latest version**
+
+**Before submitting a bug report please check the known bugs in the latest release notes before telling me.**
+
 **On Windows: The program is accessible through the system tray** *(Up arrow next to the volume mixer)* **when running in the background.**
 
 + Check `save.txt` and make sure it looks in a similar format to the example above.
 + The program needs `save.txt` and `config.ini` to start, so if there isn't one in the directory create a text file with the same name or redownload the program.
 + Genshin Stopwatch only works on `Windows`.
 + Check `config.ini` and make sure it looks similar to when you downloaded the program.
-+ If notifications aren't working on windows, go to `action center` and `manage notifications`. `Focus assist settings` can disable notifications when they happen under certain conditions.
 + If you upgraded from a version below 1.4 to 1.4+ but kept your `save.txt` and `settings.txt` the same, then you have outdated save/setting file formats. Please see [save/settings rewrite](https://github.com/Wolfmyths/Genshin-Stopwatch/releases/tag/V1.4) if you want to keep your settings/stopwatches
 
 If you found a bug or crash, please report it to me and show how to replicate the issue if possible.<br>
-**Before submitting a bug report please check the known bugs in the latest release notes before telling me.**
 
 ## Does this program run on system startup?
 
@@ -98,7 +100,6 @@ Every distro is different so you have to do this research on your own, sorry. ðŸ
 
 + Touch up on the UI a tiny bit for more clarity
 + MacOS/Linux Support *In Pre-Release Stage!*
-+ Slightly better notifications
 + Background pictures to choose from for the timers?
 + Translations? *(Not sure if this is necessary but if people want it I will make an effort)*
 + Mobile version? *In development! Release is still TBD*

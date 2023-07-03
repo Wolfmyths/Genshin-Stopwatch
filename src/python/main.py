@@ -5,10 +5,10 @@ from configparser import ConfigParser
 import requests
 import webbrowser
 from random import choice as randChoice
-import math
 
 from playsound import playsound
 
+import math
 from PyQt5.QtCore import QPoint, QTimer, Qt, QSize
 import PyQt5.QtGui as qtg
 import PyQt5.QtWidgets as qtw
@@ -34,20 +34,16 @@ class NotificationPanel(qtw.QWidget):
 
         # Size
         
-        # Set the width to 40% of the screen width
+        # Set the width to 20% of the screen width
         panelWidth = availableScreenDim.width() * 0.20
 
         # Set the height to 25% of the panel width
         panelHeight = panelWidth * 0.25
-
         self.setFixedSize(QSize(math.floor(panelWidth), math.floor(panelHeight)))
         
         # Position
-
         x = availableScreenDim.width() - self.width()
-        
         y = 2 * availableScreenDim.height() - screenDim.height() - self.height()
-
         self.move(x,y)
 
         # Setup
@@ -1692,7 +1688,5 @@ if __name__ == '__main__':
     trayMenu: qtw.QMenu = trayMen()
 
     tray.setContextMenu(trayMenu)
-
-    notify.Notify('text')
 
     app.exec_()
