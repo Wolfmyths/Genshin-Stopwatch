@@ -98,6 +98,8 @@ Every distro is different so you have to do this research on your own, sorry. ðŸ
 
 ## Future Plans?
 
++ Restore Apprise Module support if they add more compatibility for Windows
+   - *This means the notification center will be used again*
 + Touch up on the UI a tiny bit for more clarity
 + MacOS/Linux Support *In Pre-Release Stage!*
 + Background pictures to choose from for the timers?
