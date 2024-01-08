@@ -46,10 +46,7 @@ jobs:
           name: Genshin-Stopwatch-Assets-${{ matrix.os }}
           path: |
             ${{env.working-directory}}Genshin*
-            ${{env.working-directory}}config.ini
-            ${{env.working-directory}}save.txt
-            ${{env.working-directory}}icon.ico
-      
+
   release-asset:
     runs-on: ubuntu-latest
     
