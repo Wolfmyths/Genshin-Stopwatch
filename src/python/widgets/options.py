@@ -124,7 +124,7 @@ class optionsDock(qtw.QDockWidget):
         # Check for updates button
         self.updateButton = qtw.QPushButton('Check for updates', self)
         self.updateButton.setObjectName('checkUpdateButton')
-        self.updateButton.clicked.connect(lambda: self.checkUpdate(button=True))
+        self.updateButton.clicked.connect(self.checkUpdate)
         verticalLayout.addWidget(self.updateButton, alignment=Qt.AlignmentFlag.AlignTop)
 
         # Support wolfmyths
@@ -149,18 +149,17 @@ class optionsDock(qtw.QDockWidget):
         def updateFound(latestVersion: str, changelog: str) -> None:
             # Will create a dialog window if there's a version update unless specified not to
 
-            updateNotify = UpdateAlert(self, latestVersion)
+            updateNotify = UpdateAlert(latestVersion, changelog)
 
             updateNotify.exec()
         
         def upToDate() -> None:
             self.updateButton.setText('On latest version ^_^')
             QTimer.singleShot(3000, lambda: self.updateButton.setText('Check for updates'))
-
-        update = checkUpdate()
-        # Checking if the function was started by the "check for update button"
-        update.upToDate.connect(upToDate)
-        update.updateDetected.connect(lambda x, y: updateFound(x, y))
+        
+        self.check = checkUpdate()
+        self.check.upToDate.connect(upToDate)
+        self.check.updateDetected.connect(lambda x, y: updateFound(x, y))
             
     
     def applySettings(self):

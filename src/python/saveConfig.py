@@ -23,7 +23,6 @@ class ConfigKeys(StrEnum):
     desiredstamina                = auto()
     addtimer_open_on_startup      = 'addtimer open on startup'
     settings_open_on_startup      = 'settings open on startup'
-    guide_open_on_startup         = 'guide open on startup'
     static_timers_open_on_startup = 'static timers open on startup'
     gameserver                    = auto()
 
@@ -103,10 +102,7 @@ class saveConfig(ConfigParser):
     
     def getSettingsStartup(self) -> bool:
         return self.getboolean('QOL', ConfigKeys.settings_open_on_startup, fallback=False)
-    
-    def getGuideStartup(self) -> bool:
-        return self.getboolean('QOL', ConfigKeys.guide_open_on_startup, fallback=False)
-    
+
     def getStatictimerStartup(self) -> bool:
         return self.getboolean('QOL', ConfigKeys.static_timers_open_on_startup, fallback=False)
     

@@ -8,22 +8,26 @@ from saveConfig import saveConfig, ConfigKeys
 from constants import ICON
 
 class UpdateAlert(qtw.QDialog):
-    def __init__(self, latestVersion: str) -> None:
+    def __init__(self, latestVersion: str, changelog: str) -> None:
         super().__init__()
 
         self.config = saveConfig()
 
-        self.setWindowTitle('Genshin Stopwatch: New Version Update!')
+        self.setWindowTitle('Genshin Stopwatch: Update Detected!')
         self.setWindowIcon(qtg.QIcon(ICON))
 
         layout = qtw.QVBoxLayout()
 
-        self.message = qtw.QLabel(self, text=f'The latest update {latestVersion} has been released! Would you like to download it?')
+        self.message = qtw.QLabel(self, text=f'The latest update {latestVersion} has been released!\nWould you like to visit the download page?')
         layout.addWidget(self.message)
 
         self.checkBox = qtw.QCheckBox(self, text='Do not automatically check for updates')
         self.checkBox.clicked.connect(self.checkBoxClicked)
         layout.addWidget(self.checkBox)
+
+        self.patchnotes = qtw.QTextBrowser(self)
+        self.patchnotes.setMarkdown(changelog)
+        layout.addWidget(self.patchnotes)
 
         self.buttons = qtw.QDialogButtonBox.StandardButton.Ok | qtw.QDialogButtonBox.StandardButton.No
         self.buttonBox = qtw.QDialogButtonBox(self.buttons, self)

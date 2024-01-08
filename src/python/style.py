@@ -1,8 +1,9 @@
 from typing import Self
 from configparser import ConfigParser
-import os
 from enum import StrEnum, auto
 import random
+
+from constants import CONFIG
 
 # COLOR PALLET CREDITS:
 # Dark by archer: https://lospec.com/palette-list/timeless
@@ -37,7 +38,7 @@ class StyleManager:
     def __init__(self) -> None:
 
         config = ConfigParser()
-        config.read(os.path.join(os.path.abspath(os.curdir), 'config.ini'))
+        config.read(CONFIG)
 
         # Attribute Definitions
         # Default color pallet is dark
@@ -50,7 +51,7 @@ class StyleManager:
         # 3 : Text
         # 4 : Alt Text
 
-        self.colorPallets: dict[ColorPallets:tuple[str]] = {
+        self.colorPallets: dict[ColorPallets:tuple[str, str, str, str, str]] = {
             ColorPallets.dark     : ('#212124', '#464c54', '#5b8087', '#76add8', '#a3e7f0'),
             ColorPallets.light    : ('#fafafa', '#e4e5f1', '#d2d3db', '#9394a5', '#484b6a'),
             ColorPallets.original : ('#1A1A1B', '#333F44', '#37AA9C', '#94F3E4', '#FCB3FC'),
@@ -74,9 +75,13 @@ class StyleManager:
             ColorPallets.anemo   :'#60FD75'
         }
         
-        self.stopwatchBorderColor: str = self.stopwatchColorsDict['anemo']
+        self.stopwatchBorderColor: str = self.stopwatchColorsDict[ColorPallets.anemo]
 
         self.appStyleSheet: str = '''
+
+            QWidget {{
+                background-color: {0};
+            }}
 
             QMainWindow{{
                 background-color: {0};
@@ -87,10 +92,17 @@ class StyleManager:
             }}
 
             QWidget#centralWidget * {{
-                background-color: {0};
                 border: none;
             }}
 
+            QDockWidget {{
+                color: {3};
+                font-size: 15px;
+            }}
+
+            QDockWidget::title {{
+                background: {1};
+            }}
 
             QToolButton, QPushButton{{
                 background-color: {1};
@@ -239,6 +251,7 @@ class StyleManager:
 
             QPushButton {{
                 font-size: 25px;
+                background: {0};
             }}
 
             QPushButton:pressed{{

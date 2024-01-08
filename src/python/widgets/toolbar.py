@@ -7,6 +7,7 @@ import PySide6.QtGui as qtg
 
 from constants import TOOLBAR
 from saveConfig import saveConfig
+from widgets.guide import Guide
 
 if TYPE_CHECKING:
     from widgets.mainWindow import window
@@ -44,9 +45,7 @@ class toolbar(qtw.QToolBar):
 
         # Guide Button
         self.guideButton = qtg.QAction('Guide', self)
-        self.guideButton.setCheckable(True)
-        self.guideButton.setChecked(self.config.getGuideStartup())
-        self.guideButton.triggered.connect(lambda: self.button_Clicked(self.mw.dockWidgetGuide, self.guideButton.isChecked()))
+        self.guideButton.triggered.connect(self.openGuide)
         self.addAction(self.guideButton)
 
         # Static Timers Button
@@ -55,6 +54,9 @@ class toolbar(qtw.QToolBar):
         self.staticButton.setChecked(self.config.getStatictimerStartup())
         self.staticButton.triggered.connect(lambda: self.button_Clicked(self.mw.dockWidgetStaticTimer, self.staticButton.isChecked()))
         self.addAction(self.staticButton)
+    
+    def openGuide(self):
+        self.mw.guide.show()
 
     def button_Clicked(self, dockObject: qtw.QDockWidget, buttonisChecked: bool):
         # Find the QDockWidget based on the dockObjectName

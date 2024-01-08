@@ -15,14 +15,14 @@ class checkUpdate(QObject):
     `checkUpdate` will delete itself after it's finished.
     '''
 
-    updateDetected = Signal(str, str)
+    updateDetected = Signal(Version, str)
     upToDate = Signal()
     error = Signal()
 
     def __init__(self) -> None:
         super().__init__()
 
-        link = 'https://api.github.com/repos/Wolfmyths/Myth-Mod-Manager/releases'
+        link = 'https://api.github.com/repos/Wolfmyths/Genshin-Stopwatch/releases/latest'
         
         network = QNetworkAccessManager(self)
         request = QNetworkRequest(QUrl(link))
@@ -47,8 +47,15 @@ class checkUpdate(QObject):
         except Exception as e:
             self.error.emit()
             return
+        
+        # Removing letters from version string
+        version: str = data['tag_name']
 
-        latestVersion = Version.coerce(data['tag_name'])
+        for s in version:
+            if not s.isdigit() and s != '.':
+                version = version.replace(s, '')
+
+        latestVersion = Version.coerce(version)
 
         if latestVersion > VERSION:
             self.updateDetected.emit(latestVersion, data['body'])

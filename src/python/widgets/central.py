@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from datetime import timedelta
 
 from PySide6 import QtWidgets as qtw
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 
 from saveConfig import saveConfig
 from dataParser import dataParser, StopwatchDataKeys
@@ -14,6 +14,9 @@ if TYPE_CHECKING:
     from widgets.mainWindow import window
 
 class centralWidget(qtw.QWidget):
+
+    stopwatchCountChanged = Signal()
+
     def __init__(self, parent: window = None):
         super().__init__(parent)
         # Create the layout for the central widget
@@ -29,6 +32,13 @@ class centralWidget(qtw.QWidget):
         self.scrollAreaLayout.setContentsMargins(0,0,0,0)
         self.verticalLayout = qtw.QVBoxLayout()
         self.verticalLayout.setSpacing(10)
+
+        # Helper label for when there's no stopwatch present
+        self.helperLabel = qtw.QLabel('Use the "Add Timer" button to begin creating a stopwatch\n\nFor additional help press the "Guide" button ')
+        self.helperLabel.setStyleSheet('font-size: 60px;')
+        self.helperLabel.setWordWrap(True)
+        self.helperLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         # Create the scroll area
 
         self.scrollArea = qtw.QScrollArea()
@@ -44,6 +54,16 @@ class centralWidget(qtw.QWidget):
 
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.scrollAreaLayout.addWidget(self.scrollArea)
+
+        self.stopwatchCountChanged.connect(self.showOrHideHelperLabel)
+        self.showOrHideHelperLabel()
+
+    def showOrHideHelperLabel(self):
+
+        if self.findChild(Stopwatch) is None:
+            self.verticalLayout.addWidget(self.helperLabel)
+        else:
+            self.verticalLayout.removeWidget(self.helperLabel)
 
     def addStopWatch(self, timeObject: str, duration: timedelta, name: str, startDuration: timedelta, color: str, notepadContents: str = '', save: bool = True) -> None:
         # Create a Stopwatch object
@@ -61,12 +81,16 @@ class centralWidget(qtw.QWidget):
 
         if save:
             self.saveData()
+
+        self.stopwatchCountChanged.emit()
     
     def removeStopwatch(self, stopwatch: Stopwatch) -> None:
         '''Removes stopwatch from save file'''
 
         self.dataParser.remove_section(stopwatch.id_)
         self.saveData()
+
+        self.stopwatchCountChanged.emit()
 
     def saveData(self):
 

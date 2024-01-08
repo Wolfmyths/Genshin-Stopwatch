@@ -47,13 +47,12 @@ class window(qtw.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetOptions)
         self.dockWidgetOptions.setVisible(self.config.getSettingsStartup())
 
-        self.dockWidgetGuide = Guide(self)
-        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetGuide)
-        self.dockWidgetGuide.setVisible(self.config.getGuideStartup())
-
         self.dockWidgetStaticTimer = staticTimers(self)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetStaticTimer)
         self.dockWidgetStaticTimer.setVisible(self.config.getStatictimerStartup())
+
+        # Activated by toolbar
+        self.guide = Guide()
 
         # So the resize event doesn't spam the save window resolution function (see sizeApplyTimerTimeout() )
         self.windowSizeApplyTimer = QTimer(self)
