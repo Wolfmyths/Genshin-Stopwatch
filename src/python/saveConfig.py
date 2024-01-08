@@ -110,7 +110,7 @@ class saveConfig(ConfigParser):
         return self.get('QOL', ConfigKeys.gameserver, fallback='NA')
     
     def getWidth(self) -> int:
-        return self.getint('WINDOW SIZE', ConfigKeys.width, fallback=1920)
+        return self.getint('WINDOW SIZE', ConfigKeys.width, fallback=1300)
     
     def getHeight(self) -> int:
         return self.getint('WINDOW SIZE', ConfigKeys.height, fallback=1080)

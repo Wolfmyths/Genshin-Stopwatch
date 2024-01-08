@@ -62,8 +62,10 @@ class centralWidget(qtw.QWidget):
 
         if self.findChild(Stopwatch) is None:
             self.verticalLayout.addWidget(self.helperLabel)
+            self.helperLabel.show()
         else:
             self.verticalLayout.removeWidget(self.helperLabel)
+            self.helperLabel.hide()
 
     def addStopWatch(self, timeObject: str, duration: timedelta, name: str, startDuration: timedelta, color: str, notepadContents: str = '', save: bool = True) -> None:
         # Create a Stopwatch object
