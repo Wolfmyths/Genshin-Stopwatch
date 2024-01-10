@@ -33,7 +33,8 @@ def checkMissedNotify() -> None:
     for stopwatch in stopwatches.sections():
         try:
             finishedDate = datetime.strptime(stopwatches.get(stopwatch, StopwatchDataKeys.time_finished), TimeFormats.Saved_Date)
-        except:
+        except Exception as e:
+            print(f'Something went wrong converting a stopwatch finished date into a datetime object: {e}')
             continue
 
         if finishedDate <= today:

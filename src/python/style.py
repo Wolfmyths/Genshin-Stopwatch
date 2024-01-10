@@ -83,6 +83,15 @@ class StyleManager:
                 background-color: {0};
             }}
 
+            QMenu {{
+                background-color: {3};
+                color: {0};
+            }}
+
+            QMenu::item:selected {{
+                background-color: {4}
+            }}
+
             QMainWindow{{
                 background-color: {0};
             }}
@@ -118,7 +127,7 @@ class StyleManager:
                 background-color: {2}
             }}
 
-            QPushButton#applySettingsButton[unsavedChanges="true"]{{
+            QPushButton#applySettingsButton[unsavedchanges="true"]{{
                 color: {4};
             }}
 
