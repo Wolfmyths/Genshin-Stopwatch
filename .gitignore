@@ -1,6 +1,10 @@
 # Images for README.md
 img/
 
+# Save Data
+config.ini
+save.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -1,5 +1,5 @@
-pyinstaller==5.13.0
-PyQt5==5.15.9
-PyQt5_sip==12.12.1
-playsound==1.2.2
-requests==2.31.0
+PySide6==6.6.0
+semantic-version==2.10.0
+
+# External use
+pyinstaller==6.2.0

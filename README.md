@@ -7,29 +7,28 @@
                                               ![CSharp](https://img.shields.io/badge/CSharp(soon!)-.NET_7-purple)
                                               ![HTML](https://img.shields.io/badge/HTML-4-orange)
                                               
-![Desktop Framework](https://img.shields.io/badge/Desktop_Framework-PyQt5-green)
+![Desktop Framework](https://img.shields.io/badge/Desktop_Framework-PySide6-green)
 ![Mobile Framework](https://img.shields.io/badge/Mobile_Framework(soon!)-.NET_Maui-purple)
                                               
-![Windows](https://img.shields.io/badge/Windows-Supported-green)
-![MacOS](https://img.shields.io/badge/MacOS-Pre--Release-blue)
-![Linux](https://img.shields.io/badge/Linux-Pre--Release-blue)
-![iOS](https://img.shields.io/badge/iOS-TBD-lightgray)
-![Android](https://img.shields.io/badge/Android-TBD-lightgray)
+![OS](https://img.shields.io/badge/OS-Win|Mac|Linux|Android(TBD)|iOS(TBD)-blue)
                                               
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C4MJZS9)
 
 # FAQ Table of Contents
-* [What does Genshin Stopwatch do?](#what-does-genshin-stopwatch-do)
-* [How are my stopwatches saved?](#how-are-my-stopwatches-saved)
-* [What platforms is this compatible with?](#what-platforms-is-this-compatible-with)
-* [It doesn't work!](#it-doesnt-work)
-* [Does this program run on system startup?](#does-this-program-run-on-system-startup)
-    + [Windows](#on-windows)
-    + [MacOS](#on-macos)
-    + [Linux](#on-linux)
-* [Future Plans?](#future-plans)
-* [Contributing](#contributing)
-* [Credits](#credits)
+- [Genshin Stopwatch](#genshin-stopwatch)
+    - [A program to help keep track of Genshin Impact's time gates.](#a-program-to-help-keep-track-of-genshin-impacts-time-gates)
+- [FAQ Table of Contents](#faq-table-of-contents)
+  - [What does Genshin Stopwatch do?](#what-does-genshin-stopwatch-do)
+  - [How are my stopwatches saved?](#how-are-my-stopwatches-saved)
+  - [What platforms is this compatible with?](#what-platforms-is-this-compatible-with)
+  - [It doesn't work!](#it-doesnt-work)
+  - [Does this program run on system startup?](#does-this-program-run-on-system-startup)
+    - [On Windows:](#on-windows)
+    - [On MacOS:](#on-macos)
+    - [On Linux:](#on-linux)
+  - [Future Plans?](#future-plans)
+  - [Contributing](#contributing)
+  - [Credits](#credits)
 
 ## What does Genshin Stopwatch do?
 
@@ -52,9 +51,9 @@ notes = Hilichurl Camps
 
 ## What platforms is this compatible with?
 
-At the moment only Windows machines can run this program.
+Win 10 and up, MacOS, and Linux versions are available.
 
-**There are plans to support Linux and MacOS, please see the latest [pre release](https://github.com/Wolfmyths/Genshin-Stopwatch/releases/tag/V1.5.5-pre) for QA testing and [issue #26](https://github.com/Wolfmyths/Genshin-Stopwatch/issues/26)**
+MacOS/Linux versions are not tested so if there's any issues please submit an issue
 
 **Android and iOS is also underway! Release TBD**
 
@@ -98,10 +97,6 @@ Every distro is different so you have to do this research on your own, sorry. �
 
 ## Future Plans?
 
-+ Restore Apprise Module support if they add more compatibility for Windows
-   - *This means the notification center will be used again*
-+ Touch up on the UI a tiny bit for more clarity
-+ MacOS/Linux Support *In Pre-Release Stage!*
 + Background pictures to choose from for the timers?
 + Translations? *(Not sure if this is necessary but if people want it I will make an effort)*
 + Mobile version? *In development! Release is still TBD*
@@ -119,13 +114,9 @@ For more information and background knowledge of the program, see [CONTRIBUTING.
 
 + [Contributors!](https://github.com/Wolfmyths/Genshin-Stopwatch/graphs/contributors) Without you guys I wouldn't have gotten as far into this project as I would have on my own. <br> You guys have taught me a lot. ❤️
 
-+ [PyQt5](https://pypi.org/project/PyQt5/) for creating an open source easy-to-use framework.
++ [PySide6](https://www.qt.io/qt-for-python) for creating an open source easy-to-use framework.
 
 + [Pyinstaller](https://pypi.org/project/pyinstaller/) for creating a way to change python programs into an exe.
-
-+ [Playsound](https://pypi.org/project/playsound/1.2.2/) for creating a cross platform module to easily play sound files.
-
-+ [Itemize](https://freesound.org/people/Scrampunk/sounds/345297/) for creating this sound that is used for notifications
 
 + Color Pallets
   - [Timeless](https://lospec.com/palette-list/timeless) AKA Dark by Archer on lospec.com
@@ -139,5 +130,8 @@ For more information and background knowledge of the program, see [CONTRIBUTING.
   - [Koukasita](https://lospec.com/palette-list/koukasita) AKA Geo by namida on lospec.com
 
 + *(Previously used)*
+  - [PyQt5](https://pypi.org/project/PyQt5/) for creating an open source easy-to-use framework.
+  - [Playsound](https://pypi.org/project/playsound/1.2.2/) for creating a cross platform module to easily play sound files.
+  - [Itemize](https://freesound.org/people/Scrampunk/sounds/345297/) for creating this sound that is used for notifications
   - [Apprise](https://pypi.org/project/apprise/) for creating an all-in-one notification module.
   - [Win10Toast](https://pypi.org/project/win10toast/) for creating an easy way to implement windows notifications.
