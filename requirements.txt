@@ -1,5 +1,5 @@
-PySide6==6.6.0
+PySide6==6.7.0
 semantic-version==2.10.0
 
 # External use
-pyinstaller==6.2.0
+pyinstaller==6.6.0
