@@ -42,12 +42,14 @@ class saveConfig(ConfigParser):
         if not os.path.exists(CONFIG):
             with open(CONFIG, 'w+') as f:
                 pass
+        
+        self.read(CONFIG)
 
         # Checking if sections exist to prevent traceback if they don't
         for section in ('OPTIONS', 'QOL', 'STATIC_TIMERS', 'WINDOW SIZE'):
             self.__checkSection(section)
 
-        self.read(CONFIG)
+        self.save()
 
     def __new__(cls) -> Self:
 
