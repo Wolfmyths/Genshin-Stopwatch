@@ -17,10 +17,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: 3.11
           cache: 'pip'
@@ -41,7 +41,7 @@ jobs:
         run: dir
 
       - name: Create release artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Genshin-Stopwatch-Assets-${{ matrix.os }}
           path: |
@@ -103,7 +103,7 @@ jobs:
           args: zip -qq -r "Genshin-Stopwatch-${{ env.zipname }}.zip" "Genshin-Stopwatch-${{ matrix.os }}"
     
       - name: Upload Artifact to Release Assets
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: Genshin-Stopwatch-${{ env.zipname }}.zip
