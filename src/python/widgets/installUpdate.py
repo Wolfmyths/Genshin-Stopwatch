@@ -50,10 +50,9 @@ class updateApp(qtw.QDialog):
     def install(self):
         with zipfile.ZipFile(self.path) as openzip:
             openzip.extractall(self.target_dir)
+        latestExec = os.path.join(self.target_dir, f"Genshin-Stopwatch-{self.platform.lower()}", "GenshinStopwatch")
         if self.platform == "Windows":
-            latestExec = f"{self.target_dir}\\Genshin-Stopwatch-windows-latest\\GenshinStopwatch.exe"
-        else:
-            latestExec = f"{self.target_dir}/Genshin-Stopwatch-ubuntu-latest/GenshinStopwatch"
+            latestExec += ".exe"
         execPath = sys.executable
         os.remove(sys.executable)
         shutil.copyfile(latestExec, execPath)
