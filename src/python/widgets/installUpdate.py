@@ -56,7 +56,7 @@ class updateApp(qtw.QDialog):
         os.mkdir(old_dir)
         if self.platform == "Windows":
             latestExec += ".exe"
-            os.rename(sys.executable, "OLD\\Genshin-Stopwatch_OLD.exe")
+            os.rename(sys.executable, "Genshin-Stopwatch_OLD.exe")
         else:
             os.remove(sys.executable)
         shutil.copyfile(latestExec, execPath)
