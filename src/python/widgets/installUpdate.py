@@ -52,8 +52,6 @@ class updateApp(qtw.QDialog):
             openzip.extractall(self.target_dir)
         latestExec = os.path.join(self.target_dir, f"Genshin-Stopwatch-{self.platform.lower()}-latest", "GenshinStopwatch")
         execPath = sys.executable
-        old_dir = os.path.join(os.path.dirname(sys.executable), "OLD")
-        os.mkdir(old_dir)
         if self.platform == "Windows":
             latestExec += ".exe"
             os.rename(sys.executable, "Genshin-Stopwatch_OLD.exe")
