@@ -27,7 +27,7 @@ ZERO = timedelta(days=0, hours=0, seconds=0)
 ONE = timedelta(seconds=1)
 
 # Program Info
-VERSION = Version(major=2, minor=1, patch=0)
+VERSION = Version(major=2, minor=2, patch=0)
 PROGRAM_NAME = 'Genshin Stopwatch'
 
 # Object Names
