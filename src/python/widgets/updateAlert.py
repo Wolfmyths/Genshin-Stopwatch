@@ -1,11 +1,12 @@
-import webbrowser
-
 import PySide6.QtWidgets as qtw
 import PySide6.QtGui as qtg
 
 from saveConfig import saveConfig, ConfigKeys
 
 from constants import ICON
+
+from widgets.installUpdate import updateApp
+
 
 class UpdateAlert(qtw.QDialog):
     def __init__(self, latestVersion: str, changelog: str) -> None:
@@ -18,7 +19,7 @@ class UpdateAlert(qtw.QDialog):
 
         layout = qtw.QVBoxLayout()
 
-        self.message = qtw.QLabel(self, text=f'The latest update {latestVersion} has been released!\nWould you like to visit the download page?')
+        self.message = qtw.QLabel(self, text=f'The latest update {latestVersion} has been released!\nWould you like to download & install?')
         layout.addWidget(self.message)
 
         self.checkBox = qtw.QCheckBox(self, text='Do not automatically check for updates')
@@ -38,7 +39,8 @@ class UpdateAlert(qtw.QDialog):
         self.setLayout(layout)
 
     def accept(self) -> None:
-        webbrowser.open_new_tab('https://github.com/Wolfmyths/Genshin-Stopwatch/releases/latest')
+        installer = updateApp()
+        installer.exec()
         return super().accept()
     
     def checkBoxClicked(self) -> None:

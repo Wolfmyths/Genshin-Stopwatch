@@ -7,7 +7,7 @@ from widgets.sysTrayIcon import sysTrayIcon
 from saveConfig import saveConfig
 from style import StyleManager, StyleSheets
 from constants import VERSION, ICON, PROGRAM_NAME
-import notify
+import notify, os
 
 if __name__ == '__main__':
     import sys
@@ -33,5 +33,11 @@ if __name__ == '__main__':
 
     # Checking to see if any static timers and stopwatches went off while the program was shutdown
     notify.checkMissedNotify()
+
+    # Check to see if an old version was left behind after update (windows)
+    path = os.path.dirname(sys.executable)
+    old = os.path.join(path, "Genshin-Stopwatch_OLD.exe")
+    if os.path.exists(old):
+        os.remove(old)
 
     app.exec()
