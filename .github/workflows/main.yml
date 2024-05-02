@@ -84,7 +84,7 @@ jobs:
         run: mkdir -p "Genshin-Stopwatch-${{ matrix.os }}"
     
       - name: Download Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: "Genshin-Stopwatch-Assets-${{ matrix.os }}"
           path: "Genshin-Stopwatch-${{ matrix.os }}"
