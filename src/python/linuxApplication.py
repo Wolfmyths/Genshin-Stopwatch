@@ -23,6 +23,9 @@ class setApplication(QObject):
         if currentEntry.Comment.default_text != f"Genshin Stopwatch for Linux V{VERSION}":
             os.remove(self.entryPath)
             self.buildApplication()
+        if currentEntry.Exec != sys.executable:
+            os.remove(self.entryPath)
+            self.buildApplication()
         
     
     def __init__(self) -> None:
