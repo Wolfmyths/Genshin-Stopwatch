@@ -20,6 +20,7 @@ ROOT = os.path.abspath(os.path.dirname(__file__)) if not IS_SCRIPT else os.path.
 CONFIG = os.path.abspath('config.ini')
 SAVEFILE = os.path.abspath('save.txt')
 ICON = os.path.join(ROOT, 'icon.ico')
+LINUX_ICON = os.path.join(ROOT, 'img', 'icon.png')
 GUIDE = os.path.join(ROOT, 'guide.html')
 
 # Date Values

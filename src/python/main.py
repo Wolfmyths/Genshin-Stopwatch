@@ -7,7 +7,8 @@ from widgets.sysTrayIcon import sysTrayIcon
 from saveConfig import saveConfig
 from style import StyleManager, StyleSheets
 from constants import VERSION, ICON, PROGRAM_NAME
-import notify, os
+import linuxApplication
+import notify, os, platform
 
 if __name__ == '__main__':
     import sys
@@ -39,5 +40,9 @@ if __name__ == '__main__':
     old = os.path.join(path, "Genshin-Stopwatch_OLD.exe")
     if os.path.exists(old):
         os.remove(old)
-
+    
+    # check application if on linux
+    if platform.system() == "Linux":
+        linuxApplication.setApplication()
+        
     app.exec()
