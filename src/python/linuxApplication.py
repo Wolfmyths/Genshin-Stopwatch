@@ -33,7 +33,7 @@ class setApplication(QObject):
         self.home = os.path.expanduser("~")
         localIcons = os.path.join(self.home, ".local", "share", "icons")
         localApplications = os.path.join(self.home, ".local", "share", "applications")
-        self.entryPath = os.path.join(self.home, ".local", "share", "applications", "Genshin Stopwatch.desktop")
+        self.entryPath = os.path.join(self.home, ".local", "share", "applications", "Genshin-Stopwatch.desktop")
         
         if os.path.exists(localIcons) == False:
             os.makedirs(localIcons)
