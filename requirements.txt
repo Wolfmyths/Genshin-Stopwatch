@@ -3,3 +3,6 @@ semantic-version==2.10.0
 
 # External use
 pyinstaller==6.6.0
+
+#platform specific
+desktop-entry-lib; sys.platform == "linux"
